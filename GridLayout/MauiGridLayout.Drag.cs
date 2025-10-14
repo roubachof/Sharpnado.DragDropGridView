@@ -1,10 +1,12 @@
-﻿namespace Sharpnado.GridLayout;
-
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows.Input;
 
-using Tasks;
-using ScrollView = ScrollView;
+using Sharpnado.Tasks;
+
+using MR.Gestures;
+using ScrollView = Microsoft.Maui.Controls.ScrollView;
+
+namespace Sharpnado.GridLayout;
 
 public partial class GridLayout
 {
@@ -46,16 +48,6 @@ public partial class GridLayout
 
     private CancellationTokenSource? _animationCts;
 
-    private double _lastPanX;
-
-    private double _lastPanY;
-
-    private CancellationTokenSource? _autoScrollCts;
-
-    private bool _isAutoScrolling;
-
-    private double _currentScrollSpeed;
-
     public Func<View, Task>? DragAndDropEnabledItemsAnimation { get; set; }
 
     public Func<View, Task>? DragAndDropDisabledItemsAnimation { get; set; }
@@ -77,14 +69,7 @@ public partial class GridLayout
 
     protected override void OnChildRemoved(Element child, int oldLogicalIndex)
     {
-        InternalLogger.Debug(Tag, $"Remove( child: {child.GetType().Name}, index: {oldLogicalIndex} )");
-
-        // Skip header view
-        if (child == _headerView)
-        {
-            base.OnChildRemoved(child, oldLogicalIndex);
-            return;
-        }
+        InternalLogger.Debug(Tag, () => $"Remove( child: {child.GetType().Name}, index: {oldLogicalIndex} )");
 
         if (IsDragAndDropEnabled)
         {
@@ -100,13 +85,7 @@ public partial class GridLayout
     {
         base.OnChildAdded(child);
 
-        InternalLogger.Debug(Tag, $"OnChildAdded( child: {child.GetType().Name} )");
-
-        // Skip header view
-        if (child == _headerView)
-        {
-            return;
-        }
+        InternalLogger.Debug(Tag, () => $"OnChildAdded( child: {child.GetType().Name} )");
 
         _orderedChildren.Add((View)child);
 
@@ -118,28 +97,22 @@ public partial class GridLayout
 
     private void InitializeDragAndDrop()
     {
-        InternalLogger.Debug(Tag, "InitializeDragAndDrop()");
+        InternalLogger.Debug(Tag, () => $"InitializeDragAndDrop()");
+
+        Settings.MinimumDeltaDistance = 2;
 
         _scrollView = this.GetFirstParentOfType<ScrollView>();
         _refreshView = this.GetFirstParentOfType<RefreshView>();
-        InternalLogger.Debug(Tag, _scrollView != null ? "Parent ScrollView found" : "Warning: No ScrollView found!");
-        InternalLogger.Debug(Tag, _refreshView != null ? "Parent RefreshView found" : "No RefreshView found (this is fine if you don't use one).");
-
+        InternalLogger.Debug(Tag, () => _scrollView != null ? $"Parent ScrollView found" : "Warning: No ScrollView found!");
         UpdateIsDragAndDropEnabled(IsDragAndDropEnabled);
     }
 
     private void ClearDragAndDrop()
     {
-        InternalLogger.Debug(Tag, "ClearDragAndDrop()");
+        InternalLogger.Debug(Tag, () => "ClearDragAndDrop()");
 
         foreach (var child in Children)
         {
-            // Skip header view
-            if (child == _headerView)
-            {
-                continue;
-            }
-
             UnsubscribeDragAndDropIfNeeded((Element)child);
         }
 
@@ -147,30 +120,14 @@ public partial class GridLayout
         _draggingSessionList.Clear();
         _animationCts?.Dispose();
         _animationCts = null;
-        _autoScrollCts?.Cancel();
-        _autoScrollCts?.Dispose();
-        _autoScrollCts = null;
     }
 
     private void UpdateIsDragAndDropEnabled(bool isEnabled)
     {
-        InternalLogger.Debug(Tag, $"UpdateIsDragAndDropEnabled( isEnabled: {isEnabled} )");
-
-        // On Android, we need to disable scrolling BEFORE enabling gestures
-        // Otherwise the ScrollView will intercept all touch events
-        if (DeviceInfo.Platform == DevicePlatform.Android)
-        {
-            ConfigureScrollViewForDragAndDrop(isEnabled);
-        }
+        InternalLogger.Debug(Tag, () => $"UpdateIsDragAndDropEnabled( isEnabled: {isEnabled} )");
 
         foreach (var child in Children)
         {
-            // Skip header view
-            if (child == _headerView)
-            {
-                continue;
-            }
-
             if (isEnabled)
             {
                 SubscribeDragAndDropIfNeeded((Element)child);
@@ -197,267 +154,218 @@ public partial class GridLayout
             _animationCts?.Dispose();
             _animationCts = null;
         }
+
+        UpdateDisableScrollView(isEnabled);
     }
 
     private void SubscribeDragAndDropIfNeeded(Element child)
     {
-        InternalLogger.Debug(Tag, "SubscribeDragAndDropIfNeeded");
-
-        if (child is not (View view and IDragAndDropView))
+        if (child is not (IGestureAwareControl gestureAwareControl and IDragAndDropView))
         {
-            InternalLogger.Warn(Tag, $"Child of type {child.GetType().Name} does not implement IDragAndDropView, skipping drag and drop subscription.");
             return;
         }
 
-        // Add Pan gesture for drag and drop
-        var panGesture = new PanGestureRecognizer
+        InternalLogger.Debug(Tag, () => "SubscribeDragAndDropIfNeeded");
+
+        if (DeviceInfo.Platform == DevicePlatform.tvOS)
         {
-            // Setting TouchPoints helps Android recognize the gesture more reliably
-            TouchPoints = 1
-        };
-        panGesture.PanUpdated += OnPanUpdated;
-        view.GestureRecognizers.Add(panGesture);
-        
-        InternalLogger.Debug(Tag, $"Added pan gesture to {view.GetType().Name}, gesture count: {view.GestureRecognizers.Count}");
+            gestureAwareControl.LongPressed -= OnLongPressed;
+            gestureAwareControl.LongPressing -= OnLongPressing;
+
+            gestureAwareControl.LongPressed += OnLongPressed;
+            gestureAwareControl.LongPressing += OnLongPressing;
+        }
+        else
+        {
+            SubscribeToPanning(gestureAwareControl);
+        }
     }
 
     private void UnsubscribeDragAndDropIfNeeded(Element child)
     {
-        if (child is not View view)
+        if (child is not (IGestureAwareControl gestureAwareControl and IDragAndDropView))
         {
             return;
         }
 
-        InternalLogger.Debug(Tag, "UnsubscribeDragAndDropIfNeeded");
+        InternalLogger.Debug(Tag, () => "UnsubscribeDragAndDropIfNeeded");
 
-        // Remove all pan gestures
-        var panGestures = view.GestureRecognizers.OfType<PanGestureRecognizer>().ToList();
-        foreach (var gesture in panGestures)
+        if (DeviceInfo.Platform == DevicePlatform.Android)
         {
-            gesture.PanUpdated -= OnPanUpdated;
-            view.GestureRecognizers.Remove(gesture);
+            gestureAwareControl.LongPressed -= OnLongPressed;
+            gestureAwareControl.LongPressing -= OnLongPressing;
         }
+
+        UnsubscribeToPanning(gestureAwareControl);
     }
 
-    private void OnPanUpdated(object? sender, PanUpdatedEventArgs e)
+    private void OnLongPressing(object sender, LongPressEventArgs e)
     {
-        if (sender is not View view)
+        InternalLogger.Debug(Tag, () => "OnLongPressing()");
+
+        var gestureAwareControl = (IGestureAwareControl)sender;
+
+        TaskMonitor.Create(((View)gestureAwareControl).ScaleTo(1.05, 100));
+        ((IDragAndDropView)sender).IsDragAndDropping = true;
+
+        SubscribeToPanning(gestureAwareControl);
+    }
+
+    private void OnLongPressed(object sender, LongPressEventArgs e)
+    {
+        InternalLogger.Debug(Tag, () => "OnLongPressed()");
+
+        TaskMonitor.Create(
+            async () =>
+            {
+                // Need a little delay: sometimes long pressed event occurs just before panning
+                await Task.Delay(50);
+                if (_isDragging)
+                {
+                    return;
+                }
+
+                InternalLogger.Debug(Tag, () => "OnLongPressed() => !isDragging");
+
+                var gestureAwareControl = (IGestureAwareControl)sender;
+                TaskMonitor.Create(((View)gestureAwareControl).ScaleTo(1, 100));
+
+                ((IDragAndDropView)sender).IsDragAndDropping = false;
+
+                UnsubscribeToPanning(gestureAwareControl);
+            });
+    }
+
+    private void SubscribeToPanning(IGestureAwareControl gestureAwareControl)
+    {
+        InternalLogger.Debug(Tag, () => "SubscribeToPanning()");
+
+        gestureAwareControl.Panning -= OnPanning;
+        gestureAwareControl.Panning += OnPanning;
+
+        gestureAwareControl.Panned -= OnPanned;
+        gestureAwareControl.Panned += OnPanned;
+    }
+
+    private void UnsubscribeToPanning(IGestureAwareControl gestureAwareControl)
+    {
+        gestureAwareControl.Panning -= OnPanning;
+        gestureAwareControl.Panned -= OnPanned;
+    }
+
+    private void OnPanning(object sender, PanEventArgs e)
+    {
+        InternalLogger.Debug(Tag, () => "OnPanning");
+        var view = (View)sender;
+
+        if (!_isDragging)
         {
+            StartDraggingSession(view);
+        }
+
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
+
+        if (e.Cancelled)
+        {
+            InternalLogger.Debug(Tag, () => "OnPanning cancelled");
+            TaskMonitor.Create(OnViewDroppedAsync(view));
             return;
         }
 
-        switch (e.StatusType)
+        view.TranslationX += e.TotalDistance.X;
+        view.TranslationY += e.TotalDistance.Y;
+
+        if (_scrollView != null)
         {
-            case GestureStatus.Started:
-                InternalLogger.Debug(Tag, () => "Pan Started");
-                _lastPanX = 0;
-                _lastPanY = 0;
-                StartDraggingSession(view);
-                if (view is IDragAndDropView dragView)
-                {
-                    dragView.IsDragAndDropping = true;
-                }
-                break;
-
-            case GestureStatus.Running:
-                if (!_isDragging)
-                {
-                    break;
-                }
-
-                // Calculate incremental movement
-                double deltaX = e.TotalX - _lastPanX;
-                double deltaY = e.TotalY - _lastPanY;
-                _lastPanX = e.TotalX;
-                _lastPanY = e.TotalY;
-
-                // Update position based on delta
-                view.TranslationX += deltaX;
-                view.TranslationY += deltaY;
-
-                if (_scrollView != null)
-                {
-                    HandleScrollViewEdges(_scrollView, view);
-                }
-
-                CheckCandidates(view);
-                break;
-
-            case GestureStatus.Completed:
-            case GestureStatus.Canceled:
-                InternalLogger.Debug(Tag, "Pan Completed/Cancelled");
-                StopAutoScroll();
-                if (view is IDragAndDropView dragViewEnd)
-                {
-                    dragViewEnd.IsDragAndDropping = false;
-                }
-                // view.ZIndex -= 100;
-                TaskMonitor.Create(OnViewDroppedAsync(view));
-                break;
+            HandleScrollViewEdges(_scrollView, view);
         }
+
+        CheckCandidates(view);
+
+        stopwatch.Stop();
+    }
+
+    private void OnPanned(object sender, PanEventArgs e)
+    {
+        InternalLogger.Debug(Tag, () => "OnPanned()");
+
+        TaskMonitor.Create(OnViewDroppedAsync((View)sender));
     }
 
     private void StartDraggingSession(View view)
     {
-        InternalLogger.Debug(Tag, $"StartDraggingSession {view.GetType().Name}");
+        InternalLogger.Debug(Tag, () => $"StartDraggingSession {view.GetType().Name}");
         _isDragging = true;
         _draggingSessionList = [.._orderedChildren.Cast<View>()];
 
         ((IDragAndDropView)view).IsDragAndDropping = true;
         // FIXME: this make the layout trigger a new measure and layout pass and then stop the panning
-        // view.ZIndex += 100;
+        // ((View)view).ZIndex += 100;
 
         _shouldInvalidate = false;
         _draggingView = view;
     }
 
-    private void ConfigureScrollViewForDragAndDrop(bool dragAndDropEnabled)
+    private void UpdateDisableScrollView(bool isDisabled)
     {
-        InternalLogger.Debug(Tag, $"ConfigureScrollViewForDragAndDrop( dragAndDropEnabled: {dragAndDropEnabled} )");
-
+#if ANDROID
         if (_scrollView != null)
         {
-#if ANDROID
-            // When drag-and-drop is enabled, we disable scrolling so touches reach our gesture recognizers
-            var disableScrolling = dragAndDropEnabled;
-            InternalLogger.Debug(Tag, $"Setting ScrollView disableScrolling to: {disableScrolling}");
-            ((UntouchableScrollviewHandler)_scrollView.Handler!).UpdateDisableScrolling(disableScrolling);
-#endif
+            InternalLogger.Debug(Tag, () => $"UpdateScrollView( disabled: {isDisabled} )");
+            ((UntouchableScrollviewHandler)_scrollView.Handler!).UpdateDisableScrolling(isDisabled);
         }
 
         if (_refreshView != null)
         {
-            // Disable RefreshView when drag-and-drop is enabled
-            var refreshEnabled = !dragAndDropEnabled;
-            InternalLogger.Debug(Tag, $"Setting RefreshView enabled to: {refreshEnabled}");
-            _refreshView.IsEnabled = refreshEnabled;
+            InternalLogger.Debug(Tag, () => $"UpdateRefreshView( disabled: {isDisabled} )");
+            ((UntouchableRefreshViewHandler)_refreshView.Handler!).UpdateDisableScrolling(isDisabled);
         }
+#endif
     }
 
     private void HandleScrollViewEdges(ScrollView scrollView, View view)
     {
-        var viewScreenCoordinates = view.GetScreenCoordinates();
-        var scrollScreenCoordinates = scrollView.GetScreenCoordinates();
-        var containerScreenCoordinates = this.GetScreenCoordinates();
+        var viewScreenCoordinates = view.GetScreenCoordinates<Application>();
+        var scrollScreenCoordinates = scrollView.GetScreenCoordinates<Application>();
+        var containerScreenCoordinates = this.GetScreenCoordinates<Application>();
 
         double toolbarHeight = DeviceDisplay.Current.MainDisplayInfo.Orientation == DisplayOrientation.Landscape ? 48 : 56;
         double screenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) - toolbarHeight;
 
-        InternalLogger.Debug(Tag, $"screenHeight: {screenHeight}, viewScreenCoordinates: {viewScreenCoordinates}, scrollScreenCoordinates: {scrollScreenCoordinates}, containerScreenCoordinates: {containerScreenCoordinates}");
+        InternalLogger.Debug(Tag, () => $"screenHeight: {screenHeight}, viewScreenCoordinates: {viewScreenCoordinates}, scrollScreenCoordinates: {scrollScreenCoordinates}, containerScreenCoordinates: {containerScreenCoordinates}");
 
-        // Define the edge zone size (larger = easier to trigger auto-scroll)
-        const double edgeZoneSize = 120.0;
-        const double maxScrollSpeed = 25.0; // pixels per frame
-
-        double startScreenY = scrollView.ScrollY + scrollScreenCoordinates.Y;
         double endScreenY = scrollView.ScrollY + scrollScreenCoordinates.Y + screenHeight;
-        double viewCenterY = view.TranslationY + viewScreenCoordinates.Y + (view.Height / 2);
+
+        double viewBottom = view.TranslationY + viewScreenCoordinates.Y + view.Height;
+
+        double exceedingBottom = viewBottom - endScreenY;
+
+        double targetY = scrollView.ScrollY + exceedingBottom;
 
         double containerBottom = containerScreenCoordinates.Y + Height;
-        double maxScrollY = Math.Max(0, containerBottom - startScreenY);
+        double exceedingContainerBottom = containerBottom - endScreenY;
 
-        InternalLogger.Debug(Tag, $"viewCenterY: {viewCenterY}, startScreenY: {startScreenY}, endScreenY: {endScreenY}, scrollY: {scrollView.ScrollY}");
+        InternalLogger.Debug(Tag, () => $"exceedingContainerBottom: {exceedingContainerBottom}");
 
-        // Check if we're in the top edge zone
-        double distanceFromTop = viewCenterY - startScreenY;
-        if (distanceFromTop > 0 && distanceFromTop < edgeZoneSize && scrollView.ScrollY > 0)
+        if (exceedingBottom > 0 && exceedingContainerBottom > 0)
         {
-            // Calculate scroll speed based on proximity to edge (closer = faster)
-            double scrollSpeed = maxScrollSpeed * (1 - (distanceFromTop / edgeZoneSize));
-            StartAutoScroll(scrollView, -scrollSpeed, maxScrollY);
-            return;
+            InternalLogger.Debug(Tag, () => $"Scrolling to exceeding bottom: {exceedingBottom}, scrollTargetY: {targetY}");
+            TaskMonitor.Create(scrollView.ScrollToAsync(0, targetY, false));
         }
 
-        // Check if we're in the bottom edge zone
-        double distanceFromBottom = endScreenY - viewCenterY;
-        if (distanceFromBottom > 0 && distanceFromBottom < edgeZoneSize && scrollView.ScrollY < maxScrollY)
+        double startScreenY = scrollView.ScrollY + scrollScreenCoordinates.Y;
+        double viewTop = view.TranslationY + viewScreenCoordinates.Y;
+        double exceedingTop = viewTop - startScreenY;
+        double targetYTop = scrollView.ScrollY + exceedingTop;
+
+        InternalLogger.Debug(Tag, () => $"viewTop: {viewTop}, scrollY: {scrollView.ScrollY}, exceedingTop: {exceedingTop}");
+
+        if (exceedingTop < 10)
         {
-            // Calculate scroll speed based on proximity to edge (closer = faster)
-            double scrollSpeed = maxScrollSpeed * (1 - (distanceFromBottom / edgeZoneSize));
-            StartAutoScroll(scrollView, scrollSpeed, maxScrollY);
-            return;
+            InternalLogger.Debug(Tag, () => $"Scrolling to exceeding top: {exceedingTop}, scrollTargetY: {targetYTop}");
+            TaskMonitor.Create(scrollView.ScrollToAsync(0, targetYTop, false));
         }
-
-        // If not in any edge zone, stop auto-scrolling
-        StopAutoScroll();
-    }
-
-    private void StartAutoScroll(ScrollView scrollView, double scrollSpeed, double maxScrollY)
-    {
-        if (_isAutoScrolling)
-        {
-            // Update speed for existing scroll
-            _currentScrollSpeed = scrollSpeed;
-            return;
-        }
-
-        _isAutoScrolling = true;
-        _currentScrollSpeed = scrollSpeed;
-        _autoScrollCts?.Cancel();
-        _autoScrollCts?.Dispose();
-        _autoScrollCts = new CancellationTokenSource();
-
-        InternalLogger.Debug(Tag, $"Starting auto-scroll with speed: {scrollSpeed}");
-
-        Task.Run(async () =>
-        {
-            try
-            {
-                while (!_autoScrollCts.Token.IsCancellationRequested && _isDragging)
-                {
-                    double actualScrollSpeed = _currentScrollSpeed;
-                    double scrollBefore = scrollView.ScrollY;
-                    
-                    await MainThread.InvokeOnMainThreadAsync(async () =>
-                    {
-                        if (_autoScrollCts.Token.IsCancellationRequested || !_isDragging)
-                        {
-                            return;
-                        }
-
-                        double newScrollY = Math.Max(0, Math.Min(maxScrollY, scrollView.ScrollY + actualScrollSpeed));
-                        await scrollView.ScrollToAsync(0, newScrollY, false);
-                    });
-
-                    // Calculate actual scroll that happened
-                    double actualScrollDelta = scrollView.ScrollY - scrollBefore;
-                    
-                    // Compensate dragging view position to keep it visually stable
-                    if (_draggingView != null && Math.Abs(actualScrollDelta) > 0.1)
-                    {
-                        await MainThread.InvokeOnMainThreadAsync(() =>
-                        {
-                            if (_draggingView != null)
-                            {
-                                _draggingView.TranslationY += actualScrollDelta;
-                            }
-                        });
-                    }
-
-                    await Task.Delay(16, _autoScrollCts.Token); // ~60 FPS
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                // Expected when stopping auto-scroll
-            }
-            finally
-            {
-                _isAutoScrolling = false;
-            }
-        }, _autoScrollCts.Token);
-    }
-
-    private void StopAutoScroll()
-    {
-        if (!_isAutoScrolling)
-        {
-            return;
-        }
-
-        InternalLogger.Debug(Tag, "Stopping auto-scroll");
-        _autoScrollCts?.Cancel();
-        _isAutoScrolling = false;
     }
 
     private static Task WobbleAnimationAsync(View view)
@@ -475,12 +383,6 @@ public partial class GridLayout
         List<Task> animationTasks = new List<Task>();
         foreach (var child in Children)
         {
-            // Skip header view - it should not be animated or participate in drag and drop
-            if (child == _headerView)
-            {
-                continue;
-            }
-
             animationTasks.Add(ApplyAnimationAsync((View)child, token));
         }
 

@@ -5,7 +5,7 @@ namespace Sharpnado.GridLayout;
 /// This allows any content to be draggable without adding visual nesting overhead.
 /// Use CompressedLayout.IsHeadless="True" in XAML for zero layout impact.
 /// </summary>
-public class DragAndDropView : ContentView, IDragAndDropView
+public class DragAndDropView : MR.Gestures.ContentView, IDragAndDropView
 {
     public static readonly BindableProperty CanReceiveViewProperty = BindableProperty.Create(
         nameof(CanReceiveView),
