@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <Shadow x:Key="ShadowTop"
+            Brush="{StaticResource ShadowsColor}"
+            Opacity="0.3"
+            Radius="6"
+            Offset="0,-8" />
+
+    <Shadow x:Key="ShadowBottom"
+            Brush="{StaticResource LightBulbOffColor}"
+            Radius="10"
+            Offset="0,5" />
+
+    <Shadow x:Key="ShadowLightOff"
+            Brush="{StaticResource LightBulbOffColor}"
+            Radius="10"
+            Offset="0,5" />
+
+    <Shadow x:Key="ShadowLightOn"
+            Brush="{StaticResource LightBulbHaloColor}"
+            Opacity="0.5"
+            Radius="10"
+            Offset="0,0" />
+
+    <Shadow x:Key="ShadowAccentBottom"
+            Brush="{StaticResource AccentColor}"
+            Opacity="0.4"
+            Radius="6"
+            Offset="0,4" />
+
+    <Shadow x:Key="ShadowSegmentedBottom"
+            Brush="{StaticResource ShadowsColor}"
+            Opacity="0.2"
+            Radius="4"
+            Offset="0,5" />
+
+    <Shadow x:Key="ShadowLightBulbHalo"
+            Brush="{StaticResource LightBulbHaloColor}"
+            Opacity="1"
+            Radius="30"
+            Offset="0,0" />
+
+</ResourceDictionary>

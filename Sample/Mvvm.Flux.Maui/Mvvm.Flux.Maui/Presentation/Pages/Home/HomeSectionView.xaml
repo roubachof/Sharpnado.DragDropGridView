@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cv:ContentPageView x:Class="Mvvm.Flux.Maui.Presentation.Pages.Home.HomeSectionView"
+                    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    xmlns:converters="using:Mvvm.Flux.Maui.Presentation.Converters"
+                    xmlns:cv="using:Mvvm.Flux.Maui.Presentation.CustomViews"
+                    xmlns:home="using:Mvvm.Flux.Maui.Presentation.Pages.Home"
+                    xmlns:lights="using:Mvvm.Flux.Maui.Domain.Lights"
+                    xmlns:sho="http://sharpnado.com"
+                    xmlns:tlv="clr-namespace:Sharpnado.TaskLoaderView;assembly=Sharpnado.Maui.TaskLoaderView"
+                    x:Name="Root"
+                    x:DataType="home:HomeSectionViewModel">
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <Style x:Key="FoldedButton"
+                   BasedOn="{StaticResource ImageButtonSmallFabPrimary}"
+                   TargetType="ImageButton">
+                <Setter Property="HorizontalOptions" Value="End" />
+            </Style>
+            <Style x:Key="FoldedBedroom"
+                   BasedOn="{StaticResource FoldedButton}"
+                   TargetType="ImageButton">
+                <Setter Property="Source" Value="{StaticResource IconBedFabWhite}" />
+            </Style>
+            <Style x:Key="FoldedKitchen"
+                   BasedOn="{StaticResource FoldedButton}"
+                   TargetType="ImageButton">
+                <Setter Property="Source" Value="{StaticResource IconForkFabWhite}" />
+            </Style>
+            <Style x:Key="FoldedLivingRoom"
+                   BasedOn="{StaticResource FoldedButton}"
+                   TargetType="ImageButton">
+                <Setter Property="Source" Value="{StaticResource IconChairFabWhite}" />
+            </Style>
+            <Style x:Key="FoldedBathroom"
+                   BasedOn="{StaticResource FoldedButton}"
+                   TargetType="ImageButton">
+                <Setter Property="Source" Value="{StaticResource IconBathFabWhite}" />
+            </Style>
+        </ResourceDictionary>
+    </ContentView.Resources>
+    <ContentView.Content>
+        <Grid IgnoreSafeArea="True">
+            <tlv:TemplatedTaskLoader ErrorControlTemplate="{StaticResource ErrorViewTemplate}"
+                                     LoadingControlTemplate="{StaticResource ActivityIndicatorTemplate}"
+                                     TaskLoaderNotifier="{Binding Loader}">
+                <tlv:TemplatedTaskLoader.ResultControlTemplate>
+                    <ControlTemplate>
+                        <ContentView BindingContext="{Binding Source={RelativeSource AncestorType={x:Type home:HomeSectionViewModel}}}"
+                                     CompressedLayout.IsHeadless="True">
+                            <RefreshView Command="{Binding Loader.RefreshCommand,
+                                                           Mode=OneWay}"
+                                         IsRefreshing="{Binding Loader.ShowRefresher}"
+                                         RefreshColor="{StaticResource LightBulbOnColor}">
+
+                                <ScrollView>
+                                    <sho:GridLayout AnimateTransitions="False"
+                                                    ColumnCount="{Binding GridColumnCount}"
+                                                    ColumnSpacing="15"
+                                                    GridPadding="15"
+                                                    IsDragAndDropEnabled="{Binding IsDragAndDropEnabled}"
+                                                    ItemsSource="{Binding Loader.Result}"
+                                                    RowSpacing="15">
+                                        <sho:GridLayout.HeaderTemplate>
+                                            <DataTemplate>
+                                                <Grid Padding="15,60,15,0"
+                                                      ColumnDefinitions="80,*,60">
+                                                    <Label Grid.Column="1"
+                                                           Style="{StaticResource TextHuge}"
+                                                           HeightRequest="{Binding Source={x:Reference Root},
+                                                                                   Path=Height,
+                                                                                   Converter={converters:TopSafeAreaToDoubleConverter},
+                                                                                   ConverterParameter=75}"
+                                                           Margin="15"
+                                                           VerticalTextAlignment="Center"
+                                                           MaxLines="2"
+                                                           Text="{Binding Source={RelativeSource AncestorType={x:Type home:HomeSectionViewModel}},
+                                                                          Path=Title}" />
+                                                    <Image Grid.Column="0"
+                                                           WidthRequest="80"
+                                                           HeightRequest="80"
+                                                           Source="owner.png">
+                                                        <Image.GestureRecognizers>
+                                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type home:HomeSectionViewModel}}, Path=SetThreeColumnsCommand}" />
+                                                        </Image.GestureRecognizers>
+                                                    </Image>
+                                                    <Button Grid.Column="2"
+                                                            Margin="0"
+                                                            Padding="10"
+                                                            VerticalOptions="Center"
+                                                            BackgroundColor="Transparent"
+                                                            Command="{Binding Source={RelativeSource AncestorType={x:Type home:HomeSectionViewModel}},
+                                                                              Path=ToggleViewModeCommand}"
+                                                            FontFamily="FontAwesome"
+                                                            FontSize="24"
+                                                            TextColor="{StaticResource AccentColor}">
+                                                        <Button.Triggers>
+                                                            <DataTrigger Binding="{Binding Source={RelativeSource AncestorType={x:Type home:HomeSectionViewModel}},
+                                                                                           Path=GridColumnCount}"
+                                                                         TargetType="Button"
+                                                                         Value="2">
+                                                                <Setter Property="Text" Value="&#xf03a;" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Source={RelativeSource AncestorType={x:Type home:HomeSectionViewModel}},
+                                                                                           Path=GridColumnCount}"
+                                                                         TargetType="Button"
+                                                                         Value="1">
+                                                                <Setter Property="Text" Value="&#xf00a;" />
+                                                            </DataTrigger>
+                                                        </Button.Triggers>
+                                                    </Button>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </sho:GridLayout.HeaderTemplate>
+                                        <sho:GridLayout.ItemTemplate>
+                                            <DataTemplate>
+                                                <sho:DragAndDropView x:DataType="lights:Light">
+                                                    <Border Background="{StaticResource SurfaceBackgroundColor}"
+                                                            Shadow="{Binding IsOn,
+                                                                             Converter={converters:BoolToShadowResourceConverter IfFalse={x:Null},
+                                                                                                                                 IfTrue='ShadowLightOn'}}"
+                                                            StrokeShape="{StaticResource RoundRectangle}"
+                                                            StrokeThickness="0">
+                                                        <Grid Padding="10,0,10,10">
+                                                            <Grid.GestureRecognizers>
+                                                                <!--  <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type home:HomeSectionViewModel}},  -->
+                                                                <!--  Path=NavigateToLightEditCommand}"  -->
+                                                                <!--  CommandParameter="{Binding}" />  -->
+                                                            </Grid.GestureRecognizers>
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="100" />
+                                                                <RowDefinition Height="20" />
+                                                            </Grid.RowDefinitions>
+
+                                                            <Image Grid.Row="0"
+                                                                   Style="{StaticResource ImageHuge}"
+                                                                   Shadow="{Binding IsOn,
+                                                                                    Converter={converters:BoolToShadowResourceConverter IfFalse={x:Null},
+                                                                                                                                        IfTrue='ShadowLightBulbHalo'}}"
+                                                                   Source="{StaticResource IconLightOff}">
+                                                                <Image.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsOn}"
+                                                                                 TargetType="Image"
+                                                                                 Value="True">
+                                                                        <Setter Property="Source" Value="{StaticResource IconLightOn}" />
+                                                                    </DataTrigger>
+                                                                </Image.Triggers>
+                                                            </Image>
+
+                                                            <Label Grid.Row="1"
+                                                                   Style="{StaticResource TextBody}"
+                                                                   HorizontalOptions="Center"
+                                                                   Text="{Binding Name}" />
+                                                        </Grid>
+                                                    </Border>
+                                                </sho:DragAndDropView>
+                                            </DataTemplate>
+                                        </sho:GridLayout.ItemTemplate>
+                                    </sho:GridLayout>
+                                </ScrollView>
+                            </RefreshView>
+                        </ContentView>
+                    </ControlTemplate>
+                </tlv:TemplatedTaskLoader.ResultControlTemplate>
+            </tlv:TemplatedTaskLoader>
+
+            <cv:FabMenu Margin="0,0,15,15"
+                        IsVisible="True">
+                <cv:FabMenu.FoldButton>
+                    <ImageButton Style="{StaticResource ImageButtonFabAccent}"
+                                 Source="{StaticResource IconPlusFabAccent}" />
+                </cv:FabMenu.FoldButton>
+                <cv:FabMenu.FoldedViews>
+                    <Button Style="{StaticResource ButtonLargeAccent}"
+                            HorizontalOptions="Center"
+                            Command="{Binding AddGarageCommand}"
+                            ImageSource="{StaticResource IconCarFabWhite}"
+                            Text="Garage" />
+                    <ImageButton Style="{StaticResource FoldedBedroom}"
+                                 Command="{Binding AddBedroomCommand}" />
+                    <ImageButton Style="{StaticResource FoldedKitchen}"
+                                 Command="{Binding AddKitchenCommand}" />
+                    <ImageButton Style="{StaticResource FoldedLivingRoom}"
+                                 Command="{Binding AddLivingRoomCommand}" />
+                    <ImageButton Style="{StaticResource FoldedBathroom}"
+                                 Command="{Binding AddBathroomCommand}" />
+                </cv:FabMenu.FoldedViews>
+            </cv:FabMenu>
+
+            <!--  Sticky Drag & Drop Switch  -->
+            <Border Margin="0,5,0,0"
+                    Padding="15,8"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Start"
+                    Background="{StaticResource SurfaceBackgroundColor}"
+                    Shadow="{StaticResource ShadowLightOn}"
+                    StrokeShape="RoundRectangle 20"
+                    StrokeThickness="0">
+                <HorizontalStackLayout Spacing="10">
+                    <HorizontalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ToggleDragAndDropCommand}" />
+                    </HorizontalStackLayout.GestureRecognizers>
+                    <Label Style="{StaticResource TextBody}"
+                           VerticalOptions="Center"
+                           Text="Drag &amp; Drop" />
+                    <Switch VerticalOptions="Center"
+                            IsToggled="{Binding IsDragAndDropEnabled}"
+                            OnColor="{StaticResource AccentColor}" />
+                </HorizontalStackLayout>
+            </Border>
+
+            <tlv:Snackbar IsVisible="{Binding Loader.ShowErrorNotification,
+                                              Mode=TwoWay}"
+                          Text="{Binding Loader.Error,
+                                         Converter={converters:ExceptionToErrorMessageConverter}}" />
+        </Grid>
+    </ContentView.Content>
+</cv:ContentPageView>

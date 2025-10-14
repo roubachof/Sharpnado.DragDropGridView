@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <Color x:Key="PrimaryColor">#512BD4</Color>
+    <Color x:Key="PrimaryLightColor">#a895e9</Color>
+
+    <Color x:Key="AccentColor">#512BD4</Color>
+
+    <Color x:Key="SecondaryColor">#536DFE</Color>
+
+    <!--<Color x:Key="BackgroundColor">#fffdff</Color>-->
+
+    <Color x:Key="BackgroundColor">#050505</Color>
+
+    <Color x:Key="SurfaceBackgroundColor">#101010</Color>
+
+    <Color x:Key="LightBulbHaloColor">#ffd600</Color>
+    <Color x:Key="LightBulbOnColor">#ffd600</Color>
+    <Color x:Key="LightBulbOffColor">#333333</Color>
+
+
+    <!--  Pink[200]  -->
+    <Color x:Key="ShadowsColor">#f48fb1</Color>
+    <!--  Pink[600]  -->
+    <Color x:Key="RippleColor">#d81b60</Color>
+
+    <Color x:Key="GreenColor">#00C767</Color>
+    <Color x:Key="ErrorColor">#EA0054</Color>
+    <Color x:Key="WarningColor">#FF7F26</Color>
+
+    <Color x:Key="ColorStateUnknown">#6c6c6c</Color>
+    <Color x:Key="ColorStateCreated">#5c6bc0</Color>
+    <Color x:Key="ColorStatePlanned">#FF7F26</Color>
+    <Color x:Key="ColorStateDone">#00C767</Color>
+    <Color x:Key="ColorStateCancelled">#EA0054</Color>
+
+    <Color x:Key="ColorStateDoneOverlay">#90FFFFFF</Color>
+    <Color x:Key="ColorDefaultOverlay">#C0000000</Color>
+
+    <Color x:Key="PrimaryDarkColor">White</Color>
+    <Color x:Key="SecondaryDarkColor">#80FFFFFF</Color>
+    <Color x:Key="TernaryDarkColor">#50FFFFFF</Color>
+
+    <!--<Color x:Key="TextPrimaryColor">#2D2D2D</Color>
+    <Color x:Key="TextSecondaryColor">#616161</Color>
+    <Color x:Key="TextTernaryColor">#818181</Color>-->
+
+    <Color x:Key="TextPrimaryColor">White</Color>
+    <Color x:Key="TextSecondaryColor">#CCCCCC</Color>
+    <Color x:Key="TextTernaryColor">#AAAAAA</Color>
+
+    <Color x:Key="TextPrimaryDarkColor">White</Color>
+    <Color x:Key="TextSecondaryDarkColor">#80FFFFFF</Color>
+    <Color x:Key="TextTernaryDarkColor">#50FFFFFF</Color>
+
+    <Color x:Key="ColorDivider">#F4F4F4</Color>
+
+    <Color x:Key="DarkSurface">#121212</Color>
+    <Color x:Key="AcrylicSurface">#E6E6E6</Color>
+    <Color x:Key="NeumorphismSurface">#F0F0F3</Color>
+    <Color x:Key="WhiteSurface">White</Color>
+
+    <Color x:Key="AcrylicFrameBackgroundColor">#F1F1F1</Color>
+    <Color x:Key="FrameBackgroundColor">White</Color>
+
+</ResourceDictionary>

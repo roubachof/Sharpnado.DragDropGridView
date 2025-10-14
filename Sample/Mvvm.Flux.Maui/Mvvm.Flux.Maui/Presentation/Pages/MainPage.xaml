@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Mvvm.Flux.Maui.Presentation.Pages.MainPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:activities="using:Mvvm.Flux.Maui.Presentation.Pages.Activities"
+             xmlns:converters="using:Mvvm.Flux.Maui.Presentation.Converters"
+             xmlns:eShop="using:Mvvm.Flux.Maui.Presentation.Pages.EShop"
+             xmlns:home="using:Mvvm.Flux.Maui.Presentation.Pages.Home"
+             xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+             xmlns:loc="using:Mvvm.Flux.Maui.Localization"
+             xmlns:pages="using:Mvvm.Flux.Maui.Presentation.Pages"
+             xmlns:scenarios="using:Mvvm.Flux.Maui.Presentation.Pages.Scenarios"
+             xmlns:sho="http://sharpnado.com"
+             x:Name="Root"
+             Padding="0"
+             ios:Page.UseSafeArea="False">
+
+    <Grid x:DataType="pages:MainPageViewModel"
+          IgnoreSafeArea="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="{StaticResource HeightBottomBar}" />
+            <RowDefinition Height="{Binding Source={x:Reference Root}, Path=Height, Converter={converters:BottomSafeAreaToGridLengthConverter}}" />
+        </Grid.RowDefinitions>
+
+        <sho:ViewSwitcher x:Name="Switcher"
+                          Animate="False"
+                          SelectedIndex="{Binding SelectedViewModelIndex,
+                                                  Mode=TwoWay}">
+            <sho:LazyView x:TypeArguments="home:HomeSectionView"
+                          BindingContext="{Binding HomeSection}" />
+            <sho:LazyView x:TypeArguments="scenarios:ScenariosSectionView"
+                          BindingContext="{Binding ScenariosSection}" />
+            <sho:LazyView x:TypeArguments="eShop:EShopSectionView"
+                          BindingContext="{Binding EShopSection}" />
+            <sho:LazyView x:TypeArguments="activities:ActivitiesSectionView"
+                          BindingContext="{Binding ActivitiesSection}" />
+        </sho:ViewSwitcher>
+
+
+        <sho:TabHostView Grid.Row="1"
+                         BackgroundColor="{StaticResource PrimaryColor}"
+                         SelectedIndex="{Binding Source={x:Reference Switcher},
+                                                 Path=SelectedIndex,
+                                                 Mode=TwoWay}"
+                         TabType="Fixed">
+            <sho:TabHostView.Tabs>
+                <sho:BottomTabItem IconImageSource="{StaticResource IconSectionHome}"
+                                   Label="{x:Static loc:GlobalResources.Section_Home_TabText}" />
+                <sho:BottomTabItem IconImageSource="{StaticResource IconSectionScenarios}"
+                                   Label="{x:Static loc:GlobalResources.Section_Scenarios_TabText}" />
+                <sho:BottomTabItem IconImageSource="{StaticResource IconSectionEShop}"
+                                   Label="{x:Static loc:GlobalResources.Section_EShop_TabText}" />
+                <sho:BottomTabItem IconImageSource="{StaticResource IconSectionActivities}"
+                                   Label="{x:Static loc:GlobalResources.Section_Activities_TabText}" />
+            </sho:TabHostView.Tabs>
+        </sho:TabHostView>
+
+        <BoxView Grid.Row="2"
+                 Color="{StaticResource PrimaryColor}" />
+    </Grid>
+
+</ContentPage>

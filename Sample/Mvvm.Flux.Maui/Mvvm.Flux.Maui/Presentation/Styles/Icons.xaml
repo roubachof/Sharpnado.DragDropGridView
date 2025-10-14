@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    xmlns:styles="clr-namespace:Mvvm.Flux.Maui.Presentation.Styles">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Colors.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <x:Double x:Key="SizeTinyIcon">10</x:Double>
+    <x:Double x:Key="SizeSmallIcon">15</x:Double>
+    <x:Double x:Key="SizeSmallLargeIcon">20</x:Double>
+    <x:Double x:Key="SizeMediumSmallIcon">25</x:Double>
+    <x:Double x:Key="SizeMediumIcon">30</x:Double>
+    <x:Double x:Key="SizeLargeIcon">45</x:Double>
+    <x:Double x:Key="SizeHugeIcon">60</x:Double>
+
+    <x:Double x:Key="SizeFabWithTextIcon">20</x:Double>
+    <x:Double x:Key="SizeFabIcon">24</x:Double>
+    
+    <x:Double x:Key="SizeTaskLoaderIcon">70</x:Double>
+
+    <x:Double x:Key="SizeLargeAvatar">80</x:Double>
+    <x:Double x:Key="SizeMediumAvatar">60</x:Double>
+
+    <x:Double x:Key="SizeTabIcon">24</x:Double>
+
+
+    <!--  State  -->
+    <FontImageSource x:Key="IconSuccess"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.CheckCircle}"
+                     Size="{StaticResource SizeMediumSmallIcon}"
+                     Color="{StaticResource GreenColor}" />
+
+    <FontImageSource x:Key="IconSuccessAccent"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.CheckCircle}"
+                     Size="{StaticResource SizeMediumSmallIcon}"
+                     Color="{StaticResource AccentColor}" />
+
+    <FontImageSource x:Key="IconFail"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.ExclamationCircle}"
+                     Size="{StaticResource SizeMediumSmallIcon}"
+                     Color="{StaticResource ErrorColor}" />
+
+
+    <!--  Loading error types  -->
+    <FontImageSource x:Key="IconLoadingInternetErrorWhite"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.WifiSlash}"
+                     Size="{StaticResource SizeMediumIcon}"
+                     Color="{StaticResource PrimaryDarkColor}" />
+
+    <FontImageSource x:Key="IconLoadingServerErrorWhite"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Server}"
+                     Size="{StaticResource SizeMediumIcon}"
+                     Color="{StaticResource PrimaryDarkColor}" />
+
+    <FontImageSource x:Key="IconLoadingUnknownErrorWhite"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Question}"
+                     Size="{StaticResource SizeMediumIcon}"
+                     Color="{StaticResource PrimaryDarkColor}" />
+
+    <FontImageSource x:Key="IconSavingWhite"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.CloudUploadAlt}"
+                     Size="{StaticResource SizeMediumIcon}"
+                     Color="{StaticResource PrimaryDarkColor}" />
+
+
+    <!--  MainPage BottomBar  -->
+    <FontImageSource x:Key="IconSectionHome"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Home}"
+                     Size="{StaticResource SizeMediumIcon}"
+                     Color="{StaticResource PrimaryLightColor}" />
+
+    <FontImageSource x:Key="IconSectionScenarios"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.ListUl}"
+                     Size="{StaticResource SizeMediumIcon}"
+                     Color="{StaticResource PrimaryLightColor}" />
+
+    <FontImageSource x:Key="IconSectionEShop"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Store}"
+                     Size="{StaticResource SizeMediumIcon}"
+                     Color="{StaticResource PrimaryLightColor}" />
+
+    <FontImageSource x:Key="IconSectionActivities"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Bell}"
+                     Size="{StaticResource SizeMediumIcon}"
+                     Color="{StaticResource PrimaryLightColor}" />
+
+
+    <!--  Toolbar Icons  -->
+    <OnPlatform x:Key="BackIconGlyph"
+                x:TypeArguments="x:String">
+        <OnPlatform.Platforms>
+            <On Platform="Android"
+                Value="{x:Static styles:IconFont.ArrowLeft}" />
+            <On Platform="iOS"
+                Value="{x:Static styles:IconFont.ChevronLeft}" />
+        </OnPlatform.Platforms>
+    </OnPlatform>
+
+    <FontImageSource x:Key="IconBack"
+                     FontFamily="FontAwesome"
+                     Glyph="{StaticResource BackIconGlyph}"
+                     Size="{StaticResource SizeMediumIcon}"
+                     Color="{StaticResource PrimaryColor}" />
+
+
+    <!-- Fabs -->
+    
+     <FontImageSource x:Key="IconEditFabPrimary"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Pen}"
+                     Size="{StaticResource SizeFabWithTextIcon}"
+                     Color="White" />
+
+    <FontImageSource x:Key="IconEditFabAccent"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Pen}"
+                     Size="{StaticResource SizeFabWithTextIcon}"
+                     Color="{StaticResource TextPrimaryColor}" />
+
+    <FontImageSource x:Key="IconWeighFabPrimary"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.BalanceScale}"
+                     Size="{StaticResource SizeFabWithTextIcon}"
+                     Color="White" />
+
+    <FontImageSource x:Key="IconPlusFabAccent"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Plus}"
+                     Size="{StaticResource SizeFabIcon}"
+                     Color="{StaticResource TextPrimaryColor}" />
+
+    <FontImageSource x:Key="IconTakePhotoFabWhite"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Camera}"
+                     Size="{StaticResource SizeFabIcon}"
+                     Color="White" />
+
+    <FontImageSource x:Key="IconTakePhotoFabWithTextWhite"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Camera}"
+                     Size="{StaticResource SizeFabWithTextIcon}"
+                     Color="White" />
+
+    <FontImageSource x:Key="IconChoosePhotoFabWhite"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.FileImage}"
+                     Size="{StaticResource SizeFabIcon}"
+                     Color="White" />
+
+    <FontImageSource x:Key="IconTakeVideoFabWhite"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Video}"
+                     Size="{StaticResource SizeFabIcon}"
+                     Color="White" />
+    
+    <FontImageSource x:Key="IconChooseVideoFabWhite"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.FileVideo}"
+                     Size="{StaticResource SizeFabIcon}"
+                     Color="White" />
+  
+    <FontImageSource x:Key="IconCarFabWhite"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Car}"
+                     Size="{StaticResource SizeFabIcon}"
+                     Color="White" />
+    
+    <FontImageSource x:Key="IconBedFabWhite"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Bed}"
+                     Size="{StaticResource SizeFabIcon}"
+                     Color="White" />
+    
+    <FontImageSource x:Key="IconForkFabWhite"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.UtensilFork}"
+                     Size="{StaticResource SizeFabIcon}"
+                     Color="White" />
+    
+    <FontImageSource x:Key="IconChairFabWhite"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Chair}"
+                     Size="{StaticResource SizeFabIcon}"
+                     Color="White" />
+    
+    <FontImageSource x:Key="IconBathFabWhite"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Bath}"
+                     Size="{StaticResource SizeFabIcon}"
+                     Color="White" />
+    
+    <!--  Lights  -->
+    <FontImageSource x:Key="IconLightOff"
+                     FontFamily="FontAwesomeRegular"
+                     Glyph="{x:Static styles:IconFont.Lightbulb}"
+                     Size="{StaticResource SizeHugeIcon}"
+                     Color="{StaticResource LightBulbOffColor}" />
+
+    <FontImageSource x:Key="IconLightOn"
+                     FontFamily="FontAwesomeRegular"
+                     Glyph="{x:Static styles:IconFont.Lightbulb}"
+                     Size="{StaticResource SizeHugeIcon}"
+                     Color="{StaticResource LightBulbOnColor}" />
+
+
+    <!--  Download  -->
+    <FontImageSource x:Key="IconDownload"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.ArrowAltCircleDown}"
+                     Size="{StaticResource SizeMediumSmallIcon}"
+                     Color="{StaticResource AccentColor}" />
+
+    <FontImageSource x:Key="IconDownloaded"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Archive}"
+                     Size="{StaticResource SizeMediumSmallIcon}"
+                     Color="{StaticResource GreenColor}" />
+
+
+    <!--  Photos  -->
+    <FontImageSource x:Key="IconButtonCameraWhite"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Camera}"
+                     Size="{StaticResource SizeSmallIcon}"
+                     Color="{StaticResource PrimaryDarkColor}" />
+
+    <FontImageSource x:Key="IconButtonAddPictureWhite"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Images}"
+                     Size="{StaticResource SizeSmallIcon}"
+                     Color="{StaticResource PrimaryDarkColor}" />
+
+
+    <!--  Search and Filter  -->
+
+    <FontImageSource x:Key="IconSearch"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Search}"
+                     Size="{StaticResource SizeSmallLargeIcon}"
+                     Color="{StaticResource PrimaryColor}" />
+
+    <FontImageSource x:Key="IconFilter"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Filter}"
+                     Size="{StaticResource SizeSmallLargeIcon}"
+                     Color="{StaticResource PrimaryColor}" />
+
+    <!--  Shopping cart  -->
+
+    <FontImageSource x:Key="IconTrash"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.Trash}"
+                     Size="{StaticResource SizeSmallLargeIcon}"
+                     Color="{StaticResource AccentColor}" />
+
+    <FontImageSource x:Key="IconAddToBasket"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.CartPlus}"
+                     Size="{StaticResource SizeSmallLargeIcon}"
+                     Color="{StaticResource AccentColor}" />
+
+    <FontImageSource x:Key="IconAddToBasketInfo"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.CartPlus}"
+                     Size="{StaticResource SizeSmallLargeIcon}"
+                     Color="{StaticResource TextSecondaryColor}" />
+
+    <FontImageSource x:Key="IconExpandBasketWhite"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.ChevronUp}"
+                     Size="{StaticResource SizeSmallLargeIcon}"
+                     Color="{StaticResource PrimaryDarkColor}" />
+
+    <FontImageSource x:Key="IconCollapseBasketWhite"
+                     FontFamily="FontAwesome"
+                     Glyph="{x:Static styles:IconFont.ChevronDown}"
+                     Size="{StaticResource SizeSmallLargeIcon}"
+                     Color="{StaticResource PrimaryDarkColor}" />
+
+
+
+</ResourceDictionary>

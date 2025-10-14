@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<Application x:Class="Mvvm.Flux.Maui.App"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Mvvm.Flux.Maui">
+    <Application.Resources>
+
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Presentation/Styles/Colors.xaml" />
+                <ResourceDictionary Source="/Presentation/Styles/Text.xaml" />
+                <ResourceDictionary Source="/Presentation/Styles/TextFields.xaml" />
+                <ResourceDictionary Source="/Presentation/Styles/Buttons.xaml" />
+                <ResourceDictionary Source="/Presentation/Styles/InputView.xaml" />
+                <ResourceDictionary Source="/Presentation/Styles/Popups.xaml" />
+                <ResourceDictionary Source="/Presentation/Styles/Global.xaml" />
+                <ResourceDictionary Source="/Presentation/Styles/Sizes.xaml" />
+                <ResourceDictionary Source="/Presentation/Styles/Labels.xaml" />
+                <ResourceDictionary Source="/Presentation/Styles/Icons.xaml" />
+                <ResourceDictionary Source="/Presentation/Styles/Frame.xaml" />
+                <ResourceDictionary Source="/Presentation/Styles/Pickers.xaml" />
+                <ResourceDictionary Source="/Presentation/Styles/Shadows.xaml" />
+                <ResourceDictionary Source="/Presentation/Styles/Loaders.xaml" />
+                <ResourceDictionary Source="/Presentation/Styles/Image.xaml" />
+                <ResourceDictionary Source="/Presentation/Styles/Tabs.xaml" />
+                <ResourceDictionary Source="/Presentation/Styles/Items.xaml" />
+
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+
+
+    </Application.Resources>
+</Application>

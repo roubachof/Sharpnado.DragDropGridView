@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <Style x:Key="PopupTitle"
+           BasedOn="{StaticResource TextTitle}"
+           TargetType="Label">
+        <Setter Property="Margin" Value="0, 0, 0, 10" />
+        <Setter Property="HorizontalTextAlignment" Value="Start" />
+        <Setter Property="VerticalTextAlignment" Value="End" />
+    </Style>
+
+    <Style x:Key="PopupContent"
+           BasedOn="{StaticResource TextBodySecondary}"
+           TargetType="Label">
+        <Setter Property="LineBreakMode" Value="WordWrap" />
+        <Setter Property="HorizontalTextAlignment" Value="Start" />
+        <Setter Property="VerticalTextAlignment" Value="Start" />
+        <Setter Property="Margin" Value="0, 20" />
+    </Style>
+
+    <Style x:Key="PopupAction"
+           BasedOn="{StaticResource TextSubhead}"
+           TargetType="Label">
+        <Setter Property="HorizontalTextAlignment" Value="Center" />
+        <Setter Property="VerticalTextAlignment" Value="Center" />
+        <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="Margin" Value="10, 0" />
+    </Style>
+</ResourceDictionary>

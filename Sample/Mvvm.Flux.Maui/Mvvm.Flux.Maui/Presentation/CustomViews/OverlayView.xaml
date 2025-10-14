@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Grid x:Class="Mvvm.Flux.Maui.Presentation.CustomViews.OverlayView"
+      xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+      xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+      x:Name="Root"
+      BackgroundColor="{StaticResource ColorDefaultOverlay}"
+      RowDefinitions="*,*"
+      RowSpacing="10">
+
+    <Grid Grid.Row="0"
+          WidthRequest="{StaticResource SizeTaskLoaderIcon}"
+          HeightRequest="{StaticResource SizeTaskLoaderIcon}"
+          HorizontalOptions="Center"
+          VerticalOptions="End">
+        <Image x:Name="Image"
+               Style="{StaticResource ImageMedium}"
+               Source="{Binding Source={x:Reference Root},
+                                Path=Icon}" />
+        <ActivityIndicator WidthRequest="80"
+                           HeightRequest="80"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Fill"
+                           IsRunning="True"
+                           Color="{StaticResource PrimaryDarkColor}" />
+    </Grid>
+
+    <Label Grid.Row="1"
+           Style="{StaticResource TextSubhead}"
+           HorizontalOptions="Center"
+           VerticalOptions="Start"
+           Text="{Binding Source={x:Reference Root},
+                          Path=Text}"
+           TextColor="{StaticResource TextPrimaryDarkColor}" />
+</Grid>

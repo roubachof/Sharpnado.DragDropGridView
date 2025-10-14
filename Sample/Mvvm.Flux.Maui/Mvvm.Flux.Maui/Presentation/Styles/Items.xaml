@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <x:Double x:Key="SizeListThreeItems">90</x:Double>
+    <x:Double x:Key="SizeCardThreeItems">120</x:Double>
+
+    <Style x:Key="ListTextGroupHeader"
+           TargetType="Label">
+        <Setter Property="FontFamily" Value="FontExtraBold" />
+        <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="FontSize" Value="{StaticResource TextSizeHeadline}" />
+    </Style>
+
+    <Style x:Key="ListTextFirstLine"
+           TargetType="Label">
+        <Setter Property="FontFamily" Value="FontBold" />
+        <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="FontSize" Value="{StaticResource TextSizeSubhead}" />
+    </Style>
+
+    <Style x:Key="ListTextOtherLine"
+           TargetType="Label">
+        <Setter Property="FontFamily" Value="FontRegular" />
+        <Setter Property="TextColor" Value="{StaticResource TextSecondaryColor}" />
+        <Setter Property="FontSize" Value="{StaticResource TextSizeBody}" />
+    </Style>
+
+    <Style x:Key="Card"
+           TargetType="Frame">
+        <Setter Property="Margin" Value="{StaticResource MarginItemDefault}" />
+        <Setter Property="Padding" Value="{StaticResource PaddingItemDefault}" />
+    </Style>
+
+    <Style x:Key="CardTextFirstLine"
+           TargetType="Label">
+        <Setter Property="FontFamily" Value="FontBold" />
+        <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="FontSize" Value="{StaticResource TextSizeTitle}" />
+    </Style>
+
+    <Style x:Key="CardTextOtherLine"
+           TargetType="Label">
+        <Setter Property="FontFamily" Value="FontRegular" />
+        <Setter Property="TextColor" Value="{StaticResource TextSecondaryColor}" />
+        <Setter Property="FontSize" Value="{StaticResource TextSizeBody}" />
+    </Style>
+
+    <Style x:Key="CardTextEmphasize"
+           TargetType="Label">
+        <Setter Property="FontFamily" Value="FontSemiBold" />
+        <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="FontSize" Value="{StaticResource TextSizeBody}" />
+    </Style>
+
+</ResourceDictionary>

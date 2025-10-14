@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Mvvm.Flux.Maui.Presentation.Pages.Home.LightEditPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:Mvvm.Flux.Maui.Presentation.Converters"
+             xmlns:customViews="clr-namespace:Mvvm.Flux.Maui.Presentation.CustomViews"
+             xmlns:home="clr-namespace:Mvvm.Flux.Maui.Presentation.Pages.Home"
+             xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+             xmlns:loc="clr-namespace:Mvvm.Flux.Maui.Localization"
+             xmlns:styles="clr-namespace:Mvvm.Flux.Maui.Presentation.Styles"
+             xmlns:tlv="clr-namespace:Sharpnado.TaskLoaderView;assembly=Sharpnado.Maui.TaskLoaderView"
+             x:Name="Root"
+             Title="{Binding Title}"
+             Padding="0"
+             ios:Page.UseSafeArea="False"
+             x:DataType="home:LightEditPageViewModel">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <x:Double x:Key="LightSize">200</x:Double>
+
+            <FontImageSource x:Key="IconLightOff"
+                             FontFamily="FontAwesomeRegular"
+                             Glyph="{x:Static styles:IconFont.Lightbulb}"
+                             Size="{StaticResource LightSize}"
+                             Color="{StaticResource LightBulbOffColor}" />
+
+            <FontImageSource x:Key="IconLightOn"
+                             FontFamily="FontAwesomeRegular"
+                             Glyph="{x:Static styles:IconFont.Lightbulb}"
+                             Size="{StaticResource LightSize}"
+                             Color="{StaticResource LightBulbOnColor}" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <Grid ColumnDefinitions="*,*"
+              ColumnSpacing="10"
+              IgnoreSafeArea="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="{Binding Source={x:Reference Root}, Path=Height, Converter={converters:TopSafeAreaToGridLengthConverter}, ConverterParameter={StaticResource HeightToolbar}}" />
+                <RowDefinition Height="3*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <tlv:TemplatedTaskLoader x:Name="LoaderView"
+                                     Grid.Row="1"
+                                     Grid.ColumnSpan="2"
+                                     ErrorControlTemplate="{StaticResource ErrorViewTemplate}"
+                                     LoadingControlTemplate="{StaticResource LottieRocketTemplate}"
+                                     TaskLoaderNotifier="{Binding Loader}">
+                <tlv:TemplatedTaskLoader.ResultControlTemplate>
+                    <ControlTemplate>
+                        <Grid Padding="20"
+                              BindingContext="{Binding Source={RelativeSource AncestorType={x:Type home:LightEditPageViewModel}}}">
+                            <RoundRectangle WidthRequest="{StaticResource LightSize}"
+                                            HeightRequest="{StaticResource LightSize}"
+                                            Margin="0,-60,0,0"
+                                            HorizontalOptions="Center"
+                                            VerticalOptions="Center"
+                                            CornerRadius="100"
+                                            Fill="Transparent"
+                                            Shadow="{Binding Loader.Result.IsOn,
+                                                             Converter={converters:BoolToShadowResourceConverter IfFalse={x:Null},
+                                                                                                                 IfTrue='ShadowLightBulbHalo'}}" />
+
+
+                            <Image Grid.Row="0"
+                                   WidthRequest="{StaticResource LightSize}"
+                                   HeightRequest="{StaticResource LightSize}"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   Shadow="{Binding Loader.Result.IsOn,
+                                                    Converter={converters:BoolToShadowResourceConverter IfFalse={x:Null},
+                                                                                                        IfTrue='ShadowLightBulbHalo'}}"
+                                   Source="{StaticResource IconLightOff}">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ToggleLightCommand}" />
+                                </Image.GestureRecognizers>
+                                <Image.Triggers>
+                                    <DataTrigger Binding="{Binding Loader.Result.IsOn}"
+                                                 TargetType="Image"
+                                                 Value="True">
+                                        <Setter Property="Source" Value="{StaticResource IconLightOn}" />
+                                    </DataTrigger>
+                                </Image.Triggers>
+                            </Image>
+
+                        </Grid>
+                    </ControlTemplate>
+                </tlv:TemplatedTaskLoader.ResultControlTemplate>
+            </tlv:TemplatedTaskLoader>
+
+            <Button Grid.Row="2"
+                    Grid.Column="0"
+                    Style="{StaticResource ButtonRoundAccent}"
+                    HorizontalOptions="End"
+                    VerticalOptions="Start"
+                    Command="{Binding ActionOneCommand}"
+                    IsVisible="{Binding Loader.IsSuccessfullyCompleted}"
+                    Text="Action One" />
+
+            <Button Grid.Row="2"
+                    Grid.Column="1"
+                    Style="{StaticResource ButtonRoundAccent}"
+                    HorizontalOptions="Start"
+                    VerticalOptions="Start"
+                    Command="{Binding ActionTwoCommand}"
+                    IsVisible="{Binding Loader.IsSuccessfullyCompleted}"
+                    Text="Action Two" />
+
+            <customViews:Toolbar x:Name="Toolbar"
+                                 Title="{Binding Title}"
+                                 Grid.Row="0"
+                                 Grid.ColumnSpan="2"
+                                 BackgroundColor="{StaticResource PrimaryColor}"
+                                 ForegroundColor="{StaticResource TextPrimaryColor}"
+                                 ShowBackButton="True"
+                                 UseSafeAreaMargin="False">
+                <Button Style="{StaticResource ButtonWhiteTransparent}"
+                        HorizontalOptions="End"
+                        VerticalOptions="Center"
+                        BackgroundColor="Transparent"
+                        Command="{Binding SaveCommand}"
+                        IsVisible="{Binding Loader.IsSuccessfullyCompleted}"
+                        Text="{x:Static loc:GlobalResources.Common_Save}" />
+            </customViews:Toolbar>
+
+            <customViews:OverlayView Grid.Row="1"
+                                     Grid.RowSpan="2"
+                                     Grid.ColumnSpan="2"
+                                     Style="{StaticResource OverlaySaving}"
+                                     IsVisible="{Binding SaveCommand.Notifier.ShowLoader}" />
+
+            <tlv:Snackbar Grid.Row="2"
+                          Grid.ColumnSpan="2"
+                          IsVisible="{Binding CompositeCommandLoader.ShowError,
+                                              Mode=TwoWay}"
+                          Text="{Binding CompositeCommandLoader.Error,
+                                         Converter={converters:ExceptionToErrorMessageConverter}}" />
+
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

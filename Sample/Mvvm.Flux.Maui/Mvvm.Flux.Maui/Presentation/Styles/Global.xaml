@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    xmlns:converters="clr-namespace:Mvvm.Flux.Maui.Presentation.Converters">
+
+    <Style ApplyToDerivedTypes="True"
+           TargetType="ContentPage">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="BackgroundColor" Value="{StaticResource BackgroundColor}" />
+        <Setter Property="NavigationPage.HasNavigationBar" Value="False" />
+    </Style>
+
+    <Style ApplyToDerivedTypes="True"
+           TargetType="Grid">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="ColumnSpacing" Value="0" />
+        <Setter Property="RowSpacing" Value="0" />
+    </Style>
+
+    <Style ApplyToDerivedTypes="True"
+           TargetType="StackLayout">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Spacing" Value="0" />
+    </Style>
+
+    <Style x:Key="DividerHorizontal"
+           TargetType="BoxView">
+        <Setter Property="BackgroundColor" Value="{StaticResource ColorDivider}" />
+        <Setter Property="HeightRequest" Value="1" />
+        <Setter Property="VerticalOptions" Value="End" />
+    </Style>
+
+    <Style x:Key="HorizontalDivider"
+           TargetType="BoxView">
+        <Setter Property="HeightRequest" Value="1" />
+        <Setter Property="Color" Value="{StaticResource ColorDivider}" />
+    </Style>
+
+    <converters:BoolToObjectConverter x:Key="BoolToObjectConverter" />
+
+</ResourceDictionary>

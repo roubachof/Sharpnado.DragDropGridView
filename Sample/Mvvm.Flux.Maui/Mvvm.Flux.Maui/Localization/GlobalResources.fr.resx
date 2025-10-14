@@ -1,0 +1,73 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Common_Cancel" xml:space="preserve">
+        <value>Annuler</value>
+    </data>
+    <data name="Common_Ok" xml:space="preserve">
+        <value>OK</value>
+    </data>
+    <data name="Common_Retry" xml:space="preserve">
+        <value>Réessayer</value>
+    </data>
+    <data name="Common_Save" xml:space="preserve">
+    <value>Enregistrer</value>
+    </data>
+    <data name="Common_Saving" xml:space="preserve">
+    <value>Enregistrement...</value>
+    </data>
+    <data name="Error_Network" xml:space="preserve">
+    <value>Nous n'arrivons pas à joindre notre serveur.
+    Veuillez vérifier votre connexion.</value>
+    </data>
+    <data name="Error_Server_Business" xml:space="preserve">
+    <value>Votre demande n'a pas pu être traitée.
+    Veuillez vérifier les informations saisies.</value>
+    </data>
+    <data name="Error_Server_Technical" xml:space="preserve">
+    <value>Le serveur a rencontré une erreur technique.
+    Nous travaillons sur le problème.</value>
+    </data>
+    <data name="Error_Server_Unknown" xml:space="preserve">
+    <value>Votre demande n'a pas pu être traitée,
+    Code erreur : {0}</value>
+    </data>
+    <data name="Error_Unhandled" xml:space="preserve">
+    <value>Une erreur inconnue s'est produite.
+    Merci de réessayer ultérieurement.</value>
+    </data>
+    <data name="Section_Activities_TabText" xml:space="preserve">
+    <value>Activité</value>
+    </data>
+    <data name="Section_Activities_Title" xml:space="preserve">
+    <value>Activité</value>
+    </data>
+    <data name="Section_EShop_TabText" xml:space="preserve">
+    <value>E-shop</value>
+    </data>
+    <data name="Section_EShop_Title" xml:space="preserve">
+    <value>E-shop</value>
+    </data>
+    <data name="Section_Home_TabText" xml:space="preserve">
+    <value>Domicile</value>
+    </data>
+    <data name="Section_Home_Title" xml:space="preserve">
+        <value>Domicile</value>
+    </data>
+    <data name="Section_Scenarios_TabText" xml:space="preserve">
+    <value>Scénarios</value>
+    </data>
+    <data name="Section_Scenarios_Title" xml:space="preserve">
+    <value>Scénarios</value>
+    </data>
+</root>

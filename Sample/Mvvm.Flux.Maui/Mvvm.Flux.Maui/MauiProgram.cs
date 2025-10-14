@@ -1,0 +1,129 @@
+﻿using MetroLog;
+using MetroLog.Operators;
+using MetroLog.Targets;
+
+using Microsoft.Maui;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Controls.Hosting;
+using Microsoft.Maui.Hosting;
+using Mopups.Hosting;
+
+using Mvvm.Flux.Maui.Domain.Lights;
+using Mvvm.Flux.Maui.Domain.Lights.Mock;
+using Mvvm.Flux.Maui.Infrastructure;
+using Mvvm.Flux.Maui.Infrastructure.Logging;
+using Mvvm.Flux.Maui.Presentation.Pages;
+using Mvvm.Flux.Maui.Presentation.Pages.Home;
+using Prism.Ioc;
+using Prism.Navigation;
+using Sharpnado.GridLayout;
+using Sharpnado.Tabs;
+using Sharpnado.TaskLoaderView;
+using Sharpnado.Tasks;
+using SkiaSharp.Views.Maui.Controls.Hosting;
+using LoggerFactory = MetroLog.LoggerFactory;
+using LogLevel = MetroLog.LogLevel;
+
+namespace Mvvm.Flux.Maui
+{
+    public static class MauiProgram
+    {
+        private static ILogger log;
+
+        public static MauiApp CreateMauiApp()
+        {
+            Initialize();
+
+            return MauiApp.CreateBuilder()
+                .UseMauiApp<App>()
+                .UseSkiaSharp()
+                .ConfigureTaskLoader(true, true)
+                .UseSharpnadoTabs(true)
+                .UseSharpnadoGridLayout(enableLogging: true, enableDebugLogging: true)
+                .ConfigureFonts(fonts =>
+                {
+                    fonts.AddFont("OpenSans-Regular.ttf", "FontRegular");
+                    fonts.AddFont("OpenSans-Semibold.ttf", "FontSemiBold");
+                    fonts.AddFont("OpenSans-Bold.ttf", "FontBold");
+                    fonts.AddFont("OpenSans-ExtraBold.ttf", "FontExtraBold");
+                    fonts.AddFont("fa_5_pro_solid.otf", "FontAwesome");
+                    fonts.AddFont("fa_5_pro_regular.otf", "FontAwesomeRegular");
+                })
+                .ConfigureMopups()
+                .UsePrism(prism =>
+                {
+                    prism.RegisterTypes(container =>
+                    {
+                        RegisterDomain(container);
+                        RegisterNavigation(container);
+                    });
+
+                    prism.OnAppStart((_, navigation) => 
+                        navigation.CreateBuilder().AddNavigationPage().AddSegment(nameof(MainPage)).NavigateAsync());
+                })
+                .Build();
+        }
+
+        private static void Initialize()
+        {
+            InitializeCrashService();
+
+            log = InitializeLogger();
+        }
+
+        private static void RegisterDomain(IContainerRegistry containerRegistry)
+        {
+            containerRegistry.RegisterSingleton<ILightService, LightServiceMock>();
+        }
+
+        private static void RegisterNavigation(IContainerRegistry containerRegistry)
+        {
+            containerRegistry.RegisterForNavigation<NavigationPage>();
+
+            containerRegistry.RegisterForNavigation<MainPage, MainPageViewModel>();
+            containerRegistry.RegisterForNavigation<LightEditPage, LightEditPageViewModel>();
+        }
+
+        private static void InitializeCrashService()
+        {
+#if RELEASE
+            if (PlatformService.IsEmulator)
+            {
+                return;
+            }
+
+            if (LogOperatorRetriever.Instance.TryGetOperator<ILogCompressor>(out var logCompressor))
+            {
+                // Attach logs to crash
+            }
+#endif
+        }
+
+        private static ILogger InitializeLogger()
+        {
+            var config = new LoggingConfiguration();
+
+#if RELEASE
+            // Will be stored in: $"MetroLog{Path.DirectorySeparatorChar}MetroLogs{Path.DirectorySeparatorChar}Log.log"
+            if (!PlatformService.IsEmulator)
+            {
+                config.AddTarget(LogLevel.Info, LogLevel.Fatal, new StreamingFileTarget { RetainDays = 2 });
+            }
+            else
+            {
+                config.AddTarget(LogLevel.Debug, LogLevel.Fatal, new TraceTarget());
+            }
+#else
+            config.AddTarget(LogLevel.Debug, LogLevel.Fatal, new TraceTarget());
+#endif
+
+            LoggerFactory.Initialize(config);
+
+            var logger = LoggerFactory.GetLogger(nameof(App));
+
+            TaskMonitorConfiguration.ErrorHandler = (t, m, e) => logger.Error(m, e);
+
+            return logger;
+        }
+    }
+}

@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    xmlns:controls="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+                    xmlns:converters="clr-namespace:Mvvm.Flux.Maui.Presentation.Converters"
+                    xmlns:customViews="clr-namespace:Mvvm.Flux.Maui.Presentation.CustomViews"
+                    xmlns:loc="clr-namespace:Mvvm.Flux.Maui.Localization"
+                    xmlns:sho="http://sharpnado.com"
+                    xmlns:taskLoaderView="clr-namespace:Sharpnado.TaskLoaderView;assembly=Sharpnado.Maui.TaskLoaderView">
+
+    <Style TargetType="ActivityIndicator">
+        <Setter Property="Color" Value="{StaticResource AccentColor}" />
+    </Style>
+
+    <Style x:Key="OverlaySaving"
+           TargetType="customViews:OverlayView">
+        <Setter Property="Text" Value="{x:Static loc:GlobalResources.Common_Saving}" />
+        <Setter Property="Icon" Value="{StaticResource IconSavingWhite}" />
+    </Style>
+
+    <Style TargetType="taskLoaderView:Snackbar">
+        <Setter Property="FontFamily" Value="FontSemiBold" />
+        <Setter Property="TextColor" Value="Black" />
+        <Setter Property="TextSize" Value="{StaticResource TextSizeBody}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource WarningColor}" />
+        <Setter Property="Margin" Value="{StaticResource MarginItemDefault}" />
+        <Setter Property="VerticalOptions" Value="End" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 10" />
+        <Setter Property="DisplayDurationMilliseconds" Value="5000" />
+    </Style>
+
+    <Style ApplyToDerivedTypes="True"
+           TargetType="taskLoaderView:TaskLoaderView">
+        <Setter Property="AccentColor" Value="{StaticResource AccentColor}" />
+        <Setter Property="FontFamily" Value="FontSemiBold" />
+        <Setter Property="RetryButtonText" Value="{x:Static loc:GlobalResources.Common_Retry}" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+        <Setter Property="ErrorImageConverter" Value="{converters:ExceptionToImageSourceConverter}" />
+        <Setter Property="ErrorMessageConverter" Value="{converters:ExceptionToErrorMessageConverter}" />
+        <Setter Property="NotificationBackgroundColor" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="NotificationTextColor" Value="{StaticResource TextPrimaryDarkColor}" />
+    </Style>
+
+    <ControlTemplate x:Key="ActivityIndicatorTemplate">
+        <ActivityIndicator HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           IsRunning="{Binding Source={RelativeSource AncestorType={x:Type taskLoaderView:TemplatedTaskLoader}},
+                                               Path=TaskLoaderNotifier.ShowLoader}" />
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="LottieRocketTemplate">
+        <controls:SKLottieView WidthRequest="200"
+                               HeightRequest="200"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               IsAnimationEnabled="{Binding Source={RelativeSource AncestorType={x:Type taskLoaderView:TemplatedTaskLoader}},
+                                                            Path=TaskLoaderNotifier.ShowLoader}"
+                               RepeatMode="Restart"
+                               Source="rocket_launch.json" />
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="ErrorViewTemplate"
+                     x:DataType="{x:Null}">
+        <StackLayout HorizontalOptions="Center"
+                     VerticalOptions="Center"
+                     BindingContext="{Binding Source={RelativeSource AncestorType={x:Type taskLoaderView:TemplatedTaskLoader}},
+                                              Path=TaskLoaderNotifier}"
+                     Orientation="Vertical"
+                     Spacing="10">
+            <Frame Style="{StaticResource RoundedFrame}"
+                   WidthRequest="{StaticResource SizeTaskLoaderIcon}"
+                   HeightRequest="{StaticResource SizeTaskLoaderIcon}"
+                   Margin="0,0,0,10"
+                   BackgroundColor="{StaticResource PrimaryColor}">
+                <Image HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       Source="{Binding Error,
+                                        Converter={converters:ExceptionToImageSourceConverter}}" />
+            </Frame>
+            <Label Style="{StaticResource TextBodySecondary}"
+                   WidthRequest="300"
+                   Margin="0,0,0,20"
+                   HorizontalTextAlignment="Center"
+                   LineBreakMode="WordWrap"
+                   MaxLines="2"
+                   Text="{Binding Error,
+                                  Converter={converters:ExceptionToErrorMessageConverter}}" />
+
+            <Button Style="{StaticResource ButtonAccent}"
+                    HorizontalOptions="Center"
+                    VerticalOptions="End"
+                    Command="{Binding ReloadCommand}"
+                    Shadow="{StaticResource ShadowAccentBottom}"
+                    Text="{x:Static loc:GlobalResources.Common_Retry}" />
+        </StackLayout>
+    </ControlTemplate>
+
+    <DataTemplate x:Key="LottieRocket">
+        <controls:SKLottieView AbsoluteLayout.LayoutFlags="PositionProportional"
+                               AbsoluteLayout.LayoutBounds="0.5, 0.4, 200, 200"
+                               HorizontalOptions="FillAndExpand"
+                               VerticalOptions="FillAndExpand"
+                               IsAnimationEnabled="{Binding Source={RelativeSource AncestorType={x:Type taskLoaderView:TaskLoaderView}},
+                                                            Path=TaskLoaderNotifier.ShowLoader}"
+                               RepeatMode="Restart"
+                               Source="rocket_launch.json" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="LottieRocketMarginTop">
+        <controls:SKLottieView AbsoluteLayout.LayoutFlags="XProportional"
+                               AbsoluteLayout.LayoutBounds="0.5, 120, 300, 300"
+                               HorizontalOptions="FillAndExpand"
+                               VerticalOptions="FillAndExpand"
+                               IsAnimationEnabled="{Binding Source={RelativeSource AncestorType={x:Type taskLoaderView:TaskLoaderView}},
+                                                            Path=TaskLoaderNotifier.ShowLoader}"
+                               RepeatMode="Restart"
+                               Source="rocket_launch.json" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="ActivityIndicatorMarginTop">
+        <ActivityIndicator AbsoluteLayout.LayoutFlags="XProportional, SizeProportional"
+                           AbsoluteLayout.LayoutBounds="1, 100, 1, 1"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Start"
+                           IsRunning="{Binding Source={RelativeSource AncestorType={x:Type taskLoaderView:TaskLoaderView}},
+                                               Path=TaskLoaderNotifier.ShowLoader}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="ErrorView">
+        <StackLayout AbsoluteLayout.LayoutFlags="All"
+                     AbsoluteLayout.LayoutBounds="1, 1, 1, 1"
+                     HorizontalOptions="Center"
+                     VerticalOptions="Center"
+                     BindingContext="{Binding Source={RelativeSource AncestorType={x:Type taskLoaderView:TaskLoaderView}},
+                                              Path=TaskLoaderNotifier}"
+                     Orientation="Vertical"
+                     Spacing="10">
+            <Frame Style="{StaticResource RoundedFrame}"
+                   WidthRequest="{StaticResource SizeTaskLoaderIcon}"
+                   HeightRequest="{StaticResource SizeTaskLoaderIcon}"
+                   Margin="0,0,0,10"
+                   BackgroundColor="{StaticResource PrimaryColor}">
+                <Image HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       Source="{Binding Error,
+                                        Converter={converters:ExceptionToImageSourceConverter}}" />
+            </Frame>
+            <Label Style="{StaticResource TextBodySecondary}"
+                   WidthRequest="300"
+                   Margin="0,0,0,20"
+                   HorizontalTextAlignment="Center"
+                   LineBreakMode="WordWrap"
+                   MaxLines="2"
+                   Text="{Binding Error,
+                                  Converter={converters:ExceptionToErrorMessageConverter}}" />
+
+            <Button Style="{StaticResource ButtonAccent}"
+                    HorizontalOptions="Center"
+                    VerticalOptions="End"
+                    Command="{Binding ReloadCommand}"
+                    Shadow="{StaticResource ShadowAccentBottom}"
+                    Text="{x:Static loc:GlobalResources.Common_Retry}" />
+        </StackLayout>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ErrorViewMarginTop">
+        <StackLayout AbsoluteLayout.LayoutFlags="XProportional, SizeProportional"
+                     AbsoluteLayout.LayoutBounds="1, 50, 1, 1"
+                     HorizontalOptions="Center"
+                     VerticalOptions="Start"
+                     BindingContext="{Binding Source={RelativeSource AncestorType={x:Type taskLoaderView:TaskLoaderView}},
+                                              Path=TaskLoaderNotifier}"
+                     Orientation="Vertical"
+                     Spacing="10">
+            <Frame Style="{StaticResource RoundedFrame}"
+                   WidthRequest="{StaticResource SizeTaskLoaderIcon}"
+                   HeightRequest="{StaticResource SizeTaskLoaderIcon}"
+                   Margin="0,0,0,10"
+                   BackgroundColor="{StaticResource PrimaryColor}">
+                <Image HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       Source="{Binding Error,
+                                        Converter={converters:ExceptionToImageSourceConverter}}" />
+            </Frame>
+            <Label Style="{StaticResource TextBodySecondary}"
+                   WidthRequest="300"
+                   Margin="0,0,0,20"
+                   HorizontalTextAlignment="Center"
+                   LineBreakMode="WordWrap"
+                   MaxLines="2"
+                   Text="{Binding Error,
+                                  Converter={converters:ExceptionToErrorMessageConverter}}" />
+
+            <Button Style="{StaticResource ButtonAccent}"
+                    HorizontalOptions="Center"
+                    VerticalOptions="End"
+                    Command="{Binding ReloadCommand}"
+                    Shadow="{StaticResource ShadowAccentBottom}"
+                    Text="{x:Static loc:GlobalResources.Common_Retry}" />
+        </StackLayout>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ErrorNotificationView">
+        <taskLoaderView:Snackbar AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional"
+                                 AbsoluteLayout.LayoutBounds="0, 1, 1, 100"
+                                 Text="{Binding Source={RelativeSource AncestorType={x:Type taskLoaderView:TaskLoaderView}},
+                                                Path=TaskLoaderNotifier.Error,
+                                                Converter={converters:ExceptionToErrorMessageConverter}}" />
+    </DataTemplate>
+
+    <Style x:Key="TaskLoaderViewPage"
+           TargetType="taskLoaderView:TaskLoaderView">
+        <Setter Property="ErrorNotificationView" Value="{StaticResource ErrorNotificationView}" />
+        <Setter Property="LoadingView" Value="{StaticResource LottieRocket}" />
+        <Setter Property="ErrorView" Value="{StaticResource ErrorView}" />
+    </Style>
+
+    <Style x:Key="TaskLoaderViewMarginTop"
+           TargetType="taskLoaderView:TaskLoaderView">
+        <Setter Property="ErrorNotificationView" Value="{StaticResource ErrorNotificationView}" />
+        <Setter Property="LoadingView" Value="{StaticResource LottieRocketMarginTop}" />
+        <Setter Property="ErrorView" Value="{StaticResource ErrorViewMarginTop}" />
+    </Style>
+
+    <Style x:Key="TaskLoaderViewError"
+           TargetType="taskLoaderView:TaskLoaderView">
+        <Setter Property="ErrorView" Value="{StaticResource ErrorViewMarginTop}" />
+        <Setter Property="LoadingView" Value="{StaticResource ActivityIndicatorMarginTop}" />
+    </Style>
+
+</ResourceDictionary>

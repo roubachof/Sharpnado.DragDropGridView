@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
+                    xmlns:converters="clr-namespace:Mvvm.Flux.Maui.Presentation.Converters"
+                    xmlns:system="clr-namespace:System;assembly=netstandard">
+
+
+    <x:Double x:Key="ButtonSmallSize">25</x:Double>
+    <x:Double x:Key="ButtonMediumSize">35</x:Double>
+    <x:Double x:Key="ButtonLargeSize">48</x:Double>
+
+    <x:Double x:Key="ButtonFabSize">56</x:Double>
+    
+    <x:Double x:Key="ButtonTransparentTextSize">16</x:Double>
+    <x:Double x:Key="ButtonTextSize">14</x:Double>
+
+    <x:Double x:Key="BackButtonSize">60</x:Double>
+
+
+    <!--  Regular text Button  -->
+    <Style x:Key="ButtonAccent"
+           TargetType="Button">
+        <Setter Property="android:Button.UseDefaultPadding" Value="False" />
+        <Setter Property="HeightRequest" Value="{StaticResource ButtonMediumSize}" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="BackgroundColor" Value="{StaticResource AccentColor}" />
+        <Setter Property="Padding" Value="20,0" />
+        <Setter Property="MinimumWidthRequest" Value="100" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryDarkColor}" />
+        <Setter Property="FontFamily" Value="FontSemiBold" />
+        <Setter Property="FontSize" Value="{StaticResource ButtonTextSize}" />
+    </Style>
+
+    <Style x:Key="ButtonRoundAccent"
+           BaseResourceKey="ButtonAccent"
+           TargetType="Button">
+        <Setter Property="CornerRadius" Value="{Binding Source={RelativeSource Self}, Path=Height, Converter={converters:HeightToRoundCornerConverter}}" />
+    </Style>
+
+    <Style x:Key="ButtonLargeRoundAccent"
+           BaseResourceKey="ButtonRoundAccent"
+           TargetType="Button">
+        <Setter Property="HeightRequest" Value="{StaticResource ButtonLargeSize}" />
+    </Style>
+
+    <Style x:Key="ButtonAccentTransparent"
+           BaseResourceKey="ButtonAccent"
+           TargetType="Button">
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor" Value="{StaticResource AccentColor}" />
+        <Setter Property="FontFamily" Value="FontBold" />
+        <Setter Property="FontSize" Value="{StaticResource ButtonTransparentTextSize}" />
+    </Style>
+
+    <Style x:Key="ButtonWhiteTransparent"
+           BaseResourceKey="ButtonAccentTransparent"
+           TargetType="Button">
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+        <Setter Property="FontFamily" Value="FontBold" />
+        <Setter Property="FontSize" Value="{StaticResource ButtonTransparentTextSize}" />
+    </Style>
+
+    <Style x:Key="ButtonSmallAccent"
+           BaseResourceKey="ButtonAccent"
+           TargetType="Button">
+        <Setter Property="HeightRequest" Value="{StaticResource ButtonSmallSize}" />
+        <Setter Property="CornerRadius" Value="12" />
+    </Style>
+
+    <Style x:Key="ButtonLargeAccent"
+           BaseResourceKey="ButtonAccent"
+           TargetType="Button">
+        <Setter Property="HeightRequest" Value="{StaticResource ButtonLargeSize}" />
+        <Setter Property="CornerRadius" Value="12" />
+    </Style>
+
+    <Style x:Key="ButtonPrimary"
+           BaseResourceKey="ButtonAccent"
+           TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}" />
+    </Style>
+
+    <Style x:Key="ButtonRoundPrimary"
+           BaseResourceKey="ButtonPrimary"
+           TargetType="Button">
+        <Setter Property="CornerRadius" Value="{Binding Source={RelativeSource Self}, Path=Height, Converter={converters:HeightToRoundCornerConverter}}" />
+    </Style>
+
+
+    <!--  ImageButton  -->
+    <Style x:Key="ImageButtonRoundAccent"
+           TargetType="ImageButton">
+        <Setter Property="android:Button.UseDefaultPadding" Value="False" />
+        <Setter Property="HeightRequest" Value="{StaticResource ButtonMediumSize}" />
+        <Setter Property="CornerRadius" Value="{Binding Source={RelativeSource Self}, Path=Height, Converter={converters:HeightToRoundCornerConverter}}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource AccentColor}" />
+        <Setter Property="Padding" Value="10" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="VerticalOptions" Value="Center" />
+    </Style>
+
+    <Style x:Key="ImageButtonRoundSmallAccent"
+           BaseResourceKey="ImageButtonRoundAccent"
+           TargetType="ImageButton">
+        <Setter Property="HeightRequest" Value="{StaticResource ButtonSmallSize}" />
+    </Style>
+
+
+    <Style x:Key="SwitchStyle"
+           TargetType="Switch">
+        <Setter Property="Scale">
+            <OnPlatform x:TypeArguments="system:Double">
+                <OnPlatform.Platforms>
+                    <On Platform="Android"
+                        Value="0.8" />
+                    <On Platform="iOS"
+                        Value="0.8" />
+                </OnPlatform.Platforms>
+            </OnPlatform>
+        </Setter>
+        <Setter Property="HorizontalOptions" Value="Start" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="OnColor" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="ThumbColor" Value="White" />
+        <Setter Property="TranslationX">
+            <OnPlatform x:TypeArguments="system:Double">
+                <OnPlatform.Platforms>
+                    <On Platform="Android"
+                        Value="-5" />
+                    <On Platform="iOS"
+                        Value="-5" />
+                </OnPlatform.Platforms>
+            </OnPlatform>
+        </Setter>
+    </Style>
+
+    <Style x:Key="RadioButton"
+           TargetType="Button">
+        <Setter Property="BorderColor" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="BorderWidth" Value="2" />
+        <Setter Property="CornerRadius" Value="15" />
+        <Setter Property="HeightRequest">
+            <OnPlatform x:TypeArguments="system:Double">
+                <OnPlatform.Platforms>
+                    <On Platform="Android"
+                        Value="30" />
+                    <On Platform="iOS"
+                        Value="30" />
+                </OnPlatform.Platforms>
+            </OnPlatform>
+        </Setter>
+        <Setter Property="Padding">
+            <OnPlatform x:TypeArguments="Thickness">
+                <OnPlatform.Platforms>
+                    <On Platform="Android"
+                        Value="0" />
+                    <On Platform="iOS"
+                        Value="10" />
+                </OnPlatform.Platforms>
+            </OnPlatform>
+        </Setter>
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+        <Setter Property="FontFamily" Value="FontRegular" />
+        <Setter Property="FontSize" Value="{StaticResource TextSizeBody}" />
+    </Style>
+
+</ResourceDictionary>

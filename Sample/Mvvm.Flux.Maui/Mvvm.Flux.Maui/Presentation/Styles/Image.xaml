@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    xmlns:androidSpecific="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls">
+
+    <Style x:Key="ImageBase"
+           TargetType="Image">
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="Aspect" Value="AspectFit" />
+    </Style>
+
+    <Style x:Key="ImageSmall"
+           BasedOn="{StaticResource ImageBase}"
+           TargetType="Image">
+        <Setter Property="WidthRequest" Value="{StaticResource SizeSmallIcon}" />
+        <Setter Property="HeightRequest" Value="{StaticResource SizeSmallIcon}" />
+    </Style>
+
+    <Style x:Key="ImageSmallLarge"
+           BasedOn="{StaticResource ImageBase}"
+           TargetType="Image">
+        <Setter Property="WidthRequest" Value="{StaticResource SizeSmallLargeIcon}" />
+        <Setter Property="HeightRequest" Value="{StaticResource SizeSmallLargeIcon}" />
+    </Style>
+
+    <Style x:Key="ImageMediumSmall"
+           BasedOn="{StaticResource ImageBase}"
+           TargetType="Image">
+        <Setter Property="WidthRequest" Value="{StaticResource SizeMediumSmallIcon}" />
+        <Setter Property="HeightRequest" Value="{StaticResource SizeMediumSmallIcon}" />
+    </Style>
+
+    <Style x:Key="ImageMedium"
+           BasedOn="{StaticResource ImageBase}"
+           TargetType="Image">
+        <Setter Property="WidthRequest" Value="{StaticResource SizeMediumIcon}" />
+        <Setter Property="HeightRequest" Value="{StaticResource SizeMediumIcon}" />
+    </Style>
+
+    <Style x:Key="ImageLarge"
+           BasedOn="{StaticResource ImageBase}"
+           TargetType="Image">
+        <Setter Property="WidthRequest" Value="{StaticResource SizeLargeIcon}" />
+        <Setter Property="HeightRequest" Value="{StaticResource SizeLargeIcon}" />
+    </Style>
+
+    <Style x:Key="ImageHuge"
+           BasedOn="{StaticResource ImageBase}"
+           TargetType="Image">
+        <Setter Property="WidthRequest" Value="{StaticResource SizeHugeIcon}" />
+        <Setter Property="HeightRequest" Value="{StaticResource SizeHugeIcon}" />
+    </Style>
+
+
+    <!--  TextField images  -->
+
+    <Style x:Key="ImageReadonlyTextField"
+           BaseResourceKey="ImageSmallLarge"
+           TargetType="Image">
+        <Setter Property="Margin" Value="0,10,0,0" />
+        <Setter Property="HorizontalOptions" Value="Start" />
+    </Style>
+
+    <Style x:Key="ImageEditableTextField"
+           BaseResourceKey="ImageSmallLarge"
+           TargetType="Image">
+        <Setter Property="Margin" Value="0,0,0,15" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="HorizontalOptions" Value="Start" />
+    </Style>
+
+
+    <!--  ImageButton  -->
+    
+    <Style x:Key="ImageButtonFabPrimary"
+           TargetType="ImageButton">
+        <Setter Property="androidSpecific:Button.UseDefaultPadding" Value="False" />
+        <Setter Property="androidSpecific:Button.UseDefaultShadow" Value="False" />
+        <Setter Property="HeightRequest" Value="{StaticResource ButtonFabSize}" />
+        <Setter Property="WidthRequest" Value="{StaticResource ButtonFabSize}" />
+        <Setter Property="CornerRadius" Value="28" />
+        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="Padding" Value="16" />
+        <Setter Property="Aspect" Value="AspectFit" />
+    </Style>
+
+    <Style x:Key="ImageButtonFabAccent"
+           BasedOn="{StaticResource ImageButtonFabPrimary}"
+           TargetType="ImageButton">
+        <Setter Property="BackgroundColor" Value="{StaticResource AccentColor}" />
+    </Style>
+
+    <Style x:Key="ImageButtonSmallFabPrimary"
+           BasedOn="{StaticResource ImageButtonFabPrimary}"
+           TargetType="ImageButton">
+        <Setter Property="HeightRequest" Value="{StaticResource ButtonLargeSize}" />
+        <Setter Property="WidthRequest" Value="{StaticResource ButtonLargeSize}" />
+        <Setter Property="Padding" Value="12" />
+        <Setter Property="CornerRadius" Value="24" />
+    </Style>
+
+    <Style x:Key="ImageButtonBase"
+           TargetType="ImageButton">
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="Aspect" Value="AspectFit" />
+    </Style>
+
+    <Style x:Key="ImageButtonSmall"
+           BasedOn="{StaticResource ImageButtonBase}"
+           TargetType="ImageButton">
+        <Setter Property="WidthRequest" Value="{StaticResource SizeSmallIcon}" />
+        <Setter Property="HeightRequest" Value="{StaticResource SizeSmallIcon}" />
+    </Style>
+
+    <Style x:Key="ImageButtonSmallLarge"
+           BasedOn="{StaticResource ImageButtonBase}"
+           TargetType="ImageButton">
+        <Setter Property="WidthRequest" Value="{StaticResource SizeSmallLargeIcon}" />
+        <Setter Property="HeightRequest" Value="{StaticResource SizeSmallLargeIcon}" />
+    </Style>
+
+    <Style x:Key="ImageButtonMediumSmall"
+           BasedOn="{StaticResource ImageButtonBase}"
+           TargetType="ImageButton">
+        <Setter Property="WidthRequest" Value="{StaticResource SizeMediumSmallIcon}" />
+        <Setter Property="HeightRequest" Value="{StaticResource SizeMediumSmallIcon}" />
+    </Style>
+
+    <Style x:Key="ImageButtonMedium"
+           BasedOn="{StaticResource ImageButtonBase}"
+           TargetType="ImageButton">
+        <Setter Property="WidthRequest" Value="{StaticResource SizeMediumIcon}" />
+        <Setter Property="HeightRequest" Value="{StaticResource SizeMediumIcon}" />
+    </Style>
+
+    <Style x:Key="ImageButtonLarge"
+           BasedOn="{StaticResource ImageButtonBase}"
+           TargetType="ImageButton">
+        <Setter Property="WidthRequest" Value="{StaticResource SizeLargeIcon}" />
+        <Setter Property="HeightRequest" Value="{StaticResource SizeLargeIcon}" />
+    </Style>
+
+</ResourceDictionary>

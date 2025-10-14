@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--<?xaml-comp compile="true" ?>-->
+
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" />
+
+<!--  all edit fields based on syncfusion controls  -->
+
+<!--<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:sf="clr-namespace:Syncfusion.XForms.TextInputLayout;assembly=Syncfusion.Core.XForms"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    xmlns:cb="clr-namespace:Syncfusion.XForms.ComboBox;assembly=Syncfusion.SfComboBox.XForms"
+                    xmlns:sfn="clr-namespace:Syncfusion.SfNumericUpDown.XForms;assembly=Syncfusion.SfNumericUpDown.XForms">
+
+    <Style TargetType="Entry" ApplyToDerivedTypes="True">
+        <Setter Property="FontSize" Value="{StaticResource TextSizeBody}" />
+        <Setter Property="FontFamily" Value="FontRegular" />
+    </Style>
+
+    <Style TargetType="Editor" ApplyToDerivedTypes="True">
+        <Setter Property="FontSize" Value="{StaticResource TextSizeBody}" />
+        <Setter Property="FontFamily" Value="FontRegular" />
+    </Style>
+
+    <Keyboard x:Key="KeyboardSearch" x:FactoryMethod="Create">
+        <x:Arguments>
+            <KeyboardFlags>None</KeyboardFlags>
+        </x:Arguments>
+    </Keyboard>
+
+    <Style TargetType="sf:LabelStyle" ApplyToDerivedTypes="True">
+        <Setter Property="FontFamily" Value="FontRegular" />
+    </Style>
+
+    <sf:LabelStyle x:Key="TextInputHintStyle"
+                   FontSize="{StaticResource TextSizeBody}"
+                   FontFamily="FontRegular" />
+
+    <Style TargetType="sf:SfTextInputLayout" ApplyToDerivedTypes="True">
+        <Setter Property="VerticalOptions" Value="Start" />
+        <Setter Property="ContainerType" Value="Outlined" />
+        <Setter Property="InputViewPadding" Value="15" />
+        <Setter Property="FocusedColor" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="HintLabelStyle" Value="{StaticResource TextInputHintStyle}" />
+    </Style>
+
+    <Style x:Key="TextInputEditor" TargetType="sf:SfTextInputLayout">
+        <Setter Property="InputViewPadding">
+            <OnPlatform x:TypeArguments="Thickness">
+                <OnPlatform.Platforms>
+                    <On Platform="Android" Value="15" />
+                    <On Platform="iOS" Value="15,10" />
+                </OnPlatform.Platforms>
+            </OnPlatform>
+        </Setter>
+    </Style>
+
+    <Style x:Key="TextInputCombo" TargetType="sf:SfTextInputLayout">
+        <Setter Property="InputViewPadding">
+            <OnPlatform x:TypeArguments="Thickness">
+                <OnPlatform.Platforms>
+                    <On Platform="Android" Value="15,0" />
+                    <On Platform="iOS" Value="15,0" />
+                </OnPlatform.Platforms>
+            </OnPlatform>
+        </Setter>
+    </Style>
+
+    <Style x:Key="TextInputComboFilled" TargetType="sf:SfTextInputLayout" BasedOn="{StaticResource TextInputCombo}">
+        <Setter Property="ContainerType" Value="Filled" />
+    </Style>
+
+    <Style TargetType="cb:SfComboBox">
+        <Setter Property="HeightRequest" Value="50" />
+        <Setter Property="FontFamily" Value="FontRegular" />
+        <Setter Property="TextSize" Value="{StaticResource TextSizeBody}" />
+    </Style>
+
+    <Style x:Key="ComboBoxIris" TargetType="cb:SfComboBox">
+        <Setter Property="HeightRequest" Value="40" />
+    </Style>
+
+    <Style TargetType="sfn:SfNumericUpDown">
+        <Setter Property="HeightRequest" Value="40" />
+        <Setter Property="FontFamily" Value="FontRegular" />
+        <Setter Property="FontSize" Value="{StaticResource TextSizeBody}" />
+    </Style>
+
+</ResourceDictionary>-->
