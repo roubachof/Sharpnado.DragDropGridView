@@ -57,6 +57,7 @@
                                     <sho:GridLayout AnimateTransitions="True"
                                                     ColumnCount="{Binding GridColumnCount}"
                                                     ColumnSpacing="0"
+                                                    DragAndDropTrigger="LongPress"
                                                     GridPadding="0"
                                                     IsDragAndDropEnabled="{Binding IsDragAndDropEnabled}"
                                                     ItemsSource="{Binding Loader.Result}"

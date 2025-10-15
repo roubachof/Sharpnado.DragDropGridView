@@ -40,6 +40,13 @@ internal static class InternalLogger
         DiagnosticLog(DebugLevel, format(), tag);
     }
 
+    public static void DebugIf(bool condition, string tag, Func<string> format)
+    {
+        if (!condition) return;
+
+        Debug(tag, format);
+    }
+
     public static void Debug(string tag, string format)
     {
         if (!EnableDebug)

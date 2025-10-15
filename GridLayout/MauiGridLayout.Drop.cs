@@ -6,13 +6,15 @@ using Tasks;
 
 public partial class GridLayout
 {
+    private const bool VerboseLogging = false;
+
     private void CheckCandidates(View draggingView)
     {
         var dragAndDropMoving = (IDragAndDropView)draggingView;
 
         // We are comparing here the current translated coordinates
         var viewCenter = draggingView.GetTranslatingCenter();
-        InternalLogger.Debug(Tag, $"CheckCandidates( draggingView: {draggingView.GetType().Name},  CenterX:{viewCenter.X}, CenterY:{viewCenter.Y}");
+        InternalLogger.DebugIf(VerboseLogging, Tag, () => $"CheckCandidates( draggingView: {draggingView.GetType().Name},  CenterX:{viewCenter.X}, CenterY:{viewCenter.Y}");
 
         var viewIndex = _draggingSessionList.IndexOf(draggingView);
         double replaceMinXDistance = 0;
@@ -34,7 +36,7 @@ public partial class GridLayout
             // We are comparing here the current translated coordinates
             var candidateCenter = candidate.GetTranslatingCenter();
 
-            InternalLogger.Debug(Tag, $"selected candidate index {candidateIndex}");
+            InternalLogger.DebugIf(VerboseLogging, Tag, () => $"selected candidate index {candidateIndex}");
 
             if (dragEndDropCandidate.CanReceiveView && dragAndDropMoving.CanBeDropped)
             {
@@ -70,25 +72,25 @@ public partial class GridLayout
                 _groupCandidate = null;
             }
 
-            InternalLogger.Debug(Tag, $"candidateX: {candidateCenter.X}, candidateY: {candidateCenter.Y}");
+            InternalLogger.DebugIf(VerboseLogging, Tag, () => $"candidateX: {candidateCenter.X}, candidateY: {candidateCenter.Y}");
             var xDistanceSigned = viewCenter.X - candidateCenter.X;
             var yDistanceSigned = viewCenter.Y - candidateCenter.Y;
             var xDistance = Math.Abs(xDistanceSigned);
             var yDistance = Math.Abs(viewCenter.Y - candidateCenter.Y);
 
-            InternalLogger.Debug(Tag, $"replaceXDistance: [{replaceMinXDistance}, {replaceMaxXDistance}], replaceMaxXDistance: {replaceMaxYDistance}");
-            InternalLogger.Debug(Tag, $"Computed xDistance: {xDistance}, yDistance: {yDistance} ");
+            InternalLogger.DebugIf(VerboseLogging, Tag, () => $"replaceXDistance: [{replaceMinXDistance}, {replaceMaxXDistance}], replaceMaxXDistance: {replaceMaxYDistance}");
+            InternalLogger.DebugIf(VerboseLogging, Tag, () => $"Computed xDistance: {xDistance}, yDistance: {yDistance} ");
             if (xDistance > replaceMinXDistance
                 && xDistance < replaceMaxXDistance
                 && yDistance < replaceMaxYDistance)
             {
-                InternalLogger.Debug(Tag, "MADE IT THROUGH TESTS!!!");
-                InternalLogger.Debug(Tag, $"xDistanceSigned: {xDistanceSigned}, viewIndex: {viewIndex}, candidateIndex: {candidateIndex}");
+                InternalLogger.DebugIf(VerboseLogging, Tag, () => "MADE IT THROUGH TESTS!!!");
+                InternalLogger.DebugIf(VerboseLogging, Tag, () => $"xDistanceSigned: {xDistanceSigned}, viewIndex: {viewIndex}, candidateIndex: {candidateIndex}");
 
                 var isAfter = ColumnCount > 1 ? xDistanceSigned > 0 : yDistanceSigned > 1;
                 var mustShiftLeft = candidateIndex > viewIndex && isAfter;
 
-                InternalLogger.Debug(Tag, $"isAfter: {isAfter}, mustShiftLeft: {mustShiftLeft}");
+                InternalLogger.DebugIf(VerboseLogging, Tag, () => $"isAfter: {isAfter}, mustShiftLeft: {mustShiftLeft}");
                 if (mustShiftLeft && (_currentShiftTask.IsNotStarted || _currentShiftTask.IsCompleted))
                 {
                     _currentShiftTask = TaskMonitor.Create(ShiftAsync(Direction.Left, candidateIndex, viewIndex, draggingView));
@@ -98,7 +100,7 @@ public partial class GridLayout
                 var isBefore = ColumnCount > 1 ? xDistanceSigned < 0 : yDistanceSigned < 0;
                 var mustShiftRight = candidateIndex < viewIndex && isBefore;
 
-                InternalLogger.Debug(Tag, $"isBefore: {isBefore}, mustShiftRight: {mustShiftRight}");
+                InternalLogger.DebugIf(VerboseLogging, Tag, () => $"isBefore: {isBefore}, mustShiftRight: {mustShiftRight}");
                 if (mustShiftRight && (_currentShiftTask.IsNotStarted || _currentShiftTask.IsCompleted))
                 {
                     _currentShiftTask = TaskMonitor.Create(ShiftAsync(Direction.Right, candidateIndex, viewIndex, draggingView));
@@ -129,7 +131,7 @@ public partial class GridLayout
     /// <returns></returns>
     private Task ShiftAsync(Direction direction, int targetIndex, int holeIndex, View? draggingView = null)
     {
-        InternalLogger.Debug(Tag, draggingView == null
+        InternalLogger.DebugIf(VerboseLogging, Tag, () => draggingView == null
             ? $"Shift {direction} => remove view at {targetIndex}, and shift the views from {targetIndex} to {holeIndex}"
             : $"Shift {direction} => inserting {draggingView} to {targetIndex}, and shift to {holeIndex}");
 
@@ -142,12 +144,12 @@ public partial class GridLayout
             var targetTransX = targetView.X;
             var targetTransY = targetView.Y;
 
-            InternalLogger.Debug(Tag, $"targetTransX: {targetTransX}, targetTransY: {targetTransY}");
+            InternalLogger.DebugIf(VerboseLogging, Tag, () => $"targetTransX: {targetTransX}, targetTransY: {targetTransY}");
 
             var requiredTranslationX = targetTransX - shiftingView.X;
             var requiredTranslationY = targetTransY - shiftingView.Y;
 
-            InternalLogger.Debug(Tag, $"requiredTranslationX: {requiredTranslationX}, requiredTranslationY: {requiredTranslationY}");
+            InternalLogger.DebugIf(VerboseLogging, Tag, () => $"requiredTranslationX: {requiredTranslationX}, requiredTranslationY: {requiredTranslationY}");
 
             shiftAnimations.Add(
                 shiftingView.TranslateTo(
@@ -195,14 +197,14 @@ public partial class GridLayout
         }
 
         var listResult = _draggingSessionList.Aggregate(string.Empty, (i, v) => $"{i}, {v}");
-        InternalLogger.Debug(Tag, $"list: {listResult}");
+        InternalLogger.DebugIf(VerboseLogging, Tag, () => $"list: {listResult}");
 
         return Task.WhenAll(shiftAnimations);
     }
 
     private IView? StopDraggingSession(View view)
     {
-        InternalLogger.Debug(Tag, "StopDraggingSession");
+        InternalLogger.Debug(Tag, () => "StopDraggingSession");
 
         _isDragging = false;
 
@@ -217,9 +219,9 @@ public partial class GridLayout
         _draggingSessionList.Clear();
 
         // Find views that should be removed (excluding the header view)
-        return Children.Except(_orderedChildren)
-            .Where(child => child != _headerView)
-            .FirstOrDefault();
+        return Children
+            .Except(_orderedChildren)
+            .FirstOrDefault(child => child != _headerView);
     }
 
     private bool _isReorderingItemsSource;
@@ -238,7 +240,7 @@ public partial class GridLayout
                 {
                     var oldIndex = list.IndexOf(bindingContext);
 
-                    InternalLogger.Debug(Tag, $"ItemsSource item moved from {oldIndex} to {newIndexOfView}");
+                    InternalLogger.Debug(Tag, () => $"ItemsSource item moved from {oldIndex} to {newIndexOfView}");
 
                     var observableCollectionType = typeof(ObservableCollection<>);
                     var observableOfType = observableCollectionType.MakeGenericType(bindingContext.GetType());
@@ -272,14 +274,14 @@ public partial class GridLayout
     /// <param name="view">The view that has been dropped.</param>
     private async Task OnViewDroppedAsync(View view)
     {
-        InternalLogger.Debug(Tag, $"OnViewDroppedAsync( view: {view.GetType().Name} )");
+        InternalLogger.Debug(Tag, () => $"OnViewDroppedAsync( view: {view.GetType().Name} )");
 
         // Prevent invalidation during animation of children and binding context changes
         _shouldInvalidate = false;
 
         if (_groupCandidate != null && _draggingView != null)
         {
-            InternalLogger.Debug(Tag, $"Grouping started with {_groupCandidate}");
+            InternalLogger.Debug(Tag, () => $"Grouping started with {_groupCandidate}");
 
             // Group the 2 views
             await _groupCandidate.ScaleTo(1);
@@ -301,7 +303,7 @@ public partial class GridLayout
             var translationX = targetView.X - _draggingView.X;
             var translationY = targetView.Y - _draggingView.Y;
 
-            InternalLogger.Debug(Tag, $"Animating view to final translation: x:{translationX}, y:{translationY}");
+            InternalLogger.Debug(Tag, () => $"Animating view to final translation: x:{translationX}, y:{translationY}");
 
             await _draggingView.TranslateTo(translationX, translationY);
         }
@@ -318,7 +320,7 @@ public partial class GridLayout
             InvalidateMeasure();
         }
 
-        InternalLogger.Debug(Tag, $"Ordered children after invalidation: {_orderedChildren.Aggregate(string.Empty, (acc, view) => $"{acc}, {((View)view).BindingContext}")}");
+        InternalLogger.Debug(Tag, () => $"Ordered children after invalidation: {_orderedChildren.Aggregate(string.Empty, (acc, view) => $"{acc}, {((View)view).BindingContext}")}");
 
         OnItemsReorderedCommand?.Execute(
             _orderedChildren.Select(v => ((View)v).BindingContext)

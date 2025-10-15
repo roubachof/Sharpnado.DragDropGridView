@@ -4,13 +4,24 @@ using System.Windows.Input;
 using Sharpnado.Tasks;
 
 using MR.Gestures;
-using ContentView = Microsoft.Maui.Controls.ContentView;
 using ScrollView = Microsoft.Maui.Controls.ScrollView;
 
 namespace Sharpnado.GridLayout;
 
+public enum DragAndDropTrigger
+{
+    Pan = 0,
+    LongPress,
+}
+
 public partial class GridLayout
 {
+    public static readonly BindableProperty DragAndDropTriggerProperty = BindableProperty.Create(
+        nameof(DragAndDropTrigger),
+        typeof(DragAndDropTrigger),
+        typeof(GridLayout),
+        DragAndDropTrigger.Pan);
+
     public static readonly BindableProperty IsDragAndDropEnabledProperty = BindableProperty.Create(
         nameof(IsDragAndDropEnabled),
         typeof(bool),
@@ -52,6 +63,12 @@ public partial class GridLayout
     public Func<View, Task>? DragAndDropEnabledItemsAnimation { get; set; }
 
     public Func<View, Task>? DragAndDropDisabledItemsAnimation { get; set; }
+
+    public DragAndDropTrigger DragAndDropTrigger
+    {
+        get => (DragAndDropTrigger)GetValue(DragAndDropTriggerProperty);
+        set => SetValue(DragAndDropTriggerProperty, value);
+    }
 
     public bool IsDragAndDropEnabled
     {
@@ -156,7 +173,10 @@ public partial class GridLayout
             _animationCts = null;
         }
 
-        UpdateDisableScrollView(isEnabled);
+        if (DragAndDropTrigger == DragAndDropTrigger.Pan)
+        {
+            UpdateDisableScrollView(isEnabled);
+        }
     }
 
     private void SubscribeDragAndDropIfNeeded(Element child)
@@ -168,7 +188,7 @@ public partial class GridLayout
 
         InternalLogger.Debug(Tag, () => "SubscribeDragAndDropIfNeeded");
 
-        if (DeviceInfo.Platform == DevicePlatform.tvOS)
+        if (DragAndDropTrigger == DragAndDropTrigger.LongPress)
         {
             gestureAwareControl.LongPressed -= OnLongPressed;
             gestureAwareControl.LongPressing -= OnLongPressing;
@@ -191,7 +211,7 @@ public partial class GridLayout
 
         InternalLogger.Debug(Tag, () => "UnsubscribeDragAndDropIfNeeded");
 
-        if (DeviceInfo.Platform == DevicePlatform.Android)
+        if (DragAndDropTrigger == DragAndDropTrigger.LongPress)
         {
             gestureAwareControl.LongPressed -= OnLongPressed;
             gestureAwareControl.LongPressing -= OnLongPressing;
@@ -200,14 +220,16 @@ public partial class GridLayout
         UnsubscribeToPanning(gestureAwareControl);
     }
 
-    private void OnLongPressing(object sender, LongPressEventArgs e)
+    private void OnLongPressing(object? sender, LongPressEventArgs e)
     {
         InternalLogger.Debug(Tag, () => "OnLongPressing()");
 
-        var gestureAwareControl = (IGestureAwareControl)sender;
+        var gestureAwareControl = (IGestureAwareControl)sender!;
 
         TaskMonitor.Create(((View)gestureAwareControl).ScaleTo(1.05, 100));
-        ((IDragAndDropView)sender).IsDragAndDropping = true;
+        ((IDragAndDropView)sender!).IsDragAndDropping = true;
+
+        UpdateDisableScrollView(true);
 
         SubscribeToPanning(gestureAwareControl);
     }
@@ -232,7 +254,7 @@ public partial class GridLayout
                 TaskMonitor.Create(((View)gestureAwareControl).ScaleTo(1, 100));
 
                 ((IDragAndDropView)sender!).IsDragAndDropping = false;
-
+                UpdateDisableScrollView(false);
                 UnsubscribeToPanning(gestureAwareControl);
             });
     }
@@ -291,6 +313,14 @@ public partial class GridLayout
     {
         InternalLogger.Debug(Tag, () => "OnPanned()");
 
+        if (DragAndDropTrigger == DragAndDropTrigger.LongPress)
+        {
+            var gestureAwareControl = (IGestureAwareControl)sender!;
+            UnsubscribeToPanning(gestureAwareControl);
+            TaskMonitor.Create(((View)gestureAwareControl).ScaleTo(1, 100));
+            UpdateDisableScrollView(false);
+        }
+
         TaskMonitor.Create(OnViewDroppedAsync((View)sender));
     }
 
@@ -339,7 +369,7 @@ public partial class GridLayout
         double toolbarHeight = DeviceDisplay.Current.MainDisplayInfo.Orientation == DisplayOrientation.Landscape ? 48 : 56;
         double screenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) - toolbarHeight;
 
-        InternalLogger.Debug(Tag, () => $"screenHeight: {screenHeight}, viewScreenCoordinates: {viewScreenCoordinates}, scrollScreenCoordinates: {scrollScreenCoordinates}, containerScreenCoordinates: {containerScreenCoordinates}");
+        InternalLogger.DebugIf(VerboseLogging, Tag, () => $"screenHeight: {screenHeight}, viewScreenCoordinates: {viewScreenCoordinates}, scrollScreenCoordinates: {scrollScreenCoordinates}, containerScreenCoordinates: {containerScreenCoordinates}");
 
         double endScreenY = scrollView.ScrollY + scrollScreenCoordinates.Y + screenHeight;
 
@@ -352,11 +382,11 @@ public partial class GridLayout
         double containerBottom = containerScreenCoordinates.Y + Height;
         double exceedingContainerBottom = containerBottom - endScreenY;
 
-        InternalLogger.Debug(Tag, () => $"exceedingContainerBottom: {exceedingContainerBottom}");
+        InternalLogger.DebugIf(VerboseLogging, Tag, () => $"exceedingContainerBottom: {exceedingContainerBottom}");
 
         if (exceedingBottom > 0 && exceedingContainerBottom > 0)
         {
-            InternalLogger.Debug(Tag, () => $"Scrolling to exceeding bottom: {exceedingBottom}, scrollTargetY: {targetY}");
+            InternalLogger.DebugIf(VerboseLogging, Tag, () => $"Scrolling to exceeding bottom: {exceedingBottom}, scrollTargetY: {targetY}");
             TaskMonitor.Create(scrollView.ScrollToAsync(0, targetY, false));
         }
 
@@ -365,11 +395,11 @@ public partial class GridLayout
         double exceedingTop = viewTop - startScreenY;
         double targetYTop = scrollView.ScrollY + exceedingTop;
 
-        InternalLogger.Debug(Tag, () => $"viewTop: {viewTop}, scrollY: {scrollView.ScrollY}, exceedingTop: {exceedingTop}");
+        InternalLogger.DebugIf(VerboseLogging, Tag, () => $"viewTop: {viewTop}, scrollY: {scrollView.ScrollY}, exceedingTop: {exceedingTop}");
 
         if (exceedingTop < 10)
         {
-            InternalLogger.Debug(Tag, () => $"Scrolling to exceeding top: {exceedingTop}, scrollTargetY: {targetYTop}");
+            InternalLogger.DebugIf(VerboseLogging, Tag, () => $"Scrolling to exceeding top: {exceedingTop}, scrollTargetY: {targetYTop}");
             TaskMonitor.Create(scrollView.ScrollToAsync(0, targetYTop, false));
         }
     }
