@@ -4,6 +4,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                     xmlns:converters="using:Mvvm.Flux.Maui.Presentation.Converters"
                     xmlns:cv="using:Mvvm.Flux.Maui.Presentation.CustomViews"
+                    xmlns:gestures="clr-namespace:MR.Gestures;assembly=MR.Gestures"
                     xmlns:home="using:Mvvm.Flux.Maui.Presentation.Pages.Home"
                     xmlns:lights="using:Mvvm.Flux.Maui.Domain.Lights"
                     xmlns:sho="http://sharpnado.com"
@@ -40,7 +41,7 @@
         </ResourceDictionary>
     </ContentView.Resources>
     <ContentView.Content>
-        <Grid IgnoreSafeArea="True">
+        <Grid IgnoreSafeArea="False">
             <tlv:TemplatedTaskLoader ErrorControlTemplate="{StaticResource ErrorViewTemplate}"
                                      LoadingControlTemplate="{StaticResource ActivityIndicatorTemplate}"
                                      TaskLoaderNotifier="{Binding Loader}">
@@ -52,18 +53,17 @@
                                                            Mode=OneWay}"
                                          IsRefreshing="{Binding Loader.ShowRefresher}"
                                          RefreshColor="{StaticResource LightBulbOnColor}">
-
                                 <ScrollView>
-                                    <sho:GridLayout AnimateTransitions="False"
+                                    <sho:GridLayout AnimateTransitions="True"
                                                     ColumnCount="{Binding GridColumnCount}"
-                                                    ColumnSpacing="15"
-                                                    GridPadding="15"
+                                                    ColumnSpacing="0"
+                                                    GridPadding="0"
                                                     IsDragAndDropEnabled="{Binding IsDragAndDropEnabled}"
                                                     ItemsSource="{Binding Loader.Result}"
-                                                    RowSpacing="15">
+                                                    RowSpacing="0">
                                         <sho:GridLayout.HeaderTemplate>
                                             <DataTemplate>
-                                                <Grid Padding="15,60,15,0"
+                                                <Grid Padding="15,80,15,0"
                                                       ColumnDefinitions="80,*,60">
                                                     <Label Grid.Column="1"
                                                            Style="{StaticResource TextHuge}"
@@ -113,46 +113,44 @@
                                             </DataTemplate>
                                         </sho:GridLayout.HeaderTemplate>
                                         <sho:GridLayout.ItemTemplate>
-                                            <DataTemplate>
-                                                <sho:DragAndDropView x:DataType="lights:Light">
-                                                    <Border Background="{StaticResource SurfaceBackgroundColor}"
-                                                            Shadow="{Binding IsOn,
-                                                                             Converter={converters:BoolToShadowResourceConverter IfFalse={x:Null},
-                                                                                                                                 IfTrue='ShadowLightOn'}}"
-                                                            StrokeShape="{StaticResource RoundRectangle}"
-                                                            StrokeThickness="0">
-                                                        <Grid Padding="10,0,10,10">
-                                                            <Grid.GestureRecognizers>
-                                                                <!--  <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type home:HomeSectionViewModel}},  -->
-                                                                <!--  Path=NavigateToLightEditCommand}"  -->
-                                                                <!--  CommandParameter="{Binding}" />  -->
-                                                            </Grid.GestureRecognizers>
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="100" />
-                                                                <RowDefinition Height="20" />
-                                                            </Grid.RowDefinitions>
+                                            <DataTemplate x:DataType="lights:Light">
+                                                <sho:DragAndDropView IsClippedToBounds="False"
+                                                                     TappedCommand="{Binding Source={RelativeSource AncestorType={x:Type home:HomeSectionViewModel}},
+                                                                                             Path=NavigateToLightEditCommand}"
+                                                                     TappedCommandParameter="{Binding}">
+                                                    <sho:Shadows Shades="{Binding IsOn, Converter={converters:BoolToShadesResourceConverter IfFalse='ShadowNone', IfTrue='ShadeLightBulbHalo'}}">
+                                                        <Border Margin="10"
+                                                                Background="{StaticResource SurfaceBackgroundColor}"
+                                                                StrokeShape="{StaticResource RoundRectangle}"
+                                                                StrokeThickness="0">
+                                                            <Grid Padding="10,0,10,10">
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="100" />
+                                                                    <RowDefinition Height="20" />
+                                                                </Grid.RowDefinitions>
 
-                                                            <Image Grid.Row="0"
-                                                                   Style="{StaticResource ImageHuge}"
-                                                                   Shadow="{Binding IsOn,
-                                                                                    Converter={converters:BoolToShadowResourceConverter IfFalse={x:Null},
-                                                                                                                                        IfTrue='ShadowLightBulbHalo'}}"
-                                                                   Source="{StaticResource IconLightOff}">
-                                                                <Image.Triggers>
-                                                                    <DataTrigger Binding="{Binding IsOn}"
-                                                                                 TargetType="Image"
-                                                                                 Value="True">
-                                                                        <Setter Property="Source" Value="{StaticResource IconLightOn}" />
-                                                                    </DataTrigger>
-                                                                </Image.Triggers>
-                                                            </Image>
+                                                                <Image Grid.Row="0"
+                                                                       Style="{StaticResource ImageHuge}"
+                                                                       Shadow="{Binding IsOn,
+                                                                                        Converter={converters:BoolToShadowResourceConverter IfFalse={x:Null},
+                                                                                                                                            IfTrue='ShadowLightBulbHalo'}}"
+                                                                       Source="{StaticResource IconLightOff}">
+                                                                    <Image.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsOn}"
+                                                                                     TargetType="Image"
+                                                                                     Value="True">
+                                                                            <Setter Property="Source" Value="{StaticResource IconLightOn}" />
+                                                                        </DataTrigger>
+                                                                    </Image.Triggers>
+                                                                </Image>
 
-                                                            <Label Grid.Row="1"
-                                                                   Style="{StaticResource TextBody}"
-                                                                   HorizontalOptions="Center"
-                                                                   Text="{Binding Name}" />
-                                                        </Grid>
-                                                    </Border>
+                                                                <Label Grid.Row="1"
+                                                                       Style="{StaticResource TextBody}"
+                                                                       HorizontalOptions="Center"
+                                                                       Text="{Binding Name}" />
+                                                            </Grid>
+                                                        </Border>
+                                                    </sho:Shadows>
                                                 </sho:DragAndDropView>
                                             </DataTemplate>
                                         </sho:GridLayout.ItemTemplate>
@@ -188,18 +186,16 @@
             </cv:FabMenu>
 
             <!--  Sticky Drag & Drop Switch  -->
-            <Border Margin="0,5,0,0"
-                    Padding="15,8"
-                    HorizontalOptions="Center"
-                    VerticalOptions="Start"
-                    Background="{StaticResource SurfaceBackgroundColor}"
-                    Shadow="{StaticResource ShadowLightOn}"
-                    StrokeShape="RoundRectangle 20"
-                    StrokeThickness="0">
+            <gestures:Border Margin="0,40,0,0"
+                             Padding="15,0"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Start"
+                             Background="{StaticResource SurfaceBackgroundColor}"
+                             Shadow="{StaticResource ShadowLightOn}"
+                             StrokeShape="RoundRectangle 20"
+                             StrokeThickness="0"
+                             TappedCommand="{Binding ToggleDragAndDropCommand}">
                 <HorizontalStackLayout Spacing="10">
-                    <HorizontalStackLayout.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ToggleDragAndDropCommand}" />
-                    </HorizontalStackLayout.GestureRecognizers>
                     <Label Style="{StaticResource TextBody}"
                            VerticalOptions="Center"
                            Text="Drag &amp; Drop" />
@@ -207,7 +203,7 @@
                             IsToggled="{Binding IsDragAndDropEnabled}"
                             OnColor="{StaticResource AccentColor}" />
                 </HorizontalStackLayout>
-            </Border>
+            </gestures:Border>
 
             <tlv:Snackbar IsVisible="{Binding Loader.ShowErrorNotification,
                                               Mode=TwoWay}"

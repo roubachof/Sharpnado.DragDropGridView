@@ -68,6 +68,7 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
 		<PackageReference Include="Mopups" Version="1.3.0" />
 		<PackageReference Include="Prism.DryIoc.Maui" Version="9.0.271-pre" />
+		<PackageReference Include="Sharpnado.Maui.Shadows" Version="2.0.0" />
 		<PackageReference Include="Sharpnado.Maui.TaskLoaderView" Version="2.6.1" />
 		<PackageReference Include="SkiaSharp.Extended.UI.Maui" Version="2.0.0-preview.86" />
 		<PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">

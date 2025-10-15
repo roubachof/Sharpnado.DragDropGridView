@@ -9,6 +9,7 @@
              xmlns:loc="clr-namespace:Mvvm.Flux.Maui.Localization"
              xmlns:styles="clr-namespace:Mvvm.Flux.Maui.Presentation.Styles"
              xmlns:tlv="clr-namespace:Sharpnado.TaskLoaderView;assembly=Sharpnado.Maui.TaskLoaderView"
+             xmlns:xaml="http://prismlibrary.com"
              x:Name="Root"
              Title="{Binding Title}"
              Padding="0"
@@ -37,7 +38,7 @@
               ColumnSpacing="10"
               IgnoreSafeArea="True">
             <Grid.RowDefinitions>
-                <RowDefinition Height="{Binding Source={x:Reference Root}, Path=Height, Converter={converters:TopSafeAreaToGridLengthConverter}, ConverterParameter={StaticResource HeightToolbar}}" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="3*" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
@@ -108,14 +109,14 @@
                     IsVisible="{Binding Loader.IsSuccessfullyCompleted}"
                     Text="Action Two" />
 
-            <customViews:Toolbar x:Name="Toolbar"
-                                 Title="{Binding Title}"
+            <customViews:Toolbar Title="{Binding Title}"
                                  Grid.Row="0"
                                  Grid.ColumnSpan="2"
+                                 BackTapCommand="{Binding GoBackCommand}"
                                  BackgroundColor="{StaticResource PrimaryColor}"
                                  ForegroundColor="{StaticResource TextPrimaryColor}"
                                  ShowBackButton="True"
-                                 UseSafeAreaMargin="False">
+                                 UseSafeAreaMargin="True">
                 <Button Style="{StaticResource ButtonWhiteTransparent}"
                         HorizontalOptions="End"
                         VerticalOptions="Center"

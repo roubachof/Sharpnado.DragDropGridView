@@ -3,8 +3,8 @@
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:converters="clr-namespace:Mvvm.Flux.Maui.Presentation.Converters"
+             xmlns:gestures="clr-namespace:MR.Gestures;assembly=MR.Gestures"
              xmlns:sho="http://sharpnado.com"
-             xmlns:xaml="http://prismlibrary.com"
              x:Name="RootLayout">
     <ContentView.Resources>
         <ResourceDictionary>
@@ -26,6 +26,7 @@
     </ContentView.Resources>
     <ContentView.Content>
         <Grid x:Name="Grid"
+              Padding="0,0,0,16"
               ColumnSpacing="0"
               RowSpacing="0">
             <Grid.RowDefinitions>
@@ -50,20 +51,16 @@
                      BackgroundColor="{Binding Source={x:Reference RootLayout},
                                                Path=BackgroundColor}" />
 
-            <ContentView x:Name="BackButton"
-                         Grid.Row="1"
-                         Grid.Column="0"
-                         IsVisible="{Binding Source={x:Reference RootLayout},
-                                             Path=ShowBackButton}">
+            <gestures:ContentView x:Name="BackButton"
+                                  Grid.Row="1"
+                                  Grid.Column="0"
+                                  IsVisible="{Binding Source={x:Reference RootLayout},
+                                                      Path=ShowBackButton}">
                 <Image Style="{StaticResource ImageSmallLarge}"
                        sho:ImageEffect.TintColor="{Binding Source={x:Reference RootLayout},
                                                            Path=ForegroundColor}"
-                       Source="{StaticResource IconBack}">
-                    <Image.GestureRecognizers>
-                        <!-- <TapGestureRecognizer Command="{xaml:GoBack}" /> -->
-                    </Image.GestureRecognizers>
-                </Image>
-            </ContentView>
+                       Source="{StaticResource IconBack}" />
+            </gestures:ContentView>
 
             <Label x:Name="TitleLabel"
                    Grid.Row="1"

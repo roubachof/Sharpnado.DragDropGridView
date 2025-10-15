@@ -17,6 +17,7 @@ using Mvvm.Flux.Maui.Presentation.Pages.Home;
 using Prism.Ioc;
 using Prism.Navigation;
 using Sharpnado.GridLayout;
+using Sharpnado.Shades;
 using Sharpnado.Tabs;
 using Sharpnado.TaskLoaderView;
 using Sharpnado.Tasks;
@@ -39,6 +40,7 @@ namespace Mvvm.Flux.Maui
                 .UseSkiaSharp()
                 .ConfigureTaskLoader(true, true)
                 .UseSharpnadoTabs(true)
+                .UseSharpnadoShadows(true, true)
                 .UseSharpnadoGridLayout(enableLogging: true, enableDebugLogging: true)
                 .ConfigureFonts(fonts =>
                 {

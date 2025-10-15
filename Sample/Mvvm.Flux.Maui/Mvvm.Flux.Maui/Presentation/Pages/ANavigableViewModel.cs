@@ -1,4 +1,6 @@
-﻿namespace Mvvm.Flux.Maui.Presentation.Pages
+﻿using System.Windows.Input;
+
+namespace Mvvm.Flux.Maui.Presentation.Pages
 {
     public abstract class ANavigableViewModel : BindableBase, IInitialize, INavigationAware, IDestructible
     {
@@ -7,6 +9,12 @@
         protected ANavigableViewModel(INavigationService navigationService)
         {
             NavigationService = navigationService;
+            GoBackCommand = new Command(async () => await NavigationService.GoBackAsync());
+        }
+
+        public ICommand GoBackCommand
+        {
+            get;
         }
 
         public string Title

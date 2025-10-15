@@ -1,8 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
-
+using System.Windows.Input;
 using Mvvm.Flux.Maui.Presentation.Styles;
-
-using Sharpnado.TaskLoaderView;
 
 namespace Mvvm.Flux.Maui.Presentation.CustomViews
 {
@@ -48,7 +46,7 @@ namespace Mvvm.Flux.Maui.Presentation.CustomViews
 
         public static readonly BindableProperty BackTapCommandProperty = BindableProperty.Create(
             nameof(BackTapCommand),
-            typeof(TaskLoaderCommand),
+            typeof(ICommand),
             typeof(Toolbar),
             null,
             propertyChanged: BackTapCommandPropertyChanged);
@@ -96,9 +94,9 @@ namespace Mvvm.Flux.Maui.Presentation.CustomViews
             set => SetValue(SubtitleProperty, value);
         }
 
-        public TaskLoaderCommand BackTapCommand
+        public ICommand BackTapCommand
         {
-            get => (TaskLoaderCommand)GetValue(BackTapCommandProperty);
+            get => (ICommand)GetValue(BackTapCommandProperty);
             set => SetValue(BackTapCommandProperty, value);
         }
 
@@ -145,7 +143,7 @@ namespace Mvvm.Flux.Maui.Presentation.CustomViews
             var toolbar = (Toolbar)bindable;
             var tapGestureRecognizer = new TapGestureRecognizer
             {
-                Command = (TaskLoaderCommand)newvalue,
+                Command = (ICommand)newvalue,
             };
 
             toolbar.BackButton.GestureRecognizers.Add(tapGestureRecognizer);

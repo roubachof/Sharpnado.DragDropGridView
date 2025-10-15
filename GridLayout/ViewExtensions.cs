@@ -40,6 +40,36 @@ public static class ViewExtensions
             return output;
         }
 
+        public static bool TryGetFirstChildrenOfType<T>(this Element view, Func<T, bool>? condition, out T? result)
+        {
+            result = default;
+            if (view is ContentPage page)
+            {
+                view = page.Content;
+            }
+
+            if (view is T tview)
+            {
+               result = tview;
+            }
+            else if (view is ContentView contentView)
+            {
+                contentView.Content?.TryGetFirstChildrenOfType(condition, out result);
+            }
+            else if (view is Layout layout)
+            {
+                foreach (var child in layout.Children)
+                {
+                    if (child is Element elementChild)
+                    {
+                        elementChild.TryGetFirstChildrenOfType(condition, out result);
+                    }
+                }
+            }
+
+            return result != null && (condition == null || condition.Invoke(result));
+        }
+
         public static T GetFirstParentOfType<T>(this Element view)
         {
             var output = view;

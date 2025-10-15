@@ -4,6 +4,7 @@ using System.Windows.Input;
 using Sharpnado.Tasks;
 
 using MR.Gestures;
+using ContentView = Microsoft.Maui.Controls.ContentView;
 using ScrollView = Microsoft.Maui.Controls.ScrollView;
 
 namespace Sharpnado.GridLayout;
@@ -211,7 +212,7 @@ public partial class GridLayout
         SubscribeToPanning(gestureAwareControl);
     }
 
-    private void OnLongPressed(object sender, LongPressEventArgs e)
+    private void OnLongPressed(object? sender, LongPressEventArgs e)
     {
         InternalLogger.Debug(Tag, () => "OnLongPressed()");
 
@@ -227,10 +228,10 @@ public partial class GridLayout
 
                 InternalLogger.Debug(Tag, () => "OnLongPressed() => !isDragging");
 
-                var gestureAwareControl = (IGestureAwareControl)sender;
+                var gestureAwareControl = (IGestureAwareControl)sender!;
                 TaskMonitor.Create(((View)gestureAwareControl).ScaleTo(1, 100));
 
-                ((IDragAndDropView)sender).IsDragAndDropping = false;
+                ((IDragAndDropView)sender!).IsDragAndDropping = false;
 
                 UnsubscribeToPanning(gestureAwareControl);
             });
@@ -320,6 +321,11 @@ public partial class GridLayout
         {
             InternalLogger.Debug(Tag, () => $"UpdateRefreshView( disabled: {isDisabled} )");
             ((UntouchableRefreshViewHandler)_refreshView.Handler!).UpdateDisableScrolling(isDisabled);
+        }
+#else
+        if (_scrollView != null)
+        {
+            _scrollView.IsEnabled = !isDisabled;
         }
 #endif
     }

@@ -2,7 +2,8 @@
 <?xaml-comp compile="true" ?>
 
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    xmlns:sh="clr-namespace:Sharpnado.Shades;assembly=Sharpnado.Maui.Shadows">
 
     <Shadow x:Key="ShadowTop"
             Brush="{StaticResource ShadowsColor}"
@@ -43,5 +44,19 @@
             Opacity="1"
             Radius="30"
             Offset="0,0" />
+
+    <sh:SingleShade x:Key="ShadeLightOn"
+                    BlurRadius="10"
+                    Opacity="0.5"
+                    Offset="0,0"
+                    Color="{StaticResource LightBulbHaloColor}" />
+
+    <sh:SingleShade x:Key="ShadeLightBulbHalo"
+                    BlurRadius="30"
+                    Opacity="1"
+                    Offset="0,0"
+                    Color="{StaticResource LightBulbHaloColor}" />
+
+    <sh:ImmutableShades x:Key="ShadowNone" />
 
 </ResourceDictionary>

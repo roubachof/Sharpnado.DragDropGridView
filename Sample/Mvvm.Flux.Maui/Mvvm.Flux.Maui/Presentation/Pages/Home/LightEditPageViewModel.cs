@@ -17,7 +17,7 @@ namespace Mvvm.Flux.Maui.Presentation.Pages.Home
         private int _lightId;
 
         public LightEditPageViewModel(
-            INavigationService navigationService, 
+            INavigationService navigationService,
             ILightService lightService)
             : base(navigationService)
         {
