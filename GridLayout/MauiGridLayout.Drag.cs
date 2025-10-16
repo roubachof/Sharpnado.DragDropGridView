@@ -362,6 +362,10 @@ public partial class GridLayout
 
     private void HandleScrollViewEdges(ScrollView scrollView, View view)
     {
+        const double EdgeZone = 150.0;  // Larger edge detection zone for earlier response
+        const double MaxScrollSpeed = 20.0;  // Maximum pixels per frame
+        const double MinScrollSpeed = 3.0;   // Minimum scroll speed to avoid stalling
+
         var viewScreenCoordinates = view.GetScreenCoordinates<Application>();
         var scrollScreenCoordinates = scrollView.GetScreenCoordinates<Application>();
         var containerScreenCoordinates = this.GetScreenCoordinates<Application>();
@@ -371,36 +375,64 @@ public partial class GridLayout
 
         InternalLogger.DebugIf(VerboseLogging, Tag, () => $"screenHeight: {screenHeight}, viewScreenCoordinates: {viewScreenCoordinates}, scrollScreenCoordinates: {scrollScreenCoordinates}, containerScreenCoordinates: {containerScreenCoordinates}");
 
-        double endScreenY = scrollView.ScrollY + scrollScreenCoordinates.Y + screenHeight;
+        // Calculate scroll viewport boundaries
+        double scrollViewportTop = scrollView.ScrollY + scrollScreenCoordinates.Y;
+        double scrollViewportBottom = scrollView.ScrollY + scrollScreenCoordinates.Y + screenHeight;
 
-        double viewBottom = view.TranslationY + viewScreenCoordinates.Y + view.Height;
+        // Calculate dragged view boundaries
+        double viewTop = view.TranslationY + viewScreenCoordinates.Y;
+        double viewBottom = viewTop + view.Height;
 
-        double exceedingBottom = viewBottom - endScreenY;
-
-        double targetY = scrollView.ScrollY + exceedingBottom;
-
+        // Calculate container boundaries
         double containerBottom = containerScreenCoordinates.Y + Height;
-        double exceedingContainerBottom = containerBottom - endScreenY;
 
-        InternalLogger.DebugIf(VerboseLogging, Tag, () => $"exceedingContainerBottom: {exceedingContainerBottom}");
+        // Calculate distance from edges (negative = inside edge zone)
+        double distanceFromTop = viewTop - scrollViewportTop;
+        double distanceFromBottom = scrollViewportBottom - viewBottom;
 
-        if (exceedingBottom > 0 && exceedingContainerBottom > 0)
+        InternalLogger.DebugIf(VerboseLogging, Tag, () => $"distanceFromTop: {distanceFromTop}, distanceFromBottom: {distanceFromBottom}");
+
+        // Check if we need to scroll up (near top edge)
+        if (distanceFromTop < EdgeZone && scrollView.ScrollY > 0)
         {
-            InternalLogger.DebugIf(VerboseLogging, Tag, () => $"Scrolling to exceeding bottom: {exceedingBottom}, scrollTargetY: {targetY}");
+            // Calculate scroll speed based on distance (closer = faster, with easing)
+            double normalizedDistance = Math.Max(0, distanceFromTop) / EdgeZone; // 0 = at edge, 1 = far from edge
+            double easedDistance = 1.0 - Math.Pow(normalizedDistance, 2); // Quadratic easing
+            double scrollSpeed = MinScrollSpeed + (MaxScrollSpeed - MinScrollSpeed) * easedDistance;
+
+            double targetY = Math.Max(0, scrollView.ScrollY - scrollSpeed);
+            double actualScrollDelta = scrollView.ScrollY - targetY;
+
+            InternalLogger.DebugIf(VerboseLogging, Tag, () => $"Scrolling UP: speed={scrollSpeed:F2}, targetY={targetY:F2}, delta={actualScrollDelta:F2}");
+
+            // Compensate view position for scroll movement to keep it under the finger
+            view.TranslationY += actualScrollDelta;
+
             TaskMonitor.Create(scrollView.ScrollToAsync(0, targetY, false));
         }
-
-        double startScreenY = scrollView.ScrollY + scrollScreenCoordinates.Y;
-        double viewTop = view.TranslationY + viewScreenCoordinates.Y;
-        double exceedingTop = viewTop - startScreenY;
-        double targetYTop = scrollView.ScrollY + exceedingTop;
-
-        InternalLogger.DebugIf(VerboseLogging, Tag, () => $"viewTop: {viewTop}, scrollY: {scrollView.ScrollY}, exceedingTop: {exceedingTop}");
-
-        if (exceedingTop < 10)
+        // Check if we need to scroll down (near bottom edge)
+        else if (distanceFromBottom < EdgeZone && containerBottom > scrollViewportBottom)
         {
-            InternalLogger.DebugIf(VerboseLogging, Tag, () => $"Scrolling to exceeding top: {exceedingTop}, scrollTargetY: {targetYTop}");
-            TaskMonitor.Create(scrollView.ScrollToAsync(0, targetYTop, false));
+            // Calculate scroll speed based on distance (closer = faster, with easing)
+            double normalizedDistance = Math.Max(0, distanceFromBottom) / EdgeZone;
+            double easedDistance = 1.0 - Math.Pow(normalizedDistance, 2); // Quadratic easing
+            double scrollSpeed = MinScrollSpeed + (MaxScrollSpeed - MinScrollSpeed) * easedDistance;
+
+            // Calculate max scroll position: content height minus visible viewport height
+            // This ensures we can scroll enough to show the full last row
+            double scrollViewHeight = scrollView.Height;
+            double contentHeight = Height; // GridLayout's full content height
+            double maxScrollY = Math.Max(0, contentHeight - scrollViewHeight);
+            
+            double targetY = Math.Min(maxScrollY, scrollView.ScrollY + scrollSpeed);
+            double actualScrollDelta = targetY - scrollView.ScrollY;
+
+            InternalLogger.DebugIf(VerboseLogging, Tag, () => $"Scrolling DOWN: speed={scrollSpeed:F2}, targetY={targetY:F2}, maxScrollY={maxScrollY:F2}, delta={actualScrollDelta:F2}");
+
+            // Compensate view position for scroll movement to keep it under the finger
+            view.TranslationY -= actualScrollDelta;
+
+            TaskMonitor.Create(scrollView.ScrollToAsync(0, targetY, false));
         }
     }
 
