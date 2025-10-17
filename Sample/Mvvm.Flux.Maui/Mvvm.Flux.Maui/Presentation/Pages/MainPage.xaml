@@ -13,10 +13,10 @@
              xmlns:sho="http://sharpnado.com"
              x:Name="Root"
              Padding="0"
-             ios:Page.UseSafeArea="False">
+             ios:Page.UseSafeArea="False"
+             x:DataType="pages:MainPageViewModel">
 
-    <Grid x:DataType="pages:MainPageViewModel"
-          IgnoreSafeArea="True">
+    <Grid IgnoreSafeArea="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="{StaticResource HeightBottomBar}" />

@@ -40,8 +40,8 @@ namespace Mvvm.Flux.Maui
                 .UseSkiaSharp()
                 .ConfigureTaskLoader(true, true)
                 .UseSharpnadoTabs(true)
-                .UseSharpnadoShadows(true, true)
-                .UseSharpnadoGridLayout(enableLogging: true, enableDebugLogging: true)
+                .UseSharpnadoShadows(false, false)
+                .UseSharpnadoDragDropGridView(enableLogging: true, enableDebugLogging: true)
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "FontRegular");
@@ -60,8 +60,18 @@ namespace Mvvm.Flux.Maui
                         RegisterNavigation(container);
                     });
 
-                    prism.OnAppStart((_, navigation) => 
-                        navigation.CreateBuilder().AddNavigationPage().AddSegment(nameof(MainPage)).NavigateAsync());
+
+                    prism.CreateWindow(async navigationService =>
+                    {
+                        var navResult =
+                            await navigationService.NavigateAsync(
+                                nameof(NavigationPage) + "/" + nameof(MainPage));
+
+                        if (navResult.Exception != null)
+                        {
+                            log.Error("Error while navigating", navResult.Exception!);
+                        }
+                    });
                 })
                 .Build();
         }
@@ -80,8 +90,6 @@ namespace Mvvm.Flux.Maui
 
         private static void RegisterNavigation(IContainerRegistry containerRegistry)
         {
-            containerRegistry.RegisterForNavigation<NavigationPage>();
-
             containerRegistry.RegisterForNavigation<MainPage, MainPageViewModel>();
             containerRegistry.RegisterForNavigation<LightEditPage, LightEditPageViewModel>();
         }

@@ -3,19 +3,19 @@
 using System.Collections;
 using System.Collections.Specialized;
 
-public partial class GridLayout
+public partial class DragDropGridView
 {
     public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(
         nameof(ItemsSource),
         typeof(IEnumerable),
-        typeof(GridLayout),
+        typeof(DragDropGridView),
         default(IEnumerable),
         propertyChanged: OnItemsSourceChanged);
 
     public static readonly BindableProperty ItemTemplateProperty = BindableProperty.Create(
         nameof(ItemTemplate),
         typeof(DataTemplate),
-        typeof(GridLayout),
+        typeof(DragDropGridView),
         default(DataTemplate),
         propertyChanged: OnItemTemplateChanged);
 
@@ -33,7 +33,7 @@ public partial class GridLayout
 
     private static void OnItemsSourceChanged(BindableObject bindable, object? oldValue, object? newValue)
     {
-        if (bindable is not GridLayout gridLayout)
+        if (bindable is not DragDropGridView gridLayout)
         {
             return;
         }
@@ -69,7 +69,7 @@ public partial class GridLayout
 
     private static void OnItemTemplateChanged(BindableObject bindable, object oldValue, object newValue)
     {
-        if (bindable is not GridLayout gridLayout)
+        if (bindable is not DragDropGridView gridLayout)
         {
             return;
         }

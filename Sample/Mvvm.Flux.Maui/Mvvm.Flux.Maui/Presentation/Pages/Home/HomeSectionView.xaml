@@ -41,7 +41,7 @@
         </ResourceDictionary>
     </ContentView.Resources>
     <ContentView.Content>
-        <Grid IgnoreSafeArea="False">
+        <Grid>
             <tlv:TemplatedTaskLoader ErrorControlTemplate="{StaticResource ErrorViewTemplate}"
                                      LoadingControlTemplate="{StaticResource ActivityIndicatorTemplate}"
                                      TaskLoaderNotifier="{Binding Loader}">
@@ -54,15 +54,15 @@
                                          IsRefreshing="{Binding Loader.ShowRefresher}"
                                          RefreshColor="{StaticResource LightBulbOnColor}">
                                 <ScrollView>
-                                    <sho:GridLayout AnimateTransitions="True"
-                                                    ColumnCount="{Binding GridColumnCount}"
-                                                    ColumnSpacing="0"
-                                                    DragAndDropTrigger="Pan"
-                                                    GridPadding="0"
-                                                    IsDragAndDropEnabled="{Binding IsDragAndDropEnabled}"
-                                                    ItemsSource="{Binding Loader.Result}"
-                                                    RowSpacing="0">
-                                        <sho:GridLayout.HeaderTemplate>
+                                    <sho:DragDropGridView AnimateTransitions="True"
+                                                          ColumnCount="{Binding GridColumnCount}"
+                                                          ColumnSpacing="0"
+                                                          DragAndDropTrigger="LongPress"
+                                                          GridPadding="0"
+                                                          IsDragAndDropEnabled="{Binding IsDragAndDropEnabled}"
+                                                          ItemsSource="{Binding Loader.Result}"
+                                                          RowSpacing="0">
+                                        <sho:DragDropGridView.HeaderTemplate>
                                             <DataTemplate>
                                                 <Grid Padding="15,80,15,0"
                                                       ColumnDefinitions="80,*,60">
@@ -94,7 +94,7 @@
                                                                               Path=ToggleViewModeCommand}"
                                                             FontFamily="FontAwesome"
                                                             FontSize="24"
-                                                            TextColor="{StaticResource AccentColor}">
+                                                            TextColor="{StaticResource LightBulbOnColor}">
                                                         <Button.Triggers>
                                                             <DataTrigger Binding="{Binding Source={RelativeSource AncestorType={x:Type home:HomeSectionViewModel}},
                                                                                            Path=GridColumnCount}"
@@ -112,8 +112,8 @@
                                                     </Button>
                                                 </Grid>
                                             </DataTemplate>
-                                        </sho:GridLayout.HeaderTemplate>
-                                        <sho:GridLayout.ItemTemplate>
+                                        </sho:DragDropGridView.HeaderTemplate>
+                                        <sho:DragDropGridView.ItemTemplate>
                                             <DataTemplate x:DataType="lights:Light">
                                                 <sho:DragAndDropView IsClippedToBounds="False"
                                                                      TappedCommand="{Binding Source={RelativeSource AncestorType={x:Type home:HomeSectionViewModel}},
@@ -154,8 +154,8 @@
                                                     </sho:Shadows>
                                                 </sho:DragAndDropView>
                                             </DataTemplate>
-                                        </sho:GridLayout.ItemTemplate>
-                                    </sho:GridLayout>
+                                        </sho:DragDropGridView.ItemTemplate>
+                                    </sho:DragDropGridView>
                                 </ScrollView>
                             </RefreshView>
                         </ContentView>
@@ -202,7 +202,7 @@
                            Text="Drag &amp; Drop" />
                     <Switch VerticalOptions="Center"
                             IsToggled="{Binding IsDragAndDropEnabled}"
-                            OnColor="{StaticResource AccentColor}"
+                            OnColor="{StaticResource LightBulbOnColor}"
                             Scale="0.6" />
                 </HorizontalStackLayout>
             </gestures:Border>

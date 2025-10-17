@@ -1,6 +1,4 @@
 ﻿using MetroLog;
-using Microsoft.Maui.Controls.PlatformConfiguration;
-using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
 
 namespace Mvvm.Flux.Maui.Presentation.Pages
 {
@@ -11,8 +9,6 @@ namespace Mvvm.Flux.Maui.Presentation.Pages
         public MainPage()
         {
             InitializeComponent();
-
-            On<iOS>().SetUseSafeArea(false);
         }
 
         protected override void OnAppearing()

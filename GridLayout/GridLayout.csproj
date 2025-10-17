@@ -15,17 +15,17 @@
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
     <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 
-    <AssemblyName>Sharpnado.Maui.GridLayout</AssemblyName>
+    <AssemblyName>Sharpnado.Maui.DragDropGridView</AssemblyName>
     <RootNamespace>Sharpnado.GridLayout</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <LangVersion>latest</LangVersion>
     
     <Version>1.0.0</Version>
     <Authors>Jean-Marie Alfonsi</Authors>
-    <Description>Sharpnado.GridLayout is a high-performance .NET MAUI layout control with automatic grid arrangement, adaptive item sizing, and drag-and-drop reordering. Features include ItemsSource/DataTemplate binding, automatic column calculation, configurable spacing and padding, responsive orientation handling, and smooth drag-and-drop with visual feedback. Pure cross-platform implementation with no platform-specific code. Perfect for building draggable tile grids, reorderable galleries, and adaptive collections.</Description>
+    <Description>Sharpnado.DragDropGridView is a high-performance .NET MAUI control with automatic grid arrangement, adaptive item sizing, and drag-and-drop reordering. Features include ItemsSource/DataTemplate binding, automatic column calculation, configurable spacing and padding, responsive orientation handling, and smooth drag-and-drop with visual feedback. Pure cross-platform implementation with no platform-specific code. Perfect for building draggable tile grids, reorderable galleries, and adaptive collections.</Description>
     <PackageProjectUrl>https://github.com/roubachof/Sharpnado.GridLayout</PackageProjectUrl>
     <RepositoryUrl>https://github.com/roubachof/Sharpnado.GridLayout</RepositoryUrl>
-    <PackageTags>maui;android;ios;windows;maccatalyst;grid;layout;drag-and-drop;reorder;itemssource;datatemplate;adaptive;responsive</PackageTags>
+    <PackageTags>maui;android;ios;windows;maccatalyst;grid;dragdrop;drag-and-drop;reorder;itemssource;datatemplate;adaptive;responsive</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>gridlayout.png</PackageIcon>
     <PackageReadmeFile>PACKAGE_README.md</PackageReadmeFile>
@@ -54,7 +54,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.110" />
-    <PackageReference Include="MR.Gestures" Version="5.0.0" />
     <PackageReference Include="Sharpnado.TaskMonitor" Version="1.1.0" />
   </ItemGroup>
 
@@ -67,6 +66,9 @@
     <Compile Update="Platforms\Android\UntouchableRefreshviewHandler.cs">
       <ExcludeFromCurrentConfiguration>true</ExcludeFromCurrentConfiguration>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\_ThirdParties_\MR.Gestures\MR.Gestures\MR.Gestures.csproj" />
   </ItemGroup>
 
 </Project>

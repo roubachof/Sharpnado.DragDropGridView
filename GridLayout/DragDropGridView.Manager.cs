@@ -4,18 +4,18 @@ using Microsoft.Maui.Layouts;
 
 using static Double;
 
-public partial class GridLayout
+public partial class DragDropGridView
 {
-    protected class GridLayoutManager : LayoutManager
+    protected class DragDropGridViewManager : LayoutManager
     {
-        private const string Tag = nameof(GridLayoutManager);
+        private const string Tag = nameof(DragDropGridViewManager);
 
-        public GridLayoutManager(GridLayout gridLayout)
-            : base(gridLayout)
+        public DragDropGridViewManager(DragDropGridView dragDropGridView)
+            : base(dragDropGridView)
         {
         }
 
-        private GridLayout GridLayout => (GridLayout)Layout;
+        private DragDropGridView DragDropGridView => (DragDropGridView)Layout;
 
         private readonly struct LayoutData(int visibleChildCount, Size cellSize, int rows, int columns)
         {
@@ -38,9 +38,9 @@ public partial class GridLayout
             var headerHeight = 0.0;
             
             // Measure header if present
-            if (GridLayout._headerView is VisualElement headerElement && headerElement.IsVisible)
+            if (DragDropGridView._headerView is VisualElement headerElement && headerElement.IsVisible)
             {
-                var headerSize = GridLayout._headerView.Measure(widthConstraint, heightConstraint);
+                var headerSize = DragDropGridView._headerView.Measure(widthConstraint, heightConstraint);
                 headerHeight = headerSize.Height;
             }
 
@@ -52,13 +52,13 @@ public partial class GridLayout
             }
 
             var computedWidth = (layoutData.CellSize.Width * layoutData.Columns) +
-                                (GridLayout.ColumnSpacing * (layoutData.Columns - 1)) +
-                                GridLayout.GridPadding.HorizontalThickness;
+                                (DragDropGridView.ColumnSpacing * (layoutData.Columns - 1)) +
+                                DragDropGridView.GridPadding.HorizontalThickness;
 
             var computedHeight = headerHeight +
                                  (layoutData.CellSize.Height * layoutData.Rows) +
-                                 (GridLayout.RowSpacing * (layoutData.Rows - 1)) +
-                                 GridLayout.GridPadding.VerticalThickness;
+                                 (DragDropGridView.RowSpacing * (layoutData.Rows - 1)) +
+                                 DragDropGridView.GridPadding.VerticalThickness;
 
             var finalWidth = ResolveConstraints(
                 widthConstraint,
@@ -83,22 +83,22 @@ public partial class GridLayout
             var headerHeight = 0.0;
             
             // Arrange header if present
-            if (GridLayout._headerView is VisualElement headerElement && headerElement.IsVisible)
+            if (DragDropGridView._headerView is VisualElement headerElement && headerElement.IsVisible)
             {
-                var headerSize = GridLayout._headerView.Measure(bounds.Width, bounds.Height);
+                var headerSize = DragDropGridView._headerView.Measure(bounds.Width, bounds.Height);
                 var headerBounds = new Rect(bounds.X, bounds.Y, bounds.Width, headerSize.Height);
-                GridLayout._headerView.Arrange(headerBounds);
+                DragDropGridView._headerView.Arrange(headerBounds);
                 headerHeight = headerSize.Height;
             }
 
             var layoutData = GetLayoutData(bounds.Width, bounds.Height - headerHeight);
 
-            var padding = GridLayout.GridPadding;
+            var padding = DragDropGridView.GridPadding;
             var cellSize = layoutData.CellSize;
             var width = bounds.Width - padding.HorizontalThickness;
             var height = bounds.Height - padding.VerticalThickness - headerHeight;
 
-            if (!GridLayout._shouldInvalidate)
+            if (!DragDropGridView._shouldInvalidate)
             {
                 InternalLogger.Debug(Tag, "!shouldInvalidate => skipping arrange children");
                 return new Size(width, height);
@@ -113,16 +113,16 @@ public partial class GridLayout
             var yChild = bounds.Y + headerHeight + padding.Top;
             var column = 0;
 
-            InternalLogger.Debug(Tag, $"{nameof(ArrangeChildren)}(): Number of children => {GridLayout._orderedChildren.Count}");
+            InternalLogger.Debug(Tag, $"{nameof(ArrangeChildren)}(): Number of children => {DragDropGridView._orderedChildren.Count}");
 
-            foreach (var child in GridLayout._orderedChildren)
+            foreach (var child in DragDropGridView._orderedChildren)
             {
                 if (child.Visibility == Visibility.Collapsed)
                 {
                     continue;
                 }
 
-                if (child != GridLayout._draggingView)
+                if (child != DragDropGridView._draggingView)
                 {
                     ((View)child).TranslationX = 0;
                     ((View)child).TranslationY = 0;
@@ -136,11 +136,11 @@ public partial class GridLayout
                 {
                     column = 0;
                     xChild = bounds.X + padding.Left;
-                    yChild += GridLayout.RowSpacing + cellSize.Height;
+                    yChild += DragDropGridView.RowSpacing + cellSize.Height;
                 }
                 else
                 {
-                    xChild += GridLayout.ColumnSpacing + cellSize.Width;
+                    xChild += DragDropGridView.ColumnSpacing + cellSize.Width;
                 }
             }
 
@@ -149,10 +149,10 @@ public partial class GridLayout
 
         private LayoutData GetLayoutData(double width, double height)
         {
-            width -= GridLayout.GridPadding.HorizontalThickness;
-            height -= GridLayout.GridPadding.VerticalThickness;
+            width -= DragDropGridView.GridPadding.HorizontalThickness;
+            height -= DragDropGridView.GridPadding.VerticalThickness;
 
-            if (GridLayout._orderedChildren.Count == 0)
+            if (DragDropGridView._orderedChildren.Count == 0)
             {
                 return default;
             }
@@ -161,9 +161,9 @@ public partial class GridLayout
             Size maxChildSize = default;
             LayoutData layoutData = default;
 
-            InternalLogger.Debug(Tag, $"{nameof(GetLayoutData)}(): Number of children => {GridLayout._orderedChildren.Count}");
+            InternalLogger.Debug(Tag, $"{nameof(GetLayoutData)}(): Number of children => {DragDropGridView._orderedChildren.Count}");
 
-            foreach (var child in GridLayout._orderedChildren)
+            foreach (var child in DragDropGridView._orderedChildren)
             {
                 if (child.Visibility == Visibility.Collapsed)
                 {
@@ -185,9 +185,9 @@ public partial class GridLayout
                 if (IsPositiveInfinity(width))
                 {
                     // Use the explicitly set ColumnCount if available
-                    if (GridLayout.ColumnCount > 0)
+                    if (DragDropGridView.ColumnCount > 0)
                     {
-                        columns = GridLayout.ColumnCount;
+                        columns = DragDropGridView.ColumnCount;
                         rows = (visibleChildCount + columns - 1) / columns;
                     }
                     else
@@ -199,13 +199,13 @@ public partial class GridLayout
                 else
                 {
                     // If ColumnCount is explicitly set, use it; otherwise calculate based on width
-                    if (GridLayout.ColumnCount > 0)
+                    if (DragDropGridView.ColumnCount > 0)
                     {
-                        columns = GridLayout.ColumnCount;
+                        columns = DragDropGridView.ColumnCount;
                     }
                     else
                     {
-                        columns = (int)((width + GridLayout.ColumnSpacing) / (maxChildSize.Width + GridLayout.ColumnSpacing));
+                        columns = (int)((width + DragDropGridView.ColumnSpacing) / (maxChildSize.Width + DragDropGridView.ColumnSpacing));
                         columns = Math.Max(1, columns);
                     }
                     rows = (visibleChildCount + columns - 1) / columns;
@@ -214,28 +214,28 @@ public partial class GridLayout
                 // Now maximize the cell size based on the layout size.
                 Size cellSize = default;
 
-                if (IsPositiveInfinity(width) || !GridLayout.AdaptItemWidth)
+                if (IsPositiveInfinity(width) || !DragDropGridView.AdaptItemWidth)
                 {
                     cellSize.Width = maxChildSize.Width;
                 }
                 else
                 {
-                    cellSize.Width = (width - (GridLayout.ColumnSpacing * (columns - 1))) / columns;
+                    cellSize.Width = (width - (DragDropGridView.ColumnSpacing * (columns - 1))) / columns;
                 }
 
-                if (IsPositiveInfinity(height) || !GridLayout.AdaptItemHeight)
+                if (IsPositiveInfinity(height) || !DragDropGridView.AdaptItemHeight)
                 {
                     cellSize.Height = maxChildSize.Height;
                 }
                 else
                 {
-                    cellSize.Height = (height - (GridLayout.RowSpacing * (rows - 1))) / rows;
+                    cellSize.Height = (height - (DragDropGridView.RowSpacing * (rows - 1))) / rows;
                 }
 
                 layoutData = new LayoutData(visibleChildCount, cellSize, rows, columns);
             }
 
-            GridLayout.ColumnCount = layoutData.Columns;
+            DragDropGridView.ColumnCount = layoutData.Columns;
 
             return layoutData;
         }

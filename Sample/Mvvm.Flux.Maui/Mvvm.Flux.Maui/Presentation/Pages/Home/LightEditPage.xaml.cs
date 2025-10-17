@@ -1,18 +1,10 @@
-﻿using Microsoft.Maui.Controls.PlatformConfiguration;
-using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
+﻿namespace Mvvm.Flux.Maui.Presentation.Pages.Home;
 
-using Mvvm.Flux.Maui.Infrastructure;
-
-namespace Mvvm.Flux.Maui.Presentation.Pages.Home
+public partial class LightEditPage : ContentPage
 {
-    [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class LightEditPage : ContentPage
+    public LightEditPage()
     {
-        public LightEditPage()
-        {
-            InitializeComponent();
-
-            On<iOS>().SetUseSafeArea(false);
-        }
+        NavigationPage.SetHasNavigationBar(this, false);
+        InitializeComponent();
     }
 }

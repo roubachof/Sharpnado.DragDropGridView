@@ -14,22 +14,22 @@ public enum DragAndDropTrigger
     LongPress,
 }
 
-public partial class GridLayout
+public partial class DragDropGridView
 {
     public static readonly BindableProperty DragAndDropTriggerProperty = BindableProperty.Create(
         nameof(DragAndDropTrigger),
         typeof(DragAndDropTrigger),
-        typeof(GridLayout),
+        typeof(DragDropGridView),
         DragAndDropTrigger.Pan);
 
     public static readonly BindableProperty IsDragAndDropEnabledProperty = BindableProperty.Create(
         nameof(IsDragAndDropEnabled),
         typeof(bool),
-        typeof(GridLayout),
+        typeof(DragDropGridView),
         false,
         propertyChanged: (bindable, _, newValue) =>
         {
-            var gridLayout = (GridLayout)bindable;
+            var gridLayout = (DragDropGridView)bindable;
             var isEnabled = (bool)newValue;
 
             gridLayout.UpdateIsDragAndDropEnabled(isEnabled);
@@ -38,7 +38,7 @@ public partial class GridLayout
     public static readonly BindableProperty OnItemsReorderedCommandProperty = BindableProperty.Create(
         nameof(OnItemsReorderedCommand),
         typeof(ICommand),
-        typeof(GridLayout),
+        typeof(DragDropGridView),
         null);
 
     private readonly List<IView> _orderedChildren = [];
@@ -236,19 +236,21 @@ public partial class GridLayout
 
     private void OnLongPressed(object? sender, LongPressEventArgs e)
     {
-        InternalLogger.Debug(Tag, () => "OnLongPressed()");
+        InternalLogger.Debug(Tag, () => "ZOBI OnLongPressed()");
 
+        return;
         TaskMonitor.Create(
             async () =>
             {
                 // Need a little delay: sometimes long pressed event occurs just before panning
-                await Task.Delay(50);
+                await Task.Delay(400);
                 if (_isDragging)
                 {
+                    InternalLogger.Debug(Tag, () => "It is dragging => discard long pressed");
                     return;
                 }
 
-                InternalLogger.Debug(Tag, () => "OnLongPressed() => !isDragging");
+                InternalLogger.Debug(Tag, () => "OnLongPressed() => !mabisDragging");
 
                 var gestureAwareControl = (IGestureAwareControl)sender!;
                 TaskMonitor.Create(((View)gestureAwareControl).ScaleTo(1, 100));

@@ -7,7 +7,6 @@
 
     <Style ApplyToDerivedTypes="True"
            TargetType="ContentPage">
-        <Setter Property="Padding" Value="0" />
         <Setter Property="BackgroundColor" Value="{StaticResource BackgroundColor}" />
         <Setter Property="NavigationPage.HasNavigationBar" Value="False" />
     </Style>

@@ -2,23 +2,24 @@
 
 using Microsoft.Maui.Layouts;
 
-public partial class GridLayout : Layout
+public partial class DragDropGridView : Layout
 {
     public static readonly BindableProperty ColumnCountProperty = BindableProperty.Create(
         nameof(ColumnCount),
         typeof(int),
-        typeof(GridLayout),
+        typeof(DragDropGridView),
         2,
         BindingMode.TwoWay,
         propertyChanged: (bindable, oldValue, newValue) =>
         {
-            var gridLayout = (GridLayout)bindable;
+            var gridLayout = (DragDropGridView)bindable;
             InternalLogger.Info(Tag, $"ColumnCount changed from {oldValue} to {newValue}");
             
             // Only animate if this is a real change (not initial setup)
             if ((int)oldValue != 0 && (int)oldValue != (int)newValue)
             {
                 gridLayout.AnimateLayoutChange();
+                return;
             }
             
             // Force invalidation by temporarily setting _shouldInvalidate to true
@@ -31,60 +32,60 @@ public partial class GridLayout : Layout
     public static readonly BindableProperty GridPaddingProperty = BindableProperty.Create(
         nameof(GridPadding),
         typeof(Thickness),
-        typeof(GridLayout),
+        typeof(DragDropGridView),
         default(Thickness),
         propertyChanged: (bindable, _, _) =>
             {
-                ((GridLayout)bindable).InvalidateMeasure();
+                ((DragDropGridView)bindable).InvalidateMeasure();
             });
 
     public static readonly BindableProperty ColumnSpacingProperty = BindableProperty.Create(
         nameof(ColumnSpacing),
         typeof(double),
-        typeof(GridLayout),
+        typeof(DragDropGridView),
         5.0,
         propertyChanged: (bindable, _, _) =>
             {
-                ((GridLayout)bindable).InvalidateMeasure();
+                ((DragDropGridView)bindable).InvalidateMeasure();
             });
 
     public static readonly BindableProperty RowSpacingProperty = BindableProperty.Create(
         nameof(RowSpacing),
         typeof(double),
-        typeof(GridLayout),
+        typeof(DragDropGridView),
         5.0,
         propertyChanged: (bindable, _, _) =>
             {
-                ((GridLayout)bindable).InvalidateMeasure();
+                ((DragDropGridView)bindable).InvalidateMeasure();
             });
 
     public static readonly BindableProperty HeaderProperty = BindableProperty.Create(
         nameof(Header),
         typeof(object),
-        typeof(GridLayout),
+        typeof(DragDropGridView),
         null,
         propertyChanged: OnHeaderChanged);
 
     public static readonly BindableProperty HeaderTemplateProperty = BindableProperty.Create(
         nameof(HeaderTemplate),
         typeof(DataTemplate),
-        typeof(GridLayout),
+        typeof(DragDropGridView),
         null,
         propertyChanged: OnHeaderTemplateChanged);
 
     public static readonly BindableProperty AnimateTransitionsProperty = BindableProperty.Create(
         nameof(AnimateTransitions),
         typeof(bool),
-        typeof(GridLayout),
+        typeof(DragDropGridView),
         true);
 
-    private const string Tag = nameof(GridLayout);
+    private const string Tag = nameof(DragDropGridView);
 
     private View? _headerView;
 
     private DisplayOrientation _currentOrientation;
 
-    public GridLayout()
+    public DragDropGridView()
     {
 
         _currentOrientation = DeviceDisplay.MainDisplayInfo.Orientation;
@@ -139,7 +140,7 @@ public partial class GridLayout : Layout
         set => SetValue(AnimateTransitionsProperty, value);
     }
 
-    protected GridLayoutManager? LayoutManager => _layoutManager as GridLayoutManager;
+    protected DragDropGridViewManager? LayoutManager => _layoutManager as DragDropGridViewManager;
 
     /// <summary>
     /// Clears all children.
@@ -157,7 +158,7 @@ public partial class GridLayout : Layout
 
     protected override ILayoutManager CreateLayoutManager()
     {
-        return new GridLayoutManager(this);
+        return new DragDropGridViewManager(this);
     }
 
     private void MainDisplayInfoChanged(object? sender, DisplayInfoChangedEventArgs e)
@@ -171,7 +172,7 @@ public partial class GridLayout : Layout
 
     private void OnLoaded(object? sender, EventArgs e)
     {
-        InternalLogger.Debug(Tag, ">>>> GridLayout Loaded");
+        InternalLogger.Debug(Tag, ">>>> DragDropGridView Loaded");
         MainDisplayInfoChanged(this, new DisplayInfoChangedEventArgs(DeviceDisplay.MainDisplayInfo));
         DeviceDisplay.MainDisplayInfoChanged += MainDisplayInfoChanged;
         InitializeDragAndDrop();
@@ -179,7 +180,7 @@ public partial class GridLayout : Layout
 
     private void OnUnloaded(object? sender, EventArgs args)
     {
-        InternalLogger.Debug(Tag, "GridLayout Unloaded <<<<");
+        InternalLogger.Debug(Tag, "DragDropGridView Unloaded <<<<");
         DeviceDisplay.MainDisplayInfoChanged -= MainDisplayInfoChanged;
         ClearDragAndDrop();
     }
@@ -188,7 +189,7 @@ public partial class GridLayout : Layout
     {
         if (!_shouldInvalidate)
         {
-            InternalLogger.Debug(Tag, "GridLayout skipping InvalidateMeasure!");
+            InternalLogger.Debug(Tag, "DragDropGridView skipping InvalidateMeasure!");
             return;
         }
 
@@ -208,7 +209,7 @@ public partial class GridLayout : Layout
 
     private static void OnHeaderChanged(BindableObject bindable, object oldValue, object newValue)
     {
-        if (bindable is GridLayout gridLayout)
+        if (bindable is DragDropGridView gridLayout)
         {
             gridLayout.UpdateHeader();
         }
@@ -216,7 +217,7 @@ public partial class GridLayout : Layout
 
     private static void OnHeaderTemplateChanged(BindableObject bindable, object oldValue, object newValue)
     {
-        if (bindable is GridLayout gridLayout)
+        if (bindable is DragDropGridView gridLayout)
         {
             gridLayout.UpdateHeader();
         }
@@ -301,6 +302,7 @@ public partial class GridLayout : Layout
 
             // Store current bounds
             childrenInfo[view] = view.Bounds;
+            ((View)child).Opacity = 0;
         }
 
         // Trigger layout update
@@ -311,52 +313,59 @@ public partial class GridLayout : Layout
         {
             // Wait for layout to update
             await Task.Delay(16); // One frame
-
-            // Animate each child from old position to new position
-            var tasks = new List<Task>();
-            
-            foreach (var kvp in childrenInfo)
+            _shouldInvalidate = false;
+            try
             {
-                var view = kvp.Key;
-                var oldBounds = kvp.Value;
-                var newBounds = view.Bounds;
+                // Animate each child from old position to new position
+                var tasks = new List<Task>();
 
-                // Skip if view was removed or bounds didn't change significantly
-                if (!_orderedChildren.Contains(view) || 
-                    (Math.Abs(oldBounds.X - newBounds.X) < 1 && 
-                     Math.Abs(oldBounds.Y - newBounds.Y) < 1 &&
-                     Math.Abs(oldBounds.Width - newBounds.Width) < 1 &&
-                     Math.Abs(oldBounds.Height - newBounds.Height) < 1))
+                foreach (var kvp in childrenInfo)
                 {
-                    continue;
+                    var view = kvp.Key;
+                    var oldBounds = kvp.Value;
+                    var newBounds = view.Bounds;
+
+                    // Skip if view was removed or bounds didn't change significantly
+                    if (!_orderedChildren.Contains(view) ||
+                        (Math.Abs(oldBounds.X - newBounds.X) < 1 &&
+                         Math.Abs(oldBounds.Y - newBounds.Y) < 1 &&
+                         Math.Abs(oldBounds.Width - newBounds.Width) < 1 &&
+                         Math.Abs(oldBounds.Height - newBounds.Height) < 1))
+                    {
+                        continue;
+                    }
+
+                    // Reset any previous animation properties to avoid cumulative effects
+                    view.ScaleX = 1.0;
+                    view.ScaleY = 1.0;
+                    view.Scale = 1.0;
+
+                    // Calculate translation to move from old position to new position
+                    var deltaX = oldBounds.X - newBounds.X;
+                    var deltaY = oldBounds.Y - newBounds.Y;
+
+                    // Set initial state (at old position)
+                    view.TranslationX = deltaX;
+                    view.TranslationY = deltaY;
+                    view.Opacity = 0.8;
+
+                    // Animate to new position
+                    var animationTask = Task.WhenAll(
+                        view.TranslateTo(0, 0, 300, Easing.CubicOut),
+                        view.FadeTo(1.0, 200, Easing.SinOut)
+                    );
+
+                    tasks.Add(animationTask);
                 }
 
-                // Reset any previous animation properties to avoid cumulative effects
-                view.ScaleX = 1.0;
-                view.ScaleY = 1.0;
-                view.Scale = 1.0;
-
-                // Calculate translation to move from old position to new position
-                var deltaX = oldBounds.X - newBounds.X;
-                var deltaY = oldBounds.Y - newBounds.Y;
-
-                // Set initial state (at old position)
-                view.TranslationX = deltaX;
-                view.TranslationY = deltaY;
-                view.Opacity = 0.8;
-
-                // Animate to new position
-                var animationTask = Task.WhenAll(
-                    view.TranslateTo(0, 0, 300, Easing.CubicOut),
-                    view.FadeTo(1.0, 200, Easing.SinOut)
-                );
-
-                tasks.Add(animationTask);
+                if (tasks.Count > 0)
+                {
+                    await Task.WhenAll(tasks);
+                }
             }
-
-            if (tasks.Count > 0)
+            finally
             {
-                await Task.WhenAll(tasks);
+                _shouldInvalidate = true;
             }
         });
     }

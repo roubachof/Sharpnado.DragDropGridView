@@ -47,6 +47,7 @@
             </Grid.ColumnDefinitions>
 
             <BoxView Grid.Row="0"
+                     Grid.RowSpan="3"
                      Grid.ColumnSpan="3"
                      BackgroundColor="{Binding Source={x:Reference RootLayout},
                                                Path=BackgroundColor}" />

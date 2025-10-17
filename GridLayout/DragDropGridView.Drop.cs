@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using Tasks;
 
-public partial class GridLayout
+public partial class DragDropGridView
 {
     private const bool VerboseLogging = false;
 

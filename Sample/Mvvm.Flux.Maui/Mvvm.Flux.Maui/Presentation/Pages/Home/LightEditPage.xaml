@@ -9,10 +9,8 @@
              xmlns:loc="clr-namespace:Mvvm.Flux.Maui.Localization"
              xmlns:styles="clr-namespace:Mvvm.Flux.Maui.Presentation.Styles"
              xmlns:tlv="clr-namespace:Sharpnado.TaskLoaderView;assembly=Sharpnado.Maui.TaskLoaderView"
-             xmlns:xaml="http://prismlibrary.com"
              x:Name="Root"
              Title="{Binding Title}"
-             Padding="0"
              ios:Page.UseSafeArea="False"
              x:DataType="home:LightEditPageViewModel">
     <ContentPage.Resources>
@@ -35,8 +33,7 @@
     </ContentPage.Resources>
     <ContentPage.Content>
         <Grid ColumnDefinitions="*,*"
-              ColumnSpacing="10"
-              IgnoreSafeArea="True">
+              ColumnSpacing="10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="3*" />
