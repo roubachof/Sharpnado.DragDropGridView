@@ -74,7 +74,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\_ThirdParties_\MR.Gestures\MR.Gestures\MR.Gestures.csproj" />
+    <ProjectReference Include="..\_ThirdParties_\MR.Gestures\MR.Gestures\MR.Gestures.csproj" />
   </ItemGroup>
 
 </Project>
