@@ -51,7 +51,13 @@
       * MacCatalyst 15.0+
     </PackageReleaseNotes>
   </PropertyGroup>
-
+    
+    <!-- Both iOS and Mac Catalyst -->
+    <ItemGroup Condition="$(TargetFramework.StartsWith('net9.0-ios')) != true AND $(TargetFramework.StartsWith('net9.0-maccatalyst')) != true">
+        <Compile Remove="**\*.MaciOS.cs" />
+        <None Include="**\*.MaciOS.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+    </ItemGroup>
+    
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.110" />
     <PackageReference Include="Sharpnado.TaskMonitor" Version="1.1.0" />

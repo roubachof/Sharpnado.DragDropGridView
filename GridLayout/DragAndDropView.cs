@@ -2,16 +2,14 @@ namespace Sharpnado.GridLayout;
 
 /// <summary>
 /// A lightweight, headless wrapper view that implements IDragAndDropView.
-/// This allows any content to be draggable without adding visual nesting overhead.
-/// Use CompressedLayout.IsHeadless="True" in XAML for zero layout impact.
 /// </summary>
-public class DragAndDropView : MR.Gestures.ContentView, IDragAndDropView
+public partial class DragAndDropView : MR.Gestures.ContentView, IDragAndDropView
 {
     public static readonly BindableProperty CanReceiveViewProperty = BindableProperty.Create(
         nameof(CanReceiveView),
         typeof(bool),
         typeof(DragAndDropView),
-        true);
+        false);
 
     public static readonly BindableProperty CanBeDroppedProperty = BindableProperty.Create(
         nameof(CanBeDropped),

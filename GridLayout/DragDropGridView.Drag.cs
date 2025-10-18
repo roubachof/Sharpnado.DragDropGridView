@@ -4,6 +4,7 @@ using System.Windows.Input;
 using Sharpnado.Tasks;
 
 using MR.Gestures;
+
 using ScrollView = Microsoft.Maui.Controls.ScrollView;
 
 namespace Sharpnado.GridLayout;
@@ -49,6 +50,11 @@ public partial class DragDropGridView
     private RefreshView? _refreshView;
 
     private bool _isDragging;
+
+#if IOS || MACCATALYST
+    // iOS/MacCatalyst: track long-press lifecycle to avoid cancelling recognizers mid-gesture
+    private bool _isLongPressActive;
+#endif
 
     private View? _draggingView;
 
@@ -190,6 +196,10 @@ public partial class DragDropGridView
 
         if (DragAndDropTrigger == DragAndDropTrigger.LongPress)
         {
+#if IOS || MACCATALYST
+            // Always keep panning subscribed so iOS doesn't rebuild gesture recognizers mid-gesture
+            SubscribeToPanning(gestureAwareControl);
+#endif
             gestureAwareControl.LongPressed -= OnLongPressed;
             gestureAwareControl.LongPressing -= OnLongPressing;
 
@@ -226,38 +236,50 @@ public partial class DragDropGridView
 
         var gestureAwareControl = (IGestureAwareControl)sender!;
 
+#if IOS || MACCATALYST
+        _isLongPressActive = true;
+#endif
         TaskMonitor.Create(((View)gestureAwareControl).ScaleTo(1.05, 100));
         ((IDragAndDropView)sender!).IsDragAndDropping = true;
 
         UpdateDisableScrollView(true);
 
+#if !(IOS || MACCATALYST)
+        // On Android/Windows we subscribe panning when long-press starts
         SubscribeToPanning(gestureAwareControl);
+#endif
     }
 
     private void OnLongPressed(object? sender, LongPressEventArgs e)
     {
-        InternalLogger.Debug(Tag, () => "ZOBI OnLongPressed()");
+        InternalLogger.Debug(Tag, () => "OnLongPressed()");
 
-        return;
         TaskMonitor.Create(
             async () =>
             {
                 // Need a little delay: sometimes long pressed event occurs just before panning
-                await Task.Delay(400);
+                await Task.Delay(50);
+
+#if IOS || MACCATALYST
+                _isLongPressActive = false;
+#endif
+
                 if (_isDragging)
                 {
                     InternalLogger.Debug(Tag, () => "It is dragging => discard long pressed");
                     return;
                 }
 
-                InternalLogger.Debug(Tag, () => "OnLongPressed() => !mabisDragging");
+                InternalLogger.Debug(Tag, () => "OnLongPressed() => !isDragging");
 
                 var gestureAwareControl = (IGestureAwareControl)sender!;
                 TaskMonitor.Create(((View)gestureAwareControl).ScaleTo(1, 100));
 
                 ((IDragAndDropView)sender!).IsDragAndDropping = false;
                 UpdateDisableScrollView(false);
+#if !(IOS || MACCATALYST)
                 UnsubscribeToPanning(gestureAwareControl);
+#endif
             });
     }
 
@@ -283,6 +305,13 @@ public partial class DragDropGridView
         InternalLogger.Debug(Tag, () => "OnPanning");
         var view = (View)sender;
 
+#if IOS || MACCATALYST
+        // In LongPress mode on iOS/Mac, only process panning while long-press is active
+        if (DragAndDropTrigger == DragAndDropTrigger.LongPress && !_isLongPressActive)
+        {
+            return;
+        }
+#endif
         if (!_isDragging)
         {
             StartDraggingSession(view);
@@ -318,7 +347,16 @@ public partial class DragDropGridView
         if (DragAndDropTrigger == DragAndDropTrigger.LongPress)
         {
             var gestureAwareControl = (IGestureAwareControl)sender!;
+#if !(IOS || MACCATALYST)
+            // On non-Apple platforms we can safely unsubscribe here
             UnsubscribeToPanning(gestureAwareControl);
+#else
+            if (!_isLongPressActive)
+            {
+                // On iOS/Mac panning is always subscribed in LongPress mode, so we just exit if long-press is not active
+                return;
+            }
+#endif
             TaskMonitor.Create(((View)gestureAwareControl).ScaleTo(1, 100));
             UpdateDisableScrollView(false);
         }
