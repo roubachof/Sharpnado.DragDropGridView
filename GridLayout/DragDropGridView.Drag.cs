@@ -371,11 +371,14 @@ public partial class DragDropGridView
         _draggingSessionList = [.._orderedChildren.Cast<View>()];
 
         ((IDragAndDropView)view).IsDragAndDropping = true;
-        // FIXME: this make the layout trigger a new measure and layout pass and then stop the panning
-        // ((View)view).ZIndex += 100;
 
         _shouldInvalidate = false;
         _draggingView = view;
+
+#if !ANDROID
+        // ZIndex cancels gestures on Android, so only elevate on iOS/Mac/Windows
+        view.ZIndex += 100;
+#endif
     }
 
     private void UpdateDisableScrollView(bool isDisabled)

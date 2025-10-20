@@ -10,12 +10,8 @@ using Mopups.Hosting;
 
 using Mvvm.Flux.Maui.Domain.Lights;
 using Mvvm.Flux.Maui.Domain.Lights.Mock;
-using Mvvm.Flux.Maui.Infrastructure;
-using Mvvm.Flux.Maui.Infrastructure.Logging;
 using Mvvm.Flux.Maui.Presentation.Pages;
 using Mvvm.Flux.Maui.Presentation.Pages.Home;
-using Prism.Ioc;
-using Prism.Navigation;
 using Sharpnado.GridLayout;
 using Sharpnado.Shades;
 using Sharpnado.Tabs;

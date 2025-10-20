@@ -4,7 +4,6 @@ public partial class LightEditPage : ContentPage
 {
     public LightEditPage()
     {
-        NavigationPage.SetHasNavigationBar(this, false);
         InitializeComponent();
     }
 }

@@ -8,6 +8,8 @@ public partial class DragDropGridView
 {
     private const bool VerboseLogging = false;
 
+    private bool _isReorderingItemsSource;
+
     private void CheckCandidates(View draggingView)
     {
         var dragAndDropMoving = (IDragAndDropView)draggingView;
@@ -135,71 +137,88 @@ public partial class DragDropGridView
             ? $"Shift {direction} => remove view at {targetIndex}, and shift the views from {targetIndex} to {holeIndex}"
             : $"Shift {direction} => inserting {draggingView} to {targetIndex}, and shift to {holeIndex}");
 
-        List<Task> shiftAnimations = new List<Task>();
+        // Collect shifting views and their target slot positions
+        var shifts = new List<(View shifting, View target)>();
 
-        uint baseDuration = 200;
-
-        void CreateShiftAnimations(View shiftingView, View targetView, uint shiftedViewCountParam, bool log = false)
-        {
-            var targetTransX = targetView.X;
-            var targetTransY = targetView.Y;
-
-            InternalLogger.DebugIf(VerboseLogging, Tag, () => $"targetTransX: {targetTransX}, targetTransY: {targetTransY}");
-
-            var requiredTranslationX = targetTransX - shiftingView.X;
-            var requiredTranslationY = targetTransY - shiftingView.Y;
-
-            InternalLogger.DebugIf(VerboseLogging, Tag, () => $"requiredTranslationX: {requiredTranslationX}, requiredTranslationY: {requiredTranslationY}");
-
-            shiftAnimations.Add(
-                shiftingView.TranslateTo(
-                    requiredTranslationX,
-                    requiredTranslationY,
-                    baseDuration + (100 * shiftedViewCountParam)));
-        }
-
-        uint shiftedViewCount = 0;
         if (direction == Direction.Left)
         {
-            for (var index = holeIndex; index < targetIndex; index++, shiftedViewCount++)
+            for (var index = holeIndex; index < targetIndex; index++)
             {
-                var shiftingView = _draggingSessionList[index + 1];
-                var targetView = _orderedChildren[index];
-
-                CreateShiftAnimations(shiftingView, (View)targetView, shiftedViewCount);
-
-                _draggingSessionList[index] = shiftingView;
+                shifts.Add(((View)_draggingSessionList[index + 1], (View)_orderedChildren[index]));
+                _draggingSessionList[index] = _draggingSessionList[index + 1];
             }
         }
         else
         {
-            for (var index = holeIndex; index > targetIndex; index--, shiftedViewCount++)
+            for (var index = holeIndex; index > targetIndex; index--)
             {
-                var shiftingView = _draggingSessionList[index - 1];
-                var targetView = _orderedChildren[index];
-
-                CreateShiftAnimations(shiftingView, (View)targetView, shiftedViewCount);
-
-                _draggingSessionList[index] = shiftingView;
+                shifts.Add(((View)_draggingSessionList[index - 1], (View)_orderedChildren[index]));
+                _draggingSessionList[index] = _draggingSessionList[index - 1];
             }
         }
 
         if (draggingView == null)
         {
-            // Means where not just shifting but also removing the view
-            // at the target index (grouping operation)
+            // Grouping: also remove the bucket at targetIndex
             _draggingSessionList.RemoveAt(targetIndex);
         }
         else
         {
-            // The view currently dragging is placed at the target index
+            // Place dragging view in target slot
             _draggingSessionList[targetIndex] = draggingView;
+        }
+
+        // Build a single batched animation instead of per-view TranslateTo calls
+        var tcs = new TaskCompletionSource<bool>();
+        try
+        {
+            var parent = new Microsoft.Maui.Controls.Animation();
+            var duration = ShiftAnimationDuration; // short, consistent duration helps Android
+            var easing = Microsoft.Maui.Easing.Linear;
+
+            foreach (var (shifting, target) in shifts)
+            {
+                // Cancel any ongoing animations on this view
+                Microsoft.Maui.Controls.ViewExtensions.CancelAnimations(shifting);
+
+                var startX = shifting.TranslationX;
+                var startY = shifting.TranslationY;
+
+                var endX = target.X - shifting.X;
+                var endY = target.Y - shifting.Y;
+
+                // Single child animation controlling both axes
+                var child = new Microsoft.Maui.Controls.Animation(progress =>
+                {
+                    // Lerp translations
+                    shifting.TranslationX = startX + (endX - startX) * progress;
+                    shifting.TranslationY = startY + (endY - startY) * progress;
+                });
+
+                parent.Add(0, 1, child);
+            }
+
+            // Commit once
+            parent.Commit(this, "ShiftBatch", 16, duration, easing, (v, c) =>
+            {
+                // Ensure final values are set exactly
+                foreach (var (shifting, target) in shifts)
+                {
+                    shifting.TranslationX = target.X - shifting.X;
+                    shifting.TranslationY = target.Y - shifting.Y;
+                }
+                tcs.TrySetResult(true);
+            });
+        }
+        catch (Exception ex)
+        {
+            tcs.TrySetException(ex);
         }
 
         var listResult = _draggingSessionList.Aggregate(string.Empty, (i, v) => $"{i}, {v}");
         InternalLogger.DebugIf(VerboseLogging, Tag, () => $"list: {listResult}");
 
-        return Task.WhenAll(shiftAnimations);
+        return tcs.Task;
     }
 
     private IView? StopDraggingSession(View view)
@@ -209,6 +228,9 @@ public partial class DragDropGridView
         _isDragging = false;
 
         ((IDragAndDropView)view).IsDragAndDropping = false;
+#if !ANDROID
+        view.ZIndex -= 100;
+#endif
 
         SyncItemsSource(view);
 
@@ -223,8 +245,6 @@ public partial class DragDropGridView
             .Except(_orderedChildren)
             .FirstOrDefault(child => child != _headerView);
     }
-
-    private bool _isReorderingItemsSource;
 
     private void SyncItemsSource(View view)
     {

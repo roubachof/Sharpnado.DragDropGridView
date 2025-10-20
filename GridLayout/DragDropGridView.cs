@@ -140,6 +140,10 @@ public partial class DragDropGridView : Layout
         set => SetValue(AnimateTransitionsProperty, value);
     }
 
+    // Duration (in ms) used for batched shift animations during reordering.
+    // Not bindable on purpose to avoid overhead; tweak per-instance if needed.
+    public uint ShiftAnimationDuration { get; set; } = 250;
+
     protected DragDropGridViewManager? LayoutManager => _layoutManager as DragDropGridViewManager;
 
     /// <summary>

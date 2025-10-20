@@ -11,8 +11,7 @@
              xmlns:styles="clr-namespace:Mvvm.Flux.Maui.Presentation.Styles"
              xmlns:tlv="clr-namespace:Sharpnado.TaskLoaderView;assembly=Sharpnado.Maui.TaskLoaderView"
              x:Name="Root"
-             Title="{Binding Title}"
-             ios:Page.UseSafeArea="False"
+             ios:Page.UseSafeArea="True"
              x:DataType="home:LightEditPageViewModel">
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -35,6 +34,12 @@
     <ContentPage.Content>
         <Grid ColumnDefinitions="*,*"
               ColumnSpacing="10">
+            <Grid.Margin>
+                <OnPlatform x:TypeArguments="Thickness">
+                    <On Platform="Android" Value="0,0,0,0" />
+                    <On Platform="iOS" Value="0,0,0,0" />
+                </OnPlatform>
+            </Grid.Margin>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="3*" />
@@ -123,8 +128,13 @@
                                  BackTapCommand="{Binding GoBackCommand}"
                                  BackgroundColor="Transparent"
                                  ForegroundColor="{StaticResource TextPrimaryColor}"
-                                 ShowBackButton="True"
-                                 UseSafeAreaMargin="False">
+                                 ShowBackButton="True">
+                <customViews:Toolbar.UseSafeAreaMargin>
+                    <OnPlatform x:TypeArguments="x:Boolean">
+                        <On Platform="Android" Value="True" />
+                        <On Platform="iOS" Value="False" />
+                    </OnPlatform>
+                </customViews:Toolbar.UseSafeAreaMargin>
                 <Button Style="{StaticResource ButtonWhiteTransparent}"
                         HorizontalOptions="End"
                         VerticalOptions="Center"

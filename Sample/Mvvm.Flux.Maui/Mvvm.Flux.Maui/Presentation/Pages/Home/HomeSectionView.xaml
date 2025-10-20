@@ -188,8 +188,7 @@
             </cv:FabMenu>
 
             <!--  Sticky Drag & Drop Switch  -->
-            <gestures:Border Margin="0,40,0,0"
-                             Padding="15,5"
+            <gestures:Border Padding="15,5"
                              HorizontalOptions="Center"
                              VerticalOptions="Start"
                              Background="{StaticResource SurfaceBackgroundColor}"
@@ -197,8 +196,16 @@
                              StrokeShape="RoundRectangle 30"
                              StrokeThickness="0"
                              TappedCommand="{Binding ToggleDragAndDropCommand}">
+                <gestures:Border.Margin>
+                    <OnPlatform x:TypeArguments="Thickness">
+                        <On Platform="Android"
+                            Value="0,60,0,0" />
+                        <On Platform="iOS"
+                            Value="0,16,0,0" />
+                    </OnPlatform>
+                </gestures:Border.Margin>
                 <HorizontalStackLayout Spacing="10">
-                    <VerticalStackLayout>
+                    <VerticalStackLayout VerticalOptions="Center">
                         <Label Style="{StaticResource TextBody}"
                                VerticalOptions="Center"
                                Text="Drag &amp; Drop" />
