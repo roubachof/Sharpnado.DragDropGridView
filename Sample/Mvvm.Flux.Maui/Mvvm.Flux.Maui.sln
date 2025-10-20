@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mvvm.Flux.Maui", "Mvvm.Flux
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridLayout", "..\..\GridLayout\GridLayout.csproj", "{7F7281A6-6F93-4F64-8382-C8F7BDBC54F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MR.Gestures", "..\..\..\_ThirdParties_\MR.Gestures\MR.Gestures\MR.Gestures.csproj", "{C00CD5FD-B562-4F61-9EF9-A2430E1EBEBC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MR.Gestures", "..\..\_ThirdParties_\MR.Gestures\MR.Gestures\MR.Gestures.csproj", "{C00CD5FD-B562-4F61-9EF9-A2430E1EBEBC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

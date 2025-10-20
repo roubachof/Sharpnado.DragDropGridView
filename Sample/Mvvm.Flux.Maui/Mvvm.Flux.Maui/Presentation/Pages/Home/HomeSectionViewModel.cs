@@ -6,7 +6,7 @@ using MetroLog;
 using Mvvm.Flux.Maui.Domain.Lights;
 using Mvvm.Flux.Maui.Infrastructure;
 using Mvvm.Flux.Maui.Localization;
-
+using Sharpnado.GridLayout;
 using Sharpnado.TaskLoaderView;
 
 namespace Mvvm.Flux.Maui.Presentation.Pages.Home
@@ -18,6 +18,7 @@ namespace Mvvm.Flux.Maui.Presentation.Pages.Home
         private readonly ILightService _lightService;
         private int _gridColumnCount = 2;
         private bool _isDragAndDropEnabled = true;
+        private DragAndDropTrigger _dragTrigger = DragAndDropTrigger.LongPress;
 
         public HomeSectionViewModel(
             INavigationService navigationService,
@@ -72,6 +73,12 @@ namespace Mvvm.Flux.Maui.Presentation.Pages.Home
                     Log.Info($"Drag and drop {(value ? "enabled" : "disabled")}");
                 }
             }
+        }
+
+        public DragAndDropTrigger DragTrigger
+        {
+            get => _dragTrigger;
+            set => SetProperty(ref _dragTrigger, value);
         }
 
         public ICommand AddGarageCommand { get; }

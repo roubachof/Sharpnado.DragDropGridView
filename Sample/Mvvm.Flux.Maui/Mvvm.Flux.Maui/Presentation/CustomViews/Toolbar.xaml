@@ -11,14 +11,6 @@
             <Style x:Key="TextTitleStyle"
                    BasedOn="{StaticResource TextTitleToolbar}"
                    TargetType="Label">
-                <Setter Property="HorizontalOptions">
-                    <Setter.Value>
-                        <OnPlatform x:TypeArguments="LayoutOptions">
-                            <On Platform="iOS">Start</On>
-                            <On Platform="Android">Start</On>
-                        </OnPlatform>
-                    </Setter.Value>
-                </Setter>
                 <Setter Property="Margin" Value="30,10" />
                 <Setter Property="VerticalOptions" Value="Center" />
             </Style>
@@ -26,7 +18,7 @@
     </ContentView.Resources>
     <ContentView.Content>
         <Grid x:Name="Grid"
-              Padding="0,0,0,16"
+              Padding="0,10"
               ColumnSpacing="0"
               RowSpacing="0">
             <Grid.RowDefinitions>
@@ -58,8 +50,6 @@
                                   IsVisible="{Binding Source={x:Reference RootLayout},
                                                       Path=ShowBackButton}">
                 <Image Style="{StaticResource ImageSmallLarge}"
-                       sho:ImageEffect.TintColor="{Binding Source={x:Reference RootLayout},
-                                                           Path=ForegroundColor}"
                        Source="{StaticResource IconBack}" />
             </gestures:ContentView>
 

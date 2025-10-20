@@ -1,6 +1,6 @@
-# Sharpnado.Maui.GridLayout
+# Sharpnado.Maui.DragDropGridView
 
-A high-performance grid layout control for .NET MAUI with drag-and-drop reordering, adaptive sizing, and flexible item management.
+A high-performance drag-and-drop grid layout control for .NET MAUI with adaptive sizing, configurable gesture triggers, and flexible item management.
 
 ## Features
 
@@ -14,14 +14,14 @@ A high-performance grid layout control for .NET MAUI with drag-and-drop reorderi
 ## Installation
 
 ```xml
-<PackageReference Include="Sharpnado.Maui.GridLayout" Version="x.x.x" />
+<PackageReference Include="Sharpnado.Maui.DragDropGridView" Version="x.x.x" />
 ```
 
 ## Getting Started
 
 ### 1. Initialize in MauiProgram.cs
 
-Add the GridLayout initialization to your `MauiProgram.cs`:
+Add the DragDropGridView initialization to your `MauiProgram.cs`:
 
 ```csharp
 using Sharpnado.GridLayout;
@@ -33,7 +33,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .UseSharpnadoGridLayout(enableLogging: false);
+            .UseSharpnadoDragDropGridView(enableLogging: false);
             // ... other configurations
             
         return builder.Build();
@@ -43,45 +43,50 @@ public static class MauiProgram
 
 #### Configuration Options
 
-The `UseSharpnadoGridLayout` extension method accepts the following parameters:
+The `UseSharpnadoDragDropGridView` extension method accepts the following parameters:
 
 - `enableLogging` (default: `false`): Enable or disable logging
 - `enableDebugLogging` (default: `false`): Enable debug-level logging
 - `loggerDelegate`: Custom logger implementation (optional)
-- `logFilter`: Filter logs by tags separated by `|` (e.g., `"GridLayout|Drag|Drop"`)
+- `logFilter`: Filter logs by tags separated by `|` (e.g., `"DragDropGridView|Drag|Drop"`)
 
 Example with logging enabled:
 
 ```csharp
-.UseSharpnadoGridLayout(
+.UseSharpnadoDragDropGridView(
     enableLogging: true,
     enableDebugLogging: true,
-    logFilter: "GridLayout|Drag")
+    logFilter: "DragDropGridView|Drag")
 ```
 
 ### 2. Add Namespace to XAML
 
 ```xml
-xmlns:gridLayout="clr-namespace:Sharpnado.GridLayout;assembly=Sharpnado.Maui.GridLayout"
+xmlns:gridLayout="clr-namespace:Sharpnado.GridLayout;assembly=Sharpnado.Maui.DragDropGridView"
 ```
 
-### 3. Use the GridLayout
+### 3. Use the DragDropGridView
 
 ```xml
-<gridLayout:GridLayout
+<gridLayout:DragDropGridView
     ColumnCount="2"
     ColumnSpacing="10"
     RowSpacing="10"
-    ItemsSource="{Binding Items}">
+    IsDragAndDropEnabled="True"
+    DragAndDropTrigger="Pan"
+    ItemsSource="{Binding Items}"
+    OnItemsReorderedCommand="{Binding ItemsReorderedCommand}">
     
-    <gridLayout:GridLayout.ItemTemplate>
+    <gridLayout:DragDropGridView.ItemTemplate>
         <DataTemplate>
-            <Border Padding="10" Background="LightGray">
-                <Label Text="{Binding Name}" />
-            </Border>
+            <gridLayout:DragAndDropView>
+                <Border Padding="10" Background="LightGray">
+                    <Label Text="{Binding Name}" />
+                </Border>
+            </gridLayout:DragAndDropView>
         </DataTemplate>
-    </gridLayout:GridLayout.ItemTemplate>
-</gridLayout:GridLayout>
+    </gridLayout:DragDropGridView.ItemTemplate>
+</gridLayout:DragDropGridView>
 ```
 
 ## Advanced Usage
@@ -89,52 +94,66 @@ xmlns:gridLayout="clr-namespace:Sharpnado.GridLayout;assembly=Sharpnado.Maui.Gri
 ### With Header
 
 ```xml
-<gridLayout:GridLayout
+<gridLayout:DragDropGridView
     ColumnCount="2"
     ColumnSpacing="10"
     RowSpacing="10"
+    IsDragAndDropEnabled="True"
     ItemsSource="{Binding Items}">
     
-    <gridLayout:GridLayout.HeaderTemplate>
+    <gridLayout:DragDropGridView.HeaderTemplate>
         <DataTemplate>
             <StackLayout Padding="15">
                 <Label Text="My Items" FontSize="24" FontAttributes="Bold" />
                 <Label Text="Drag to reorder" FontSize="12" TextColor="Gray" />
             </StackLayout>
         </DataTemplate>
-    </gridLayout:GridLayout.HeaderTemplate>
+    </gridLayout:DragDropGridView.HeaderTemplate>
     
-    <gridLayout:GridLayout.ItemTemplate>
+    <gridLayout:DragDropGridView.ItemTemplate>
         <DataTemplate>
-            <Border Padding="10" Background="LightGray">
-                <Label Text="{Binding Name}" />
-            </Border>
+            <gridLayout:DragAndDropView>
+                <Border Padding="10" Background="LightGray">
+                    <Label Text="{Binding Name}" />
+                </Border>
+            </gridLayout:DragAndDropView>
         </DataTemplate>
-    </gridLayout:GridLayout.ItemTemplate>
-</gridLayout:GridLayout>
+    </gridLayout:DragDropGridView.ItemTemplate>
+</gridLayout:DragDropGridView>
 ```
 
 ### Drag and Drop
 
-The GridLayout supports drag-and-drop reordering out of the box. Items can be dragged to new positions, and the ItemsSource will be automatically updated if it implements `IList`.
+The DragDropGridView supports drag-and-drop reordering with two trigger modes:
 
-### Using GridLayout in a ScrollView
+- Pan (default): drag starts as soon as the user pans the item.
+- LongPress: hold the item, then drag after the long press begins. Recommended on iOS when you want to avoid accidental drags.
 
-The GridLayout works correctly inside a ScrollView. When `ColumnCount` is explicitly set, it will be respected even when the ScrollView provides infinite width:
+Important requirements:
+- Draggable items must be MR.Gestures-based controls that implement `IGestureAwareControl`. The easiest is to wrap your template content inside `<gridLayout:DragAndDropView>...</gridLayout:DragAndDropView>` which already inherits from `MR.Gestures.ContentView`.
+- The ItemsSource will be automatically updated on reorder if it implements `IList`.
+
+MR.Gestures integration:
+- This package includes a fork of MR.Gestures to enable reliable LongPress-based drag-and-drop on iOS/Mac Catalyst. No extra setup is required beyond calling `.UseSharpnadoDragDropGridView(...)`, which configures MR.Gestures for you.
+
+### Using DragDropGridView in a ScrollView
+
+The DragDropGridView works correctly inside a ScrollView and includes automatic edge scrolling during drag operations. When `ColumnCount` is explicitly set, it will be respected even when the ScrollView provides infinite width:
 
 ```xml
 <ScrollView>
-    <gridLayout:GridLayout
+    <gridLayout:DragDropGridView
         ColumnCount="2"
         ColumnSpacing="10"
         RowSpacing="10"
+        IsDragAndDropEnabled="True"
         ItemsSource="{Binding Items}">
         <!-- Templates -->
-    </gridLayout:GridLayout>
+    </gridLayout:DragDropGridView>
 </ScrollView>
 ```
 
-**Important**: Always set an explicit `ColumnCount` when using GridLayout inside a ScrollView. Without it, the layout cannot determine how many columns to display.
+**Important**: Always set an explicit `ColumnCount` when using DragDropGridView inside a ScrollView. Without it, the layout cannot determine how many columns to display.
 
 ### Properties
 
@@ -146,8 +165,13 @@ The GridLayout works correctly inside a ScrollView. When `ColumnCount` is explic
 | `ColumnCount` | `int` | Number of columns in the grid |
 | `ColumnSpacing` | `double` | Spacing between columns |
 | `RowSpacing` | `double` | Spacing between rows |
-| `ItemHeight` | `double` | Fixed height for all items (optional) |
-| `ItemWidth` | `double` | Fixed width for all items (optional) |
+| `GridPadding` | `Thickness` | Padding around the entire grid |
+| `IsDragAndDropEnabled` | `bool` | Enable or disable drag-and-drop functionality |
+| `DragAndDropTrigger` | `DragAndDropTrigger` | Gesture trigger: `Pan` or `LongPress` |
+| `OnItemsReorderedCommand` | `ICommand` | Command executed when items are reordered |
+| `AdaptItemWidth` | `bool` | Whether items should adapt their width (default: true) |
+| `AdaptItemHeight` | `bool` | Whether items should adapt their height (default: false) |
+| `AnimateTransitions` | `bool` | Enable layout change animations (default: true) |
 
 ## Sample Application
 
@@ -161,7 +185,7 @@ Check out the sample application in the `Sample/Mvvm.Flux.Maui` directory for a 
 
 ## Architecture
 
-The GridLayout is built using the Mvvm.Flux architecture pattern, which emphasizes:
+The DragDropGridView is built using the Mvvm.Flux architecture pattern, which emphasizes:
 
 - **Composition over inheritance**: Small, focused components
 - **Immutability**: Using C# records for data models

@@ -57,7 +57,8 @@
                                     <sho:DragDropGridView AnimateTransitions="True"
                                                           ColumnCount="{Binding GridColumnCount}"
                                                           ColumnSpacing="0"
-                                                          DragAndDropTrigger="LongPress"
+                                                          DragAndDropTrigger="{Binding Source={RelativeSource AncestorType={x:Type home:HomeSectionViewModel}},
+                                                                                       Path=DragTrigger}"
                                                           GridPadding="0"
                                                           IsDragAndDropEnabled="{Binding IsDragAndDropEnabled}"
                                                           ItemsSource="{Binding Loader.Result}"
@@ -188,22 +189,30 @@
 
             <!--  Sticky Drag & Drop Switch  -->
             <gestures:Border Margin="0,40,0,0"
-                             Padding="15,0"
+                             Padding="15,5"
                              HorizontalOptions="Center"
                              VerticalOptions="Start"
                              Background="{StaticResource SurfaceBackgroundColor}"
                              Shadow="{StaticResource ShadowLightOn}"
-                             StrokeShape="RoundRectangle 20"
+                             StrokeShape="RoundRectangle 30"
                              StrokeThickness="0"
                              TappedCommand="{Binding ToggleDragAndDropCommand}">
                 <HorizontalStackLayout Spacing="10">
-                    <Label Style="{StaticResource TextBody}"
-                           VerticalOptions="Center"
-                           Text="Drag &amp; Drop" />
+                    <VerticalStackLayout>
+                        <Label Style="{StaticResource TextBody}"
+                               VerticalOptions="Center"
+                               Text="Drag &amp; Drop" />
+                        <Label Style="{StaticResource TextBody}"
+                               VerticalOptions="Center"
+                               FontFamily="FontBold"
+                               Text="{Binding DragTrigger}" />
+                    </VerticalStackLayout>
+
                     <Switch VerticalOptions="Center"
                             IsToggled="{Binding IsDragAndDropEnabled}"
                             OnColor="{StaticResource LightBulbOnColor}"
-                            Scale="0.6" />
+                            Scale="0.8" />
+
                 </HorizontalStackLayout>
             </gestures:Border>
 

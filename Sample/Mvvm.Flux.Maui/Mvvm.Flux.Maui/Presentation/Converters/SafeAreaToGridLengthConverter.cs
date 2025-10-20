@@ -13,7 +13,8 @@ namespace Mvvm.Flux.Maui.Presentation.Converters
                 defaultValue = 0;
             }
 
-            return new GridLength(defaultValue + PlatformService.GetSafeArea().Top);
+            var result = new GridLength(defaultValue + PlatformService.GetSafeArea().Top);
+            return result;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

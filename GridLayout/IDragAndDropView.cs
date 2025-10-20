@@ -1,6 +1,8 @@
-﻿namespace Sharpnado.GridLayout;
+﻿using MR.Gestures;
 
-public interface IDragAndDropView
+namespace Sharpnado.GridLayout;
+
+public interface IDragAndDropView : IGestureAwareControl
 {
     bool CanReceiveView { get; }
 

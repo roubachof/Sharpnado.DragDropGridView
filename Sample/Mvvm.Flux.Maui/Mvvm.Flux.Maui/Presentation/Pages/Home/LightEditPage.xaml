@@ -7,6 +7,7 @@
              xmlns:home="clr-namespace:Mvvm.Flux.Maui.Presentation.Pages.Home"
              xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
              xmlns:loc="clr-namespace:Mvvm.Flux.Maui.Localization"
+             xmlns:sho="http://sharpnado.com"
              xmlns:styles="clr-namespace:Mvvm.Flux.Maui.Presentation.Styles"
              xmlns:tlv="clr-namespace:Sharpnado.TaskLoaderView;assembly=Sharpnado.Maui.TaskLoaderView"
              x:Name="Root"
@@ -61,28 +62,38 @@
                                                              Converter={converters:BoolToShadowResourceConverter IfFalse={x:Null},
                                                                                                                  IfTrue='ShadowLightBulbHalo'}}" />
 
-
-                            <Image Grid.Row="0"
-                                   WidthRequest="{StaticResource LightSize}"
-                                   HeightRequest="{StaticResource LightSize}"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center"
-                                   Shadow="{Binding Loader.Result.IsOn,
-                                                    Converter={converters:BoolToShadowResourceConverter IfFalse={x:Null},
-                                                                                                        IfTrue='ShadowLightBulbHalo'}}"
-                                   Source="{StaticResource IconLightOff}">
-                                <Image.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding ToggleLightCommand}" />
-                                </Image.GestureRecognizers>
-                                <Image.Triggers>
+                            <sho:Shadows CornerRadius="100"
+                                         Shades="{sho:SingleShade BlurRadius='60',
+                                                                  Color={StaticResource LightBulbHaloColor},
+                                                                  Offset='0,-30'}">
+                                <sho:Shadows.Triggers>
                                     <DataTrigger Binding="{Binding Loader.Result.IsOn}"
-                                                 TargetType="Image"
-                                                 Value="True">
-                                        <Setter Property="Source" Value="{StaticResource IconLightOn}" />
+                                                 TargetType="sho:Shadows"
+                                                 Value="False">
+                                        <Setter Property="Shades" Value="{StaticResource ShadowNone}" />
                                     </DataTrigger>
-                                </Image.Triggers>
-                            </Image>
-
+                                </sho:Shadows.Triggers>
+                                <Image Grid.Row="0"
+                                       WidthRequest="{StaticResource LightSize}"
+                                       HeightRequest="{StaticResource LightSize}"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       Shadow="{Binding Loader.Result.IsOn,
+                                                        Converter={converters:BoolToShadowResourceConverter IfFalse={x:Null},
+                                                                                                            IfTrue='ShadowLightBulbHalo'}}"
+                                       Source="{StaticResource IconLightOff}">
+                                    <Image.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding ToggleLightCommand}" />
+                                    </Image.GestureRecognizers>
+                                    <Image.Triggers>
+                                        <DataTrigger Binding="{Binding Loader.Result.IsOn}"
+                                                     TargetType="Image"
+                                                     Value="True">
+                                            <Setter Property="Source" Value="{StaticResource IconLightOn}" />
+                                        </DataTrigger>
+                                    </Image.Triggers>
+                                </Image>
+                            </sho:Shadows>
                         </Grid>
                     </ControlTemplate>
                 </tlv:TemplatedTaskLoader.ResultControlTemplate>
@@ -110,17 +121,18 @@
                                  Grid.Row="0"
                                  Grid.ColumnSpan="2"
                                  BackTapCommand="{Binding GoBackCommand}"
-                                 BackgroundColor="{StaticResource PrimaryColor}"
+                                 BackgroundColor="Transparent"
                                  ForegroundColor="{StaticResource TextPrimaryColor}"
                                  ShowBackButton="True"
-                                 UseSafeAreaMargin="True">
+                                 UseSafeAreaMargin="False">
                 <Button Style="{StaticResource ButtonWhiteTransparent}"
                         HorizontalOptions="End"
                         VerticalOptions="Center"
                         BackgroundColor="Transparent"
                         Command="{Binding SaveCommand}"
                         IsVisible="{Binding Loader.IsSuccessfullyCompleted}"
-                        Text="{x:Static loc:GlobalResources.Common_Save}" />
+                        Text="{x:Static loc:GlobalResources.Common_Save}"
+                        TextColor="{StaticResource LightBulbOnColor}" />
             </customViews:Toolbar>
 
             <customViews:OverlayView Grid.Row="1"
