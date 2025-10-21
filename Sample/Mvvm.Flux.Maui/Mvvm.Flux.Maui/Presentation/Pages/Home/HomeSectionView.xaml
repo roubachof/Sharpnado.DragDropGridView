@@ -202,6 +202,10 @@
                             Value="0,60,0,0" />
                         <On Platform="iOS"
                             Value="0,16,0,0" />
+                        <On Platform="WinUI"
+                            Value="0,32,0,0" />
+                        <On Platform="MacCatalyst"
+                            Value="0,16,0,0" />
                     </OnPlatform>
                 </gestures:Border.Margin>
                 <HorizontalStackLayout Spacing="10">

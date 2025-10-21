@@ -122,7 +122,10 @@ public partial class DragDropGridView
     private void InitializeDragAndDrop()
     {
         InternalLogger.Debug(Tag, () => $"InitializeDragAndDrop()");
-
+#if WINDOWS
+        InternalLogger.Warn("WARNING: Drag and drop is unavailable on windows.");
+        return;
+#endif
         Settings.MinimumDeltaDistance = 2;
 
         _scrollView = this.GetFirstParentOfType<ScrollView>();
@@ -149,6 +152,11 @@ public partial class DragDropGridView
     private void UpdateIsDragAndDropEnabled(bool isEnabled)
     {
         InternalLogger.Debug(Tag, () => $"UpdateIsDragAndDropEnabled( isEnabled: {isEnabled} )");
+
+#if WINDOWS
+        InternalLogger.Warn("WARNING: Drag and drop is unavailable on windows.");
+        return;
+#endif
 
         foreach (var child in Children)
         {
@@ -187,6 +195,11 @@ public partial class DragDropGridView
 
     private void SubscribeDragAndDropIfNeeded(Element child)
     {
+#if WINDOWS
+        InternalLogger.Warn("WARNING: Drag and drop is unavailable on windows.");
+        return;
+#endif
+
         if (child is not (IGestureAwareControl gestureAwareControl and IDragAndDropView))
         {
             return;
@@ -214,6 +227,11 @@ public partial class DragDropGridView
 
     private void UnsubscribeDragAndDropIfNeeded(Element child)
     {
+#if WINDOWS
+        InternalLogger.Warn("WARNING: Drag and drop is unavailable on windows.");
+        return;
+#endif
+
         if (child is not (IGestureAwareControl gestureAwareControl and IDragAndDropView))
         {
             return;
