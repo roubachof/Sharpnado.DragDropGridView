@@ -1,67 +1,81 @@
 # Changelog
 
-All notable changes to the Sharpnado.Maui.GridLayout project will be documented in this file.
+All notable changes to Sharpnado.Maui.DragDropGridView will be documented in this file.
 
-## [Unreleased]
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-### Added
-- **MAUI Extension Builder**: Added `UseSharpnadoGridLayout()` extension method for `MauiAppBuilder`
-  - Enables easy configuration of the GridLayout library in `MauiProgram.cs`
-  - Supports logging configuration with `enableLogging`, `enableDebugLogging`, `loggerDelegate`, and `logFilter` parameters
-  - Similar pattern to `UseSharpnadoShadows()` from Sharpnado.Shadows library
-  - See `MauiAppBuilderExtensions.cs` for implementation details
+## [1.0.0] - 2025-01-23
 
-- **Header Support**: Added `HeaderTemplate` and `Header` properties to GridLayout
-  - Allows displaying a custom header at the top of the grid
-  - Uses `DataTemplate` for flexible header customization
-  - Header is automatically laid out above grid items
-  - See sample app `HomeSectionView.xaml` for usage example
+### Initial Release
 
-- **Internal Logging**: Added `InternalLogger` class for diagnostic logging
-  - Configurable logging levels (Info, Debug, Error)
-  - Optional custom logger delegate
-  - Tag-based filtering with pipe-separated syntax
-  - Default console output for development scenarios
+A high-performance drag-and-drop grid layout control for .NET MAUI with adaptive sizing, configurable gesture triggers, and flexible item management.
 
-- **Comprehensive Documentation**: Added README.md with:
-  - Getting started guide
-  - Usage examples with XAML code
-  - Advanced scenarios (headers, drag-and-drop)
-  - Property reference table
-  - Architecture overview
-  - Platform support information
+#### Features
 
-### Changed
-- **Sample App Updated**: Modified `HomeSectionView.xaml` to use GridLayout instead of CollectionView
-  - Demonstrates 2-column grid layout
-  - Shows header implementation with title and image
-  - Includes light bulb items with tap gesture handling
-  - Integrated with TaskLoaderView for async data loading
+**Core Grid Layout**
+- Automatic grid layout with responsive column calculation
+- Configurable column count, spacing, and padding
+- Adaptive item width/height based on available space
+- Header support with custom DataTemplate
+- Full ItemsSource and DataTemplate binding with INotifyCollectionChanged support
+- Orientation-aware layout (portrait/landscape)
+- Works seamlessly inside ScrollView with explicit ColumnCount
 
-- **Sample App Configuration**: Updated `MauiProgram.cs` to call `UseSharpnadoGridLayout()`
-  - Shows proper initialization pattern
-  - Demonstrates logging configuration options
+**Drag & Drop** (iOS, Android, Mac Catalyst)
+- Built-in drag-and-drop support for reordering items
+- Two trigger modes: Pan (immediate) and LongPress (recommended for iOS)
+- Automatic ScrollView edge detection and auto-scrolling during drag operations
+- Smooth batched shift animations with configurable duration (default 120ms)
+- OnItemsReorderedCommand for handling reorder events
+- Automatic ItemsSource synchronization for IList collections
 
-### Fixed
-- **ScrollView Compatibility**: Fixed GridLayout to respect `ColumnCount` property when inside a ScrollView
-  - Previously, when GridLayout was in a ScrollView with infinite width, it would ignore `ColumnCount` and show all items in one row
-  - Now, when `ColumnCount` is explicitly set, it's always respected regardless of available width
-  - Also respects `ColumnCount` when width is constrained but `ColumnCount` is set
-  - Enables proper grid layout in scrollable containers
+**Customizable Animations**
+- `ViewStartDraggingAnimation` - Animation when item starts being dragged
+- `ViewStopDraggingAnimation` - Animation when item stops being dragged
+- `DragAndDropEnabledItemsAnimation` - Continuous animation when D&D is enabled
+- `DragAndDropDisabledItemsAnimation` - Cleanup animation when D&D is disabled
+- Predefined animations via `DragDropAnimations` static class:
+  - Start/Stop: ScaleUp, ScaleUpLarge, ScaleUpBounce, ScaleToBounce
+  - Enabled/Disabled: Wobble, StopWobble
+- Custom animation functions support
 
-- **Visibility Check**: Fixed `Visibility` property access on header view
-  - Changed to use `VisualElement.IsVisible` property
-  - Safe casting from `View` to `VisualElement`
-  - Prevents runtime errors on non-visual elements
+**Integration**
+- Pure .NET MAUI implementation with no platform-specific code required
+- Includes fork of MR.Gestures for reliable gesture handling
+- Full logging support with configurable levels and filtering
+- MVVM-friendly with command and data binding support
 
-### Technical Details
-- Framework: .NET 9.0
-- Target Platforms: iOS 15.0+, Android 21+, Mac Catalyst 15.0+, Windows 10.0.17763.0+
-- Build Status: ✅ All platforms compile successfully with 0 errors
-- Dependencies: Microsoft.Maui.Controls 9.0+
+#### Platform Support
 
-### Developer Notes
-- Follow the pattern established by Sharpnado.Shadows for consistency
-- Extension method pattern simplifies library initialization
-- Logging configuration is optional but recommended for debugging
-- Header support enables richer UI layouts without custom controls
+- ✅ iOS 15.0+ (full drag-and-drop support)
+- ✅ Android API 21+ (full drag-and-drop support)
+- ✅ Mac Catalyst 15.0+ (full drag-and-drop support)
+- ⚠️ Windows 10.0.17763.0+ (grid layout only, no drag-and-drop)
+
+#### Known Limitations
+
+- **Windows**: Drag-and-drop not supported due to gesture coordinate system complexities
+- **Android**: Dragged items may appear behind other items (ZIndex changes cancel gestures)
+- **ItemsSource**: Must implement IList for automatic reordering
+- **Draggable items**: Must be wrapped in MR.Gestures-compatible controls (e.g., DragAndDropView)
+
+#### Dependencies
+
+- Microsoft.Maui.Controls 9.0.110+
+- .NET 9.0
+- Sharpnado.TaskMonitor 1.1.0
+- MR.Gestures (included)
+
+#### Installation
+
+```bash
+dotnet add package Sharpnado.Maui.DragDropGridView
+```
+
+Initialize in MauiProgram.cs:
+```csharp
+.UseSharpnadoDragDropGridView(enableLogging: false)
+```
+
+[1.0.0]: https://github.com/roubachof/Sharpnado.GridLayout/releases/tag/v1.0.0

@@ -9,7 +9,7 @@ using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 
 
-namespace Sharpnado.GridLayout;
+namespace Sharpnado.Maui.DragDropGridView;
 
 public class UntouchableScrollviewHandler : ScrollViewHandler
 {
@@ -21,9 +21,9 @@ public class UntouchableScrollviewHandler : ScrollViewHandler
     protected override MauiScrollView CreatePlatformView()
     {
         var scrollView = new UntouchableMauiScrollView(
-            new ContextThemeWrapper(MauiContext!.Context, Resource.Style.scrollViewTheme),
+            new ContextThemeWrapper(MauiContext!.Context, _Microsoft.Android.Resource.Designer.Resource.Style.scrollViewTheme),
             null!,
-            Resource.Attribute.scrollViewStyle)
+            _Microsoft.Android.Resource.Designer.Resource.Attribute.scrollViewStyle)
         {
             ClipToOutline = true,
             FillViewport = true,

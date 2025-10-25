@@ -1,4 +1,4 @@
-﻿namespace Sharpnado.GridLayout;
+﻿namespace Sharpnado.Maui.DragDropGridView;
 
 using Microsoft.Maui.Layouts;
 

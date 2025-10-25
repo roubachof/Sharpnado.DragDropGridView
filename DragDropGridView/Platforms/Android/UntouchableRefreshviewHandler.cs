@@ -3,7 +3,7 @@ using Android.Views;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 
-namespace Sharpnado.GridLayout;
+namespace Sharpnado.Maui.DragDropGridView;
 
 public class UntouchableRefreshViewHandler : RefreshViewHandler
 {

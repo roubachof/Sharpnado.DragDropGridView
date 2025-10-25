@@ -24,7 +24,7 @@ A high-performance drag-and-drop grid layout control for .NET MAUI with adaptive
 Add the DragDropGridView initialization to your `MauiProgram.cs`:
 
 ```csharp
-using Sharpnado.GridLayout;
+using Sharpnado.Maui.DragDropGridView;
 
 public static class MauiProgram
 {
@@ -62,9 +62,9 @@ Example with logging enabled:
 ### 2. Add Namespace to XAML
 
 ```xml
-xmlns:gridLayout="clr-namespace:Sharpnado.GridLayout;assembly=Sharpnado.Maui.DragDropGridView"
-```
+xmlns:gridLayout="clr-namespace:Sharpnado.Maui.DragDropGridView;assembly=Sharpnado.Maui.DragDropGridView"
 
+<ScrollView>
 ### 3. Use the DragDropGridView
 
 ```xml
@@ -165,6 +165,99 @@ MR.Gestures integration:
 
 **Note**: ScrollView integration and automatic gesture handling is available on all supported drag-and-drop platforms (iOS, Android, Mac Catalyst).
 
+### Custom Animations
+
+The DragDropGridView supports customizable animations for various drag-and-drop states. You can use the predefined animations from the `DragDropAnimations` static class or provide your own custom animation functions.
+
+#### Animation Properties
+
+The grid exposes four animation properties:
+
+| Property | Description |
+|----------|-------------|
+| `LongPressedDraggingAnimation` | Animation applied when an item starts being dragged |
+| `LongPressedDroppingAnimation` | Animation applied when an item stops being dragged |
+| `DragAndDropItemsAnimation` | Continuous animation applied to all items when drag-and-drop mode is enabled |
+| `DragAndDropEndItemsAnimation` | Cleanup animation applied to all items when drag-and-drop mode is disabled |
+
+#### Using Predefined Animations
+
+The `DragDropAnimations` class provides ready-to-use animations:
+
+```csharp
+using Sharpnado.Maui.DragDropGridView;
+
+// Configure start/stop dragging animations
+myGridLayout.LongPressedDraggingAnimation = DragDropAnimations.Dragging.ScaleUpAsync;
+myGridLayout.LongPressedDroppingAnimation = DragDropAnimations.Dropping.ScaleToNormalAsync;
+
+// Configure enabled/disabled mode animations
+myGridLayout.DragAndDropItemsAnimation = DragDropAnimations.Items.WobbleAsync;
+myGridLayout.DragAndDropEndItemsAnimation = DragDropAnimations.EndItems.StopWobbleAsync;
+```
+
+**Available Predefined Animations:**
+
+**Dragging:**
+- `ScaleUpAsync` - Subtle scale to 1.05
+- `ScaleUpLargeAsync` - More pronounced scale to 1.15
+- `ScaleUpBounceAsync` - Scale with bounce effect
+- `NoneAsync` - No animation
+
+**Dropping:**
+- `ScaleToNormalAsync` - Scale back to 1.0
+- `ScaleToBounceAsync` - Scale back with bounce effect
+- `NoneAsync` - No animation
+
+**Items:**
+- `WobbleAsync` - Continuous wobble/rotation animation
+- `StopWobbleAsync` - Reset rotation to 0
+- `NoneAsync` - No animation
+
+**EndItems:**
+- `StopWobbleAsync` - Reset rotation to 0
+- `NoneAsync` - No animation
+
+#### Using Custom Animations
+
+You can provide your own animation functions:
+
+```csharp
+// Custom start dragging animation
+myGridLayout.LongPressedDraggingAnimation = async (view) =>
+{
+    await view.ScaleTo(1.1, 150);
+    await view.FadeTo(0.8, 100);
+};
+
+// Custom stop dragging animation
+myGridLayout.LongPressedDroppingAnimation = async (view) =>
+{
+    await view.FadeTo(1.0, 100);
+    await view.ScaleTo(1.0, 150);
+};
+
+// Custom continuous wobble animation
+myGridLayout.DragAndDropItemsAnimation = async (view) =>
+{
+    await view.RotateTo(5, 200);
+    await view.RotateTo(-5, 200);
+    await view.RotateTo(0, 200);
+};
+
+// Custom cleanup animation
+myGridLayout.DragAndDropEndItemsAnimation = async (view) =>
+{
+    await view.RotateTo(0, 150);
+    await view.ScaleTo(1.0, 150);
+};
+```
+
+**Note:** If no animation is set, the default behavior is:
+- Start dragging: scale up to 1.05
+- Stop dragging: scale back to 1.0
+- Enabled/Disabled mode: no animation
+
 ### Properties
 
 | Property | Type | Description |
@@ -182,6 +275,11 @@ MR.Gestures integration:
 | `AdaptItemWidth` | `bool` | Whether items should adapt their width (default: true) |
 | `AdaptItemHeight` | `bool` | Whether items should adapt their height (default: false) |
 | `AnimateTransitions` | `bool` | Enable layout change animations (default: true) |
+| `LongPressedDraggingAnimation` | `Func<View, Task>` | Animation applied when an item starts being dragged |
+| `LongPressedDroppingAnimation` | `Func<View, Task>` | Animation applied when an item stops being dragged |
+| `DragAndDropItemsAnimation` | `Func<View, Task>` | Continuous animation for items when drag-and-drop is enabled |
+| `DragAndDropEndItemsAnimation` | `Func<View, Task>` | Cleanup animation for items when drag-and-drop is disabled |
+| `ShiftAnimationDuration` | `uint` | Duration (ms) for batch shift animations during reordering (default: 120) |
 
 ## Sample Application
 

@@ -12,7 +12,7 @@ using Mvvm.Flux.Maui.Domain.Lights;
 using Mvvm.Flux.Maui.Domain.Lights.Mock;
 using Mvvm.Flux.Maui.Presentation.Pages;
 using Mvvm.Flux.Maui.Presentation.Pages.Home;
-using Sharpnado.GridLayout;
+using Sharpnado.Maui.DragDropGridView;
 using Sharpnado.Shades;
 using Sharpnado.Tabs;
 using Sharpnado.TaskLoaderView;

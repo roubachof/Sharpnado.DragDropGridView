@@ -1,7 +1,7 @@
 using MR.Gestures;
 using ScrollView = Microsoft.Maui.Controls.ScrollView;
 
-namespace Sharpnado.GridLayout;
+namespace Sharpnado.Maui.DragDropGridView;
 
 /// <summary>
 /// Extension methods for configuring Sharpnado.DragDropGridView in a MAUI application.

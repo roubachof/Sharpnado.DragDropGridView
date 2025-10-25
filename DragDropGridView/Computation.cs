@@ -1,4 +1,4 @@
-namespace Sharpnado.GridLayout;
+namespace Sharpnado.Maui.DragDropGridView;
 
 public static class Computation
     {

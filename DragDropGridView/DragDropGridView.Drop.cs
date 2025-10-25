@@ -1,4 +1,4 @@
-﻿namespace Sharpnado.GridLayout;
+﻿namespace Sharpnado.Maui.DragDropGridView;
 
 using System.Collections;
 using System.Collections.ObjectModel;
@@ -9,6 +9,137 @@ public partial class DragDropGridView
     private const bool VerboseLogging = false;
 
     private bool _isReorderingItemsSource;
+
+    /// <summary>
+    /// The method that will handle the end of the dragging.
+    /// It will either:
+    /// * Group the dragged view with a receiving view,
+    /// then shift the views to the left to fill the hole left by the dragged view,
+    /// * Animate the dragged view to its placeholder.
+    /// Then invalidate the layout.
+    /// </summary>
+    /// <param name="view">The view that has been dropped.</param>
+    private async Task OnViewDroppedAsync(View view)
+    {
+        InternalLogger.Debug(Tag, () => $"OnViewDroppedAsync( view: {view.GetType().Name} )");
+
+        // Prevent invalidation during animation of children and binding context changes
+        _shouldInvalidate = false;
+
+        if (_groupCandidate != null && _draggingView != null)
+        {
+            InternalLogger.Debug(Tag, () => $"Grouping started with {_groupCandidate}");
+
+            // Group the 2 views
+            await _groupCandidate.ScaleTo(1);
+
+            await ((IDragAndDropView)_groupCandidate).OnViewDroppedAsync((IDragAndDropView)_draggingView);
+
+            var draggingViewIndex = _draggingSessionList.IndexOf(_draggingView);
+
+            await ShiftAsync(Direction.Left, _draggingSessionList.Count - 1, draggingViewIndex);
+
+            _groupCandidate = null;
+        }
+        else if (_draggingView != null)
+        {
+            // Animate to final position
+            var viewIndex = _draggingSessionList.IndexOf(_draggingView);
+            var targetView = (View)_orderedChildren[viewIndex];
+
+            var translationX = targetView.X - _draggingView.X;
+            var translationY = targetView.Y - _draggingView.Y;
+
+            InternalLogger.Debug(Tag, () => $"Animating view to final translation: x:{translationX}, y:{translationY}");
+
+            await _draggingView.TranslateTo(translationX, translationY);
+        }
+
+        var toBeRemoved = StopDraggingSession(view);
+
+        _shouldInvalidate = true;
+        if (toBeRemoved != null)
+        {
+            Children.Remove(toBeRemoved);
+        }
+        else
+        {
+            InvalidateMeasure();
+        }
+
+        InternalLogger.Debug(Tag, () => $"Ordered children after invalidation: {_orderedChildren.Aggregate(string.Empty, (acc, view) => $"{acc}, {((View)view).BindingContext}")}");
+
+        OnItemsReorderedCommand?.Execute(
+            _orderedChildren.Select(v => ((View)v).BindingContext)
+                .ToList());
+
+        if (DragAndDropItemsAnimation != null)
+        {
+            TaskMonitor.Create(ApplyAnimationToChildrenAsync());
+        }
+    }
+
+    private IView? StopDraggingSession(View view)
+    {
+        InternalLogger.Debug(Tag, () => "StopDraggingSession");
+
+        _isDragging = false;
+
+        ((IDragAndDropView)view).IsDragAndDropping = false;
+#if !ANDROID
+        view.ZIndex -= 100;
+#endif
+
+        SyncItemsSource(view);
+
+        _draggingView = null;
+        _orderedChildren.Clear();
+        _orderedChildren.AddRange(_draggingSessionList);
+
+        _draggingSessionList.Clear();
+
+        // Find views that should be removed (excluding the header view)
+        return Children
+            .Except(_orderedChildren)
+            .FirstOrDefault(child => child != _headerView);
+    }
+
+    private void SyncItemsSource(View view)
+    {
+        var newIndexOfView = _draggingSessionList.IndexOf(view);
+
+        var itemsSource = ItemsSource;
+        var bindingContext = view.BindingContext;
+        if (bindingContext != null)
+        {
+            if (itemsSource is IList list)
+            {
+                try
+                {
+                    var oldIndex = list.IndexOf(bindingContext);
+
+                    InternalLogger.Debug(Tag, () => $"ItemsSource item moved from {oldIndex} to {newIndexOfView}");
+
+                    var observableCollectionType = typeof(ObservableCollection<>);
+                    var observableOfType = observableCollectionType.MakeGenericType(bindingContext.GetType());
+
+                    var itemsSourceType = itemsSource.GetType();
+                    if (itemsSourceType.IsAssignableTo(observableOfType))
+                    {
+                        _isReorderingItemsSource = true;
+
+                        // call the move method on the observable collection
+                        var moveMethod = itemsSourceType.GetMethod("Move");
+                        moveMethod?.Invoke(itemsSource, [oldIndex, newIndexOfView]);
+                    }
+                }
+                finally
+                {
+                    _isReorderingItemsSource = false;
+                }
+            }
+        }
+    }
 
     private void CheckCandidates(View draggingView)
     {
@@ -220,131 +351,4 @@ public partial class DragDropGridView
 
         return tcs.Task;
     }
-
-    private IView? StopDraggingSession(View view)
-    {
-        InternalLogger.Debug(Tag, () => "StopDraggingSession");
-
-        _isDragging = false;
-
-        ((IDragAndDropView)view).IsDragAndDropping = false;
-#if !ANDROID
-        view.ZIndex -= 100;
-#endif
-
-        SyncItemsSource(view);
-
-        _draggingView = null;
-        _orderedChildren.Clear();
-        _orderedChildren.AddRange(_draggingSessionList);
-
-        _draggingSessionList.Clear();
-
-        // Find views that should be removed (excluding the header view)
-        return Children
-            .Except(_orderedChildren)
-            .FirstOrDefault(child => child != _headerView);
-    }
-
-    private void SyncItemsSource(View view)
-    {
-        var newIndexOfView = _draggingSessionList.IndexOf(view);
-
-        var itemsSource = ItemsSource;
-        var bindingContext = view.BindingContext;
-        if (bindingContext != null)
-        {
-            if (itemsSource is IList list)
-            {
-                try
-                {
-                    var oldIndex = list.IndexOf(bindingContext);
-
-                    InternalLogger.Debug(Tag, () => $"ItemsSource item moved from {oldIndex} to {newIndexOfView}");
-
-                    var observableCollectionType = typeof(ObservableCollection<>);
-                    var observableOfType = observableCollectionType.MakeGenericType(bindingContext.GetType());
-
-                    var itemsSourceType = itemsSource.GetType();
-                    if (itemsSourceType.IsAssignableTo(observableOfType))
-                    {
-                        _isReorderingItemsSource = true;
-
-                        // call the move method on the observable collection
-                        var moveMethod = itemsSourceType.GetMethod("Move");
-                        moveMethod?.Invoke(itemsSource, [oldIndex, newIndexOfView]);
-                    }
-                }
-                finally
-                {
-                    _isReorderingItemsSource = false;
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// The method that will handle the end of the dragging.
-    /// It will either:
-    /// * Group the dragged view with a receiving view,
-    /// then shift the views to the left to fill the hole left by the dragged view,
-    /// * Animate the dragged view to its placeholder.
-    /// Then invalidate the layout.
-    /// </summary>
-    /// <param name="view">The view that has been dropped.</param>
-    private async Task OnViewDroppedAsync(View view)
-    {
-        InternalLogger.Debug(Tag, () => $"OnViewDroppedAsync( view: {view.GetType().Name} )");
-
-        // Prevent invalidation during animation of children and binding context changes
-        _shouldInvalidate = false;
-
-        if (_groupCandidate != null && _draggingView != null)
-        {
-            InternalLogger.Debug(Tag, () => $"Grouping started with {_groupCandidate}");
-
-            // Group the 2 views
-            await _groupCandidate.ScaleTo(1);
-
-            await ((IDragAndDropView)_groupCandidate).OnViewDroppedAsync((IDragAndDropView)_draggingView);
-
-            var draggingViewIndex = _draggingSessionList.IndexOf(_draggingView);
-
-            await ShiftAsync(Direction.Left, _draggingSessionList.Count - 1, draggingViewIndex);
-
-            _groupCandidate = null;
-        }
-        else if (_draggingView != null)
-        {
-            // Animate to final position
-            var viewIndex = _draggingSessionList.IndexOf(_draggingView);
-            var targetView = (View)_orderedChildren[viewIndex];
-
-            var translationX = targetView.X - _draggingView.X;
-            var translationY = targetView.Y - _draggingView.Y;
-
-            InternalLogger.Debug(Tag, () => $"Animating view to final translation: x:{translationX}, y:{translationY}");
-
-            await _draggingView.TranslateTo(translationX, translationY);
-        }
-
-        var toBeRemoved = StopDraggingSession(view);
-
-        _shouldInvalidate = true;
-        if (toBeRemoved != null)
-        {
-            Children.Remove(toBeRemoved);
-        }
-        else
-        {
-            InvalidateMeasure();
-        }
-
-        InternalLogger.Debug(Tag, () => $"Ordered children after invalidation: {_orderedChildren.Aggregate(string.Empty, (acc, view) => $"{acc}, {((View)view).BindingContext}")}");
-
-        OnItemsReorderedCommand?.Execute(
-            _orderedChildren.Select(v => ((View)v).BindingContext)
-                .ToList());
-    }
-
 }

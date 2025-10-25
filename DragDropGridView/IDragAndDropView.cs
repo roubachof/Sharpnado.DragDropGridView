@@ -1,6 +1,6 @@
 ﻿using MR.Gestures;
 
-namespace Sharpnado.GridLayout;
+namespace Sharpnado.Maui.DragDropGridView;
 
 public interface IDragAndDropView : IGestureAwareControl
 {

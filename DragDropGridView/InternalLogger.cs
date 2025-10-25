@@ -3,7 +3,7 @@ using System.Text;
 
 [assembly: InternalsVisibleTo("Sharpnado.Maui.GridLayout")]
 
-namespace Sharpnado.GridLayout;
+namespace Sharpnado.Maui.DragDropGridView;
 
 internal static class InternalLogger
 {

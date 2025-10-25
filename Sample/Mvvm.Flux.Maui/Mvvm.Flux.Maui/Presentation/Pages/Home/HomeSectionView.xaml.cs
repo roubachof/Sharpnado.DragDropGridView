@@ -1,4 +1,6 @@
 ﻿using Mvvm.Flux.Maui.Presentation.CustomViews;
+using Sharpnado.Maui.DragDropGridView;
+using Sharpnado.TaskLoaderView;
 
 namespace Mvvm.Flux.Maui.Presentation.Pages.Home
 {
@@ -8,6 +10,17 @@ namespace Mvvm.Flux.Maui.Presentation.Pages.Home
         public HomeSectionView()
         {
             InitializeComponent();
+            TaskLoader.ResultControlTemplateLoaded += TaskLoaderOnResultControlTemplateLoaded;
+        }
+
+        private void TaskLoaderOnResultControlTemplateLoaded(object? sender, ControlTemplateLoadedEventArgs e)
+        {
+            var gridView = e.View.FindByName<DragDropGridView>("GridView");
+            gridView.DragAndDropItemsAnimation = DragDropAnimations.Items.WobbleAsync;
+            gridView.DragAndDropEndItemsAnimation = DragDropAnimations.EndItems.StopWobbleAsync;
+
+            gridView.LongPressedDraggingAnimation = DragDropAnimations.Dragging.ScaleUpBounceAsync;
+            gridView.LongPressedDroppingAnimation = DragDropAnimations.Dropping.ScaleToBounceAsync;
         }
     }
 }

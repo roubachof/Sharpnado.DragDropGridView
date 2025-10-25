@@ -1,4 +1,4 @@
-namespace Sharpnado.GridLayout;
+namespace Sharpnado.Maui.DragDropGridView;
 
 /// <summary>
 /// A lightweight, headless wrapper view that implements IDragAndDropView.

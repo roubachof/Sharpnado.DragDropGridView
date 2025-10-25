@@ -30,25 +30,44 @@
     <PackageIcon>gridlayout.png</PackageIcon>
     <PackageReadmeFile>PACKAGE_README.md</PackageReadmeFile>
     <PackageReleaseNotes>
-      Version 1.0.0 - Initial release for .NET 9 MAUI
+      Version 1.0.0 - Initial Release (January 2025)
       
-      FEATURES:
-      * Automatic grid layout with responsive column calculation
-      * ItemsSource/DataTemplate binding with INotifyCollectionChanged support
-      * Drag-and-drop reordering with smooth animations
-      * Adaptive item width and height based on available space
-      * Configurable column/row spacing and grid padding
-      * Orientation-aware layout (portrait/landscape)
-      * Custom drag-and-drop animations support
-      * ScrollView edge detection during drag operations
-      * OnItemsReorderedCommand for handling reorder events
-      * Pure .NET MAUI implementation - works identically across all platforms
+      CORE FEATURES:
+      ✨ Automatic grid layout with responsive column calculation
+      ✨ Full ItemsSource/DataTemplate binding with INotifyCollectionChanged support
+      ✨ Header support with custom DataTemplate
+      ✨ Adaptive item width/height based on available space
+      ✨ Configurable column/row spacing and grid padding
+      ✨ Orientation-aware layout (portrait/landscape)
+      ✨ Works seamlessly inside ScrollView with explicit ColumnCount
+      
+      DRAG &amp; DROP (iOS, Android, Mac Catalyst):
+      🎯 Built-in drag-and-drop reordering with smooth animations
+      🎯 Two trigger modes: Pan (immediate) and LongPress (iOS recommended)
+      🎯 Automatic ScrollView edge detection and auto-scrolling
+      🎯 Batched shift animations with configurable duration (default 120ms)
+      🎯 OnItemsReorderedCommand for handling reorder events
+      🎯 Automatic ItemsSource synchronization for IList collections
+      
+      CUSTOMIZABLE ANIMATIONS:
+      🎨 ViewStartDraggingAnimation / ViewStopDraggingAnimation
+      🎨 DragAndDropEnabledItemsAnimation / DragAndDropDisabledItemsAnimation
+      🎨 Predefined animations: ScaleUp, ScaleUpBounce, Wobble, and more
+      🎨 Custom animation functions support
+      
+      INTEGRATION:
+      🔧 Pure .NET MAUI implementation
+      🔧 Includes MR.Gestures fork for reliable gesture handling
+      🔧 Full logging support with configurable levels
+      🔧 MVVM-friendly with command and data binding support
       
       PLATFORMS:
-      * Android API 21+
-      * iOS 12.2+
-      * Windows 10.0.17763.0+
-      * MacCatalyst 15.0+
+      ✅ iOS 15.0+ (full drag-and-drop)
+      ✅ Android API 21+ (full drag-and-drop)
+      ✅ Mac Catalyst 15.0+ (full drag-and-drop)
+      ⚠️  Windows 10.0.17763.0+ (grid layout only, no drag-and-drop)
+      
+      See CHANGELOG.md for detailed release notes.
     </PackageReleaseNotes>
   </PropertyGroup>
     

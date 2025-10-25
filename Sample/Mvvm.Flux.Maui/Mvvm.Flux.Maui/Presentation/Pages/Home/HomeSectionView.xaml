@@ -42,7 +42,8 @@
     </ContentView.Resources>
     <ContentView.Content>
         <Grid>
-            <tlv:TemplatedTaskLoader ErrorControlTemplate="{StaticResource ErrorViewTemplate}"
+            <tlv:TemplatedTaskLoader x:Name="TaskLoader"
+                                     ErrorControlTemplate="{StaticResource ErrorViewTemplate}"
                                      LoadingControlTemplate="{StaticResource ActivityIndicatorTemplate}"
                                      TaskLoaderNotifier="{Binding Loader}">
                 <tlv:TemplatedTaskLoader.ResultControlTemplate>
@@ -54,7 +55,8 @@
                                          IsRefreshing="{Binding Loader.ShowRefresher}"
                                          RefreshColor="{StaticResource LightBulbOnColor}">
                                 <ScrollView>
-                                    <sho:DragDropGridView AnimateTransitions="True"
+                                    <sho:DragDropGridView x:Name="GridView"
+                                                          AnimateTransitions="True"
                                                           ColumnCount="{Binding GridColumnCount}"
                                                           ColumnSpacing="0"
                                                           DragAndDropTrigger="{Binding Source={RelativeSource AncestorType={x:Type home:HomeSectionViewModel}},
