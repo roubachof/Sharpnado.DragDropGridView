@@ -122,9 +122,8 @@
                                                                      TappedCommand="{Binding Source={RelativeSource AncestorType={x:Type home:HomeSectionViewModel}},
                                                                                              Path=NavigateToLightEditCommand}"
                                                                      TappedCommandParameter="{Binding}">
-                                                    <sho:Shadows Shades="{Binding IsOn, Converter={converters:BoolToShadesResourceConverter IfFalse='ShadowNone', IfTrue='ShadeLightBulbHalo'}}">
-                                                        <Border Margin="10"
-                                                                Background="{StaticResource SurfaceBackgroundColor}"
+                                                    <sho:Shadows Margin="10" CornerRadius="10" Shades="{Binding IsOn, Converter={converters:BoolToShadesResourceConverter IfFalse='ShadowNone', IfTrue='ShadeLightBulbHalo'}}">
+                                                        <Border Background="{StaticResource SurfaceBackgroundColor}"
                                                                 StrokeShape="{StaticResource RoundRectangle}"
                                                                 StrokeThickness="0">
                                                             <Grid Padding="10,0,10,10">
