@@ -16,11 +16,11 @@ namespace Mvvm.Flux.Maui.Presentation.Pages.Home
         private void TaskLoaderOnResultControlTemplateLoaded(object? sender, ControlTemplateLoadedEventArgs e)
         {
             var gridView = e.View.FindByName<DragDropGridView>("GridView");
-            gridView.DragAndDropItemsAnimation = DragDropAnimations.Items.WobbleAsync;
-            gridView.DragAndDropEndItemsAnimation = DragDropAnimations.EndItems.StopWobbleAsync;
+            // gridView.DragAndDropItemsAnimation = DragDropAnimations.Items.WobbleAsync;
+            // gridView.DragAndDropEndItemsAnimation = DragDropAnimations.EndItems.StopWobbleAsync;
 
-            gridView.LongPressedDraggingAnimation = DragDropAnimations.Dragging.ScaleUpBounceAsync;
-            gridView.LongPressedDroppingAnimation = DragDropAnimations.Dropping.ScaleToBounceAsync;
+            gridView.LongPressedDraggingAnimation = DragDropAnimations.Dragging.ScaleUpAsync;
+            gridView.LongPressedDroppingAnimation = DragDropAnimations.Dropping.ScaleToNormalAsync;
         }
     }
 }
