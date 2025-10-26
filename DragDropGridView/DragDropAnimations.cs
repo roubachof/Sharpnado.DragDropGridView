@@ -16,11 +16,6 @@ public static class DragDropAnimations
         public static Task WobbleAsync(View view) => view.Wobble();
 
         /// <summary>
-        /// Cleanup animation to reset rotation after wobble.
-        /// </summary>
-        public static Task StopWobbleAsync(View view) => view.RotateTo(0, 100);
-
-        /// <summary>
         /// No animation - items remain static.
         /// </summary>
         public static Task NoneAsync(View view) => Task.CompletedTask;
@@ -34,7 +29,18 @@ public static class DragDropAnimations
         /// <summary>
         /// Cleanup animation to reset rotation after wobble.
         /// </summary>
-        public static Task StopWobbleAsync(View view) => view.RotateTo(0, 100);
+        public static async Task StopWobbleAsync(View view)
+        {
+            try
+            {
+                await view.RotateTo(0, 100);
+            }
+            finally
+            {
+                view.Rotation = 0;
+            }
+
+        }
 
         /// <summary>
         /// No animation - items remain static.

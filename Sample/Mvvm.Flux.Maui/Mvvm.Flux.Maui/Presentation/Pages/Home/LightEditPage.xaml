@@ -36,8 +36,10 @@
               ColumnSpacing="10">
             <Grid.Margin>
                 <OnPlatform x:TypeArguments="Thickness">
-                    <On Platform="Android" Value="0,0,0,0" />
-                    <On Platform="iOS" Value="0,0,0,0" />
+                    <On Platform="Android"
+                        Value="0,0,0,0" />
+                    <On Platform="iOS"
+                        Value="0,0,0,0" />
                 </OnPlatform>
             </Grid.Margin>
             <Grid.RowDefinitions>
@@ -67,7 +69,9 @@
                                                              Converter={converters:BoolToShadowResourceConverter IfFalse={x:Null},
                                                                                                                  IfTrue='ShadowLightBulbHalo'}}" />
 
-                            <sho:Shadows CornerRadius="100"
+                            <sho:Shadows HorizontalOptions="Center"
+                                         VerticalOptions="Center"
+                                         CornerRadius="100"
                                          Shades="{sho:SingleShade BlurRadius='60',
                                                                   Color={StaticResource LightBulbHaloColor},
                                                                   Offset='0,-30'}">
@@ -81,8 +85,6 @@
                                 <Image Grid.Row="0"
                                        WidthRequest="{StaticResource LightSize}"
                                        HeightRequest="{StaticResource LightSize}"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center"
                                        Shadow="{Binding Loader.Result.IsOn,
                                                         Converter={converters:BoolToShadowResourceConverter IfFalse={x:Null},
                                                                                                             IfTrue='ShadowLightBulbHalo'}}"
@@ -131,8 +133,10 @@
                                  ShowBackButton="True">
                 <customViews:Toolbar.UseSafeAreaMargin>
                     <OnPlatform x:TypeArguments="x:Boolean">
-                        <On Platform="Android" Value="True" />
-                        <On Platform="iOS" Value="False" />
+                        <On Platform="Android"
+                            Value="True" />
+                        <On Platform="iOS"
+                            Value="False" />
                     </OnPlatform>
                 </customViews:Toolbar.UseSafeAreaMargin>
                 <Button Style="{StaticResource ButtonWhiteTransparent}"

@@ -1,6 +1,10 @@
-# Sharpnado.Maui.DragDropGridView
-
-A high-performance drag-and-drop grid layout control for .NET MAUI with adaptive sizing, configurable gesture triggers, and flexible item management.
+<div align="center">
+  <img src="Docs/gridlayout.png" alt="DragDropGridView Logo" width="200"/>
+  
+  # Sharpnado.Maui.DragDropGridView
+  
+  A high-performance drag-and-drop grid layout control for .NET MAUI with adaptive sizing, configurable gesture triggers, and flexible item management.
+</div>
 
 ## Features
 
@@ -136,8 +140,18 @@ Important requirements:
 - The ItemsSource will be automatically updated on reorder if it implements `IList`.
 - On Windows, the grid will function as a read-only layout without drag-and-drop capabilities.
 
-MR.Gestures integration:
-- This package includes a fork of MR.Gestures to enable reliable LongPress-based drag-and-drop on iOS/Mac Catalyst. No extra setup is required beyond calling `.UseSharpnadoDragDropGridView(...)`, which configures MR.Gestures for you.
+#### MR.Gestures Integration
+
+**Important**: This library would not exist without the excellent work of **Michael Rumpler** on [MR.Gestures](https://www.mrgestures.com/). The DragDropGridView uses a fork of MR.Gestures to enable reliable cross-platform gesture handling, particularly for LongPress-based drag-and-drop on iOS and Mac Catalyst.
+
+The fork is maintained within this package to ensure:
+- Seamless integration with the drag-and-drop functionality
+- Consistent behavior across iOS, Android, and Mac Catalyst
+- Reliable gesture recognition without conflicts
+
+No extra setup is required beyond calling `.UseSharpnadoDragDropGridView(...)`, which automatically configures the MR.Gestures infrastructure for you.
+
+**Thank you, Michael Rumpler**, for creating and maintaining MR.Gestures - this component would not have been possible without your foundational work! 🙏
 
 ### Using DragDropGridView in a ScrollView
 
@@ -264,6 +278,7 @@ myGridLayout.DragAndDropEndItemsAnimation = async (view) =>
 |----------|------|-------------|
 | `ItemsSource` | `IEnumerable` | The collection of items to display |
 | `ItemTemplate` | `DataTemplate` | Template for rendering each item |
+| `Header` | `object` | Optional header content (can be a View or any object) |
 | `HeaderTemplate` | `DataTemplate` | Optional template for the header |
 | `ColumnCount` | `int` | Number of columns in the grid |
 | `ColumnSpacing` | `double` | Spacing between columns |
@@ -279,7 +294,32 @@ myGridLayout.DragAndDropEndItemsAnimation = async (view) =>
 | `LongPressedDroppingAnimation` | `Func<View, Task>` | Animation applied when an item stops being dragged |
 | `DragAndDropItemsAnimation` | `Func<View, Task>` | Continuous animation for items when drag-and-drop is enabled |
 | `DragAndDropEndItemsAnimation` | `Func<View, Task>` | Cleanup animation for items when drag-and-drop is disabled |
-| `ShiftAnimationDuration` | `uint` | Duration (ms) for batch shift animations during reordering (default: 120) |
+| `ShiftAnimationDuration` | `uint` | Duration (ms) for batch shift animations during reordering (default: 250) |
+
+### DragAndDropView Properties
+
+The `DragAndDropView` control is a wrapper view that enables drag-and-drop functionality. It exposes the following bindable properties:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `CanReceiveView` | `bool` | Whether this view can receive dropped views (default: false) |
+| `CanBeDropped` | `bool` | Whether this view can be dropped onto other views (default: true) |
+| `CanMove` | `bool` | Whether this view can be moved/dragged (default: true) |
+| `IsDragAndDropping` | `bool` | Whether this view is currently being dragged or dropped (default: false) |
+| `OnViewDroppedCommand` | `ICommand` | Command executed when another view is dropped onto this view |
+
+Example usage:
+
+```xml
+<gridLayout:DragAndDropView
+    CanMove="True"
+    CanReceiveView="True"
+    OnViewDroppedCommand="{Binding HandleDropCommand}">
+    <Border Padding="10" Background="LightGray">
+        <Label Text="{Binding Name}" />
+    </Border>
+</gridLayout:DragAndDropView>
+```
 
 ## Sample Application
 
@@ -332,6 +372,12 @@ This project is licensed under the MIT License.
 ## Credits
 
 Developed by Jean-Marie Alfonsi (Sharpnado)
+
+### Special Thanks
+
+**Michael Rumpler** - Creator of [MR.Gestures](https://www.mrgestures.com/)
+
+This library uses a fork of MR.Gestures to provide reliable cross-platform gesture handling. The drag-and-drop functionality would not have been possible without Michael's excellent work on gesture recognition in Xamarin.Forms and .NET MAUI. A huge thank you for making this component possible! 🙏
 
 ## Support
 
