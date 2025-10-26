@@ -73,9 +73,7 @@ Example with logging enabled:
 xmlns:gridLayout="clr-namespace:Sharpnado.Maui.DragDropGridView;assembly=Sharpnado.Maui.DragDropGridView"
 
 <ScrollView>
-### 3. Use the DragDropGridView
 
-```xml
 <gridLayout:DragDropGridView
     ColumnCount="2"
     ColumnSpacing="10"
