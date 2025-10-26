@@ -8,11 +8,6 @@ public partial class DragDropGridView
 {
     private void SubscribeDragAndDropIfNeeded(Element child)
     {
-#if WINDOWS
-        InternalLogger.Warn("WARNING: Drag and drop is unavailable on windows.");
-        return;
-#endif
-
         if (child is not (IGestureAwareControl gestureAwareControl and IDragAndDropView))
         {
             return;
@@ -40,11 +35,6 @@ public partial class DragDropGridView
 
     private void UnsubscribeDragAndDropIfNeeded(Element child)
     {
-#if WINDOWS
-        InternalLogger.Warn("WARNING: Drag and drop is unavailable on windows.");
-        return;
-#endif
-
         if (child is not (IGestureAwareControl gestureAwareControl and IDragAndDropView))
         {
             return;

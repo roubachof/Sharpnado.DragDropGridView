@@ -18,7 +18,7 @@ namespace Mvvm.Flux.Maui.Presentation.Pages.Home
         private readonly ILightService _lightService;
         private int _gridColumnCount = 2;
         private bool _isDragAndDropEnabled = true;
-        private DragAndDropTrigger _dragTrigger = DragAndDropTrigger.LongPress;
+        private DragAndDropTrigger _dragTrigger = DragAndDropTrigger.Pan;
 
         public HomeSectionViewModel(
             INavigationService navigationService,
