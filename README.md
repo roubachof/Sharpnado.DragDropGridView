@@ -15,6 +15,10 @@
 - 🔄 **Data Binding**: Full ItemsSource and DataTemplate support
 - 📱 **Cross-Platform**: Works on iOS, Android, Mac Catalyst, and Windows (drag-and-drop available on iOS, Android, Mac Catalyst only)
 
+
+https://github.com/user-attachments/assets/92c8332d-6237-4349-be15-eaf5c0042c8f
+
+
 ## Installation
 
 ```xml
@@ -130,6 +134,10 @@ xmlns:gridLayout="clr-namespace:Sharpnado.Maui.DragDropGridView;assembly=Sharpna
 
 **Platform Availability**: Drag-and-drop functionality is currently available on iOS, Android, and Mac Catalyst. It is **not available on Windows** due to gesture coordinate system complexities.
 
+
+https://github.com/user-attachments/assets/7ea52963-7c13-4b75-ac64-531dbde3e895
+
+
 The DragDropGridView supports drag-and-drop reordering with two trigger modes:
 
 - Pan (default): drag starts as soon as the user pans the item.
@@ -182,6 +190,10 @@ No extra setup is required beyond calling `.UseSharpnadoDragDropGridView(...)`, 
 ### Custom Animations
 
 The DragDropGridView supports customizable animations for various drag-and-drop states. You can use the predefined animations from the `DragDropAnimations` static class or provide your own custom animation functions.
+
+
+https://github.com/user-attachments/assets/805e0e58-6845-43d4-b316-b0e610d33464
+
 
 #### Animation Properties
 
