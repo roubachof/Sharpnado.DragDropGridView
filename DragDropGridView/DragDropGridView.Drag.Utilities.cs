@@ -20,7 +20,7 @@ public partial class DragDropGridView
             InternalLogger.Debug(Tag, () => $"UpdateRefreshView( disabled: {isDisabled} )");
             ((UntouchableRefreshViewHandler)_refreshView.Handler!).UpdateDisableScrolling(isDisabled);
         }
-#else
+#elif !WINDOWS
         if (_scrollView != null)
         {
             _scrollView.IsEnabled = !isDisabled;
