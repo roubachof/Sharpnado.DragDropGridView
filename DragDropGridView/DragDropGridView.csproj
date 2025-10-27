@@ -29,8 +29,13 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>gridlayout.png</PackageIcon>
     <PackageReadmeFile>PACKAGE_README.md</PackageReadmeFile>
+    
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageReleaseNotes>
-      Version 1.0.0 - Initial Release (January 2025)
+      Version 1.0.0 - Initial Release (October 2025)
       
       CORE FEATURES:
       ✨ Automatic grid layout with responsive column calculation

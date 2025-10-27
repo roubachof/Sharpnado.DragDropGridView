@@ -4,6 +4,8 @@
   # Sharpnado.Maui.DragDropGridView
   
   A high-performance drag-and-drop grid layout control for .NET MAUI with adaptive sizing, configurable gesture triggers, and flexible item management.
+  
+  [![Nuget](https://img.shields.io/nuget/v/Sharpnado.Maui.DragDropGridView.svg)](https://www.nuget.org/packages/Sharpnado.Maui.DragDropGridView)
 </div>
 
 ## Features
