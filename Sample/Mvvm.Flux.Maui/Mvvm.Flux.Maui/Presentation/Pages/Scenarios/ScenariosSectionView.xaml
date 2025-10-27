@@ -2,10 +2,162 @@
 <customViews:ContentPageView x:Class="Mvvm.Flux.Maui.Presentation.Pages.Scenarios.ScenariosSectionView"
                              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-                             xmlns:customViews="clr-namespace:Mvvm.Flux.Maui.Presentation.CustomViews">
+                             xmlns:converters="using:Mvvm.Flux.Maui.Presentation.Converters"
+                             xmlns:customViews="clr-namespace:Mvvm.Flux.Maui.Presentation.CustomViews"
+                             xmlns:gestures="clr-namespace:MR.Gestures;assembly=MR.Gestures"
+                             xmlns:lights="using:Mvvm.Flux.Maui.Domain.Lights"
+                             xmlns:scenarios="using:Mvvm.Flux.Maui.Presentation.Pages.Scenarios"
+                             xmlns:sho="http://sharpnado.com"
+                             xmlns:tlv="clr-namespace:Sharpnado.TaskLoaderView;assembly=Sharpnado.Maui.TaskLoaderView"
+                             x:Name="Root"
+                             x:DataType="scenarios:ScenariosSectionViewModel">
     <ContentView.Content>
-        <StackLayout>
-            <Label Text="Hello Xamarin.Forms!" />
-        </StackLayout>
+        <Grid>
+            <tlv:TemplatedTaskLoader x:Name="TaskLoader"
+                                     ErrorControlTemplate="{StaticResource ErrorViewTemplate}"
+                                     LoadingControlTemplate="{StaticResource ActivityIndicatorTemplate}"
+                                     TaskLoaderNotifier="{Binding Loader}">
+                <tlv:TemplatedTaskLoader.ResultControlTemplate>
+                    <ControlTemplate>
+                        <ContentView BindingContext="{Binding Source={RelativeSource AncestorType={x:Type scenarios:ScenariosSectionViewModel}}}"
+                                     CompressedLayout.IsHeadless="True">
+                            <RefreshView Command="{Binding Loader.RefreshCommand,
+                                                           Mode=OneWay}"
+                                         IsRefreshing="{Binding Loader.ShowRefresher}"
+                                         RefreshColor="{StaticResource LightBulbOnColor}">
+                                <Grid RowDefinitions="Auto,*">
+                                    <!--  Header Section  -->
+                                    <Grid Grid.Row="0"
+                                          Padding="15,129,15,20"
+                                          ColumnDefinitions="80,*">
+                                        <Image Grid.Column="0"
+                                               WidthRequest="80"
+                                               HeightRequest="80"
+                                               Source="owner.png" />
+                                        <Label Grid.Column="1"
+                                               Style="{StaticResource TextHuge}"
+                                               HeightRequest="{Binding Source={x:Reference Root},
+                                                                       Path=Height,
+                                                                       Converter={converters:TopSafeAreaToDoubleConverter},
+                                                                       ConverterParameter=75}"
+                                               Margin="15"
+                                               VerticalTextAlignment="Center"
+                                               MaxLines="2"
+                                               Text="{Binding Title}" />
+                                    </Grid>
+
+                                    <!--  Horizontal ScrollView with DragDropGridView  -->
+                                    <ScrollView Grid.Row="1"
+                                                Orientation="Horizontal">
+                                        <sho:DragDropGridView x:Name="GridView"
+                                                              AdaptItemWidth="True"
+                                                              AnimateTransitions="True"
+                                                              ColumnSpacing="0"
+                                                              DragAndDropTrigger="{Binding DragTrigger}"
+                                                              GridPadding="15,0"
+                                                              IsDragAndDropEnabled="{Binding IsDragAndDropEnabled}"
+                                                              ItemsSource="{Binding Loader.Result}"
+                                                              RowCount="{Binding GridRowCount}"
+                                                              RowSpacing="0">
+                                            <sho:DragDropGridView.ItemTemplate>
+                                                <DataTemplate x:DataType="lights:Light">
+                                                    <sho:DragAndDropView WidthRequest="120"
+                                                                         IsClippedToBounds="False"
+                                                                         TappedCommand="{Binding Source={RelativeSource AncestorType={x:Type scenarios:ScenariosSectionViewModel}},
+                                                                                                 Path=NavigateToLightEditCommand}"
+                                                                         TappedCommandParameter="{Binding}">
+                                                        <sho:Shadows Margin="10"
+                                                                     CornerRadius="10"
+                                                                     Shades="{Binding IsOn,
+                                                                                      Converter={converters:BoolToShadesResourceConverter IfFalse='ShadowNone',
+                                                                                                                                          IfTrue='ShadeLightBulbHalo'}}">
+                                                            <Border Background="{StaticResource SurfaceBackgroundColor}"
+                                                                    StrokeShape="{StaticResource RoundRectangle}"
+                                                                    StrokeThickness="0">
+                                                                <Grid Padding="10,0,10,10">
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition Height="100" />
+                                                                        <RowDefinition Height="20" />
+                                                                    </Grid.RowDefinitions>
+
+                                                                    <Image Grid.Row="0"
+                                                                           Style="{StaticResource ImageHuge}"
+                                                                           Shadow="{Binding IsOn,
+                                                                                            Converter={converters:BoolToShadowResourceConverter IfFalse={x:Null},
+                                                                                                                                                IfTrue='ShadowLightBulbHalo'}}"
+                                                                           Source="{StaticResource IconLightOff}">
+                                                                        <Image.Triggers>
+                                                                            <DataTrigger Binding="{Binding IsOn}"
+                                                                                         TargetType="Image"
+                                                                                         Value="True">
+                                                                                <Setter Property="Source" Value="{StaticResource IconLightOn}" />
+                                                                            </DataTrigger>
+                                                                        </Image.Triggers>
+                                                                    </Image>
+
+                                                                    <Label Grid.Row="1"
+                                                                           Style="{StaticResource TextBody}"
+                                                                           HorizontalOptions="Center"
+                                                                           Text="{Binding Name}" />
+                                                                </Grid>
+                                                            </Border>
+                                                        </sho:Shadows>
+                                                    </sho:DragAndDropView>
+                                                </DataTemplate>
+                                            </sho:DragDropGridView.ItemTemplate>
+                                        </sho:DragDropGridView>
+                                    </ScrollView>
+                                </Grid>
+                            </RefreshView>
+                        </ContentView>
+                    </ControlTemplate>
+                </tlv:TemplatedTaskLoader.ResultControlTemplate>
+            </tlv:TemplatedTaskLoader>
+
+            <!--  Sticky Drag & Drop Switch  -->
+            <gestures:Border Padding="15,5"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Start"
+                             Background="{StaticResource SurfaceBackgroundColor}"
+                             Shadow="{StaticResource ShadowLightOn}"
+                             StrokeShape="RoundRectangle 30"
+                             StrokeThickness="0"
+                             TappedCommand="{Binding ToggleDragAndDropCommand}">
+                <gestures:Border.Margin>
+                    <OnPlatform x:TypeArguments="Thickness">
+                        <On Platform="Android"
+                            Value="0,60,0,0" />
+                        <On Platform="iOS"
+                            Value="0,16,0,0" />
+                        <On Platform="WinUI"
+                            Value="0,32,0,0" />
+                        <On Platform="MacCatalyst"
+                            Value="0,16,0,0" />
+                    </OnPlatform>
+                </gestures:Border.Margin>
+                <HorizontalStackLayout Spacing="10">
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Label Style="{StaticResource TextBody}"
+                               VerticalOptions="Center"
+                               Text="Drag &amp; Drop" />
+                        <Label Style="{StaticResource TextBody}"
+                               VerticalOptions="Center"
+                               FontFamily="FontBold"
+                               Text="Horizontal" />
+                    </VerticalStackLayout>
+
+                    <Switch VerticalOptions="Center"
+                            IsToggled="{Binding IsDragAndDropEnabled}"
+                            OnColor="{StaticResource LightBulbOnColor}"
+                            Scale="0.8" />
+
+                </HorizontalStackLayout>
+            </gestures:Border>
+
+            <tlv:Snackbar IsVisible="{Binding Loader.ShowErrorNotification,
+                                              Mode=TwoWay}"
+                          Text="{Binding Loader.Error,
+                                         Converter={converters:ExceptionToErrorMessageConverter}}" />
+        </Grid>
     </ContentView.Content>
 </customViews:ContentPageView>

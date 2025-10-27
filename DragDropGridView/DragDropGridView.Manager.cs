@@ -112,6 +112,8 @@ public partial class DragDropGridView
             var xChild = bounds.X + padding.Left;
             var yChild = bounds.Y + headerHeight + padding.Top;
             var column = 0;
+            var row = 0;
+            bool isHorizontalScroll = DragDropGridView.RowCount > 0;
 
             InternalLogger.Debug(Tag, $"{nameof(ArrangeChildren)}(): Number of children => {DragDropGridView._orderedChildren.Count}");
 
@@ -132,15 +134,33 @@ public partial class DragDropGridView
                     child.Arrange(destination);
                 }
 
-                if (++column == layoutData.Columns)
+                if (isHorizontalScroll)
                 {
-                    column = 0;
-                    xChild = bounds.X + padding.Left;
-                    yChild += DragDropGridView.RowSpacing + cellSize.Height;
+                    // Horizontal scroll mode: arrange by rows
+                    if (++row == layoutData.Rows)
+                    {
+                        row = 0;
+                        yChild = bounds.Y + headerHeight + padding.Top;
+                        xChild += DragDropGridView.ColumnSpacing + cellSize.Width;
+                    }
+                    else
+                    {
+                        yChild += DragDropGridView.RowSpacing + cellSize.Height;
+                    }
                 }
                 else
                 {
-                    xChild += DragDropGridView.ColumnSpacing + cellSize.Width;
+                    // Vertical scroll mode: arrange by columns
+                    if (++column == layoutData.Columns)
+                    {
+                        column = 0;
+                        xChild = bounds.X + padding.Left;
+                        yChild += DragDropGridView.RowSpacing + cellSize.Height;
+                    }
+                    else
+                    {
+                        xChild += DragDropGridView.ColumnSpacing + cellSize.Width;
+                    }
                 }
             }
 
@@ -182,7 +202,17 @@ public partial class DragDropGridView
             {
                 int rows;
                 int columns;
-                if (IsPositiveInfinity(width))
+                
+                // Check if we're in horizontal scroll mode (RowCount > 0)
+                bool isHorizontalScroll = DragDropGridView.RowCount > 0;
+                
+                if (isHorizontalScroll)
+                {
+                    // Horizontal scrolling mode: fixed rows, columns grow
+                    rows = DragDropGridView.RowCount;
+                    columns = (visibleChildCount + rows - 1) / rows;
+                }
+                else if (IsPositiveInfinity(width))
                 {
                     // Use the explicitly set ColumnCount if available
                     if (DragDropGridView.ColumnCount > 0)
@@ -214,7 +244,7 @@ public partial class DragDropGridView
                 // Now maximize the cell size based on the layout size.
                 Size cellSize = default;
 
-                if (IsPositiveInfinity(width) || !DragDropGridView.AdaptItemWidth)
+                if (IsPositiveInfinity(width) || !DragDropGridView.AdaptItemWidth || isHorizontalScroll)
                 {
                     cellSize.Width = maxChildSize.Width;
                 }
@@ -235,7 +265,15 @@ public partial class DragDropGridView
                 layoutData = new LayoutData(visibleChildCount, cellSize, rows, columns);
             }
 
-            DragDropGridView.ColumnCount = layoutData.Columns;
+            // Update ColumnCount/RowCount based on mode
+            if (DragDropGridView.RowCount > 0)
+            {
+                DragDropGridView.RowCount = layoutData.Rows;
+            }
+            else
+            {
+                DragDropGridView.ColumnCount = layoutData.Columns;
+            }
 
             return layoutData;
         }

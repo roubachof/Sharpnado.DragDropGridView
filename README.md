@@ -168,7 +168,9 @@ No extra setup is required beyond calling `.UseSharpnadoDragDropGridView(...)`, 
 - **Automatic Scrolling**: When dragging items near the edges, the ScrollView will automatically scroll to reveal more content
 - **Gesture Coordination**: The control automatically manages gesture conflicts between dragging and scrolling
 - **Edge Detection**: Smart edge detection triggers scrolling during drag operations for smooth user experience
-- **Layout Respect**: When `ColumnCount` is explicitly set, it will be respected even when the ScrollView provides infinite width
+- **Layout Respect**: When `ColumnCount` or `RowCount` is explicitly set, it will be respected even when the ScrollView provides infinite dimensions
+
+#### Vertical Scrolling (Default)
 
 ```xml
 <ScrollView>
@@ -183,9 +185,26 @@ No extra setup is required beyond calling `.UseSharpnadoDragDropGridView(...)`, 
 </ScrollView>
 ```
 
-**Important**: Always set an explicit `ColumnCount` when using DragDropGridView inside a ScrollView. Without it, the layout cannot determine how many columns to display.
+**Important**: Always set an explicit `ColumnCount` when using DragDropGridView inside a vertical ScrollView. Without it, the layout cannot determine how many columns to display.
 
-**Note**: ScrollView integration and automatic gesture handling is available on all supported drag-and-drop platforms (iOS, Android, Mac Catalyst).
+#### Horizontal Scrolling
+
+```xml
+<ScrollView Orientation="Horizontal">
+    <gridLayout:DragDropGridView
+        RowCount="2"
+        ColumnSpacing="10"
+        RowSpacing="10"
+        IsDragAndDropEnabled="True"
+        ItemsSource="{Binding Items}">
+        <!-- Templates -->
+    </gridLayout:DragDropGridView>
+</ScrollView>
+```
+
+**Important**: Always set an explicit `RowCount` when using DragDropGridView inside a horizontal ScrollView. Without it, the layout cannot determine how many rows to display.
+
+**Note**: ScrollView integration and automatic gesture handling (both vertical and horizontal auto-scroll) is available on all supported drag-and-drop platforms (iOS, Android, Mac Catalyst).
 
 ### Custom Animations
 
@@ -292,7 +311,8 @@ myGridLayout.DragAndDropEndItemsAnimation = async (view) =>
 | `ItemTemplate` | `DataTemplate` | Template for rendering each item |
 | `Header` | `object` | Optional header content (can be a View or any object) |
 | `HeaderTemplate` | `DataTemplate` | Optional template for the header |
-| `ColumnCount` | `int` | Number of columns in the grid |
+| `ColumnCount` | `int` | Number of columns in the grid (for vertical scrolling) |
+| `RowCount` | `int` | Number of rows in the grid (for horizontal scrolling, default: 0) |
 | `ColumnSpacing` | `double` | Spacing between columns |
 | `RowSpacing` | `double` | Spacing between rows |
 | `GridPadding` | `Thickness` | Padding around the entire grid |
@@ -307,6 +327,11 @@ myGridLayout.DragAndDropEndItemsAnimation = async (view) =>
 | `DragAndDropItemsAnimation` | `Func<View, Task>` | Continuous animation for items when drag-and-drop is enabled |
 | `DragAndDropEndItemsAnimation` | `Func<View, Task>` | Cleanup animation for items when drag-and-drop is disabled |
 | `ShiftAnimationDuration` | `uint` | Duration (ms) for batch shift animations during reordering (default: 250) |
+
+**Note on ColumnCount vs RowCount:**
+- Set `ColumnCount` > 0 for vertical scrolling mode (items arranged in fixed columns, rows grow)
+- Set `RowCount` > 0 for horizontal scrolling mode (items arranged in fixed rows, columns grow)
+- Both cannot be > 0 simultaneously; RowCount takes precedence if both are set
 
 ### DragAndDropView Properties
 

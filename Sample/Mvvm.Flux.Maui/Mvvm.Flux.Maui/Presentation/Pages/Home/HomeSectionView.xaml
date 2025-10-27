@@ -120,8 +120,7 @@
                                         </sho:DragDropGridView.HeaderTemplate>
                                         <sho:DragDropGridView.ItemTemplate>
                                             <DataTemplate x:DataType="lights:Light">
-                                                <sho:DragAndDropView IsClippedToBounds="False"
-                                                                     TappedCommand="{Binding Source={RelativeSource AncestorType={x:Type home:HomeSectionViewModel}},
+                                                <sho:DragAndDropView TappedCommand="{Binding Source={RelativeSource AncestorType={x:Type home:HomeSectionViewModel}},
                                                                                              Path=NavigateToLightEditCommand}"
                                                                      TappedCommandParameter="{Binding}">
                                                     <sho:Shadows CornerRadius="10"

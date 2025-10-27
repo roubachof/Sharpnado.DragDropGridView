@@ -87,6 +87,9 @@ public partial class DragDropGridView
             double targetScroll = Math.Min(maxScroll, currentScroll + scrollSpeed);
             double scrollDelta = targetScroll - currentScroll;
 
+        var viewScreenCoordinates = view.GetScreenCoordinates<Application>();
+        var scrollScreenCoordinates = scrollView.GetScreenCoordinates<Application>();
+        var containerScreenCoordinates = this.GetScreenCoordinates<Application>();
             InternalLogger.DebugIf(VerboseLogging, Tag, () => 
                 $"Scrolling FORWARD: intensity={scrollIntensity:F2}, speed={scrollSpeed:F2}, delta={scrollDelta:F2}");
 

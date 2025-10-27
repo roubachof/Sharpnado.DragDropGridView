@@ -26,7 +26,7 @@ namespace Mvvm.Flux.Maui.Presentation.Pages
                 new HomeSectionViewModel(navigationService, lightService);
 
             _childrenViewModels[(int)MainSections.Scenarios] =
-                new ScenariosSectionViewModel(navigationService);
+                new ScenariosSectionViewModel(navigationService, lightService);
 
             _childrenViewModels[(int)MainSections.EShop] =
                 new EShopSectionViewModel(navigationService);

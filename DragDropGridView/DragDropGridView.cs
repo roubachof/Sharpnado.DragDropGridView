@@ -29,6 +29,31 @@ public partial class DragDropGridView : Layout
             gridLayout._shouldInvalidate = oldShouldInvalidate;
         });
 
+    public static readonly BindableProperty RowCountProperty = BindableProperty.Create(
+        nameof(RowCount),
+        typeof(int),
+        typeof(DragDropGridView),
+        0,
+        BindingMode.TwoWay,
+        propertyChanged: (bindable, oldValue, newValue) =>
+        {
+            var gridLayout = (DragDropGridView)bindable;
+            InternalLogger.Info(Tag, $"RowCount changed from {oldValue} to {newValue}");
+            
+            // Only animate if this is a real change (not initial setup)
+            if ((int)oldValue != 0 && (int)oldValue != (int)newValue)
+            {
+                gridLayout.AnimateLayoutChange();
+                return;
+            }
+            
+            // Force invalidation by temporarily setting _shouldInvalidate to true
+            var oldShouldInvalidate = gridLayout._shouldInvalidate;
+            gridLayout._shouldInvalidate = true;
+            gridLayout.InvalidateMeasure();
+            gridLayout._shouldInvalidate = oldShouldInvalidate;
+        });
+
     public static readonly BindableProperty GridPaddingProperty = BindableProperty.Create(
         nameof(GridPadding),
         typeof(Thickness),
@@ -98,6 +123,12 @@ public partial class DragDropGridView : Layout
     {
         get => (int)GetValue(ColumnCountProperty);
         set => SetValue(ColumnCountProperty, value);
+    }
+
+    public int RowCount
+    {
+        get => (int)GetValue(RowCountProperty);
+        set => SetValue(RowCountProperty, value);
     }
 
     public Thickness GridPadding
