@@ -9,7 +9,7 @@ public class UntouchableRefreshViewHandler : RefreshViewHandler
 {
     public void UpdateDisableScrolling(bool disableScrolling)
     {
-        ((UntouchableMauiSwipeRefreshLayout)PlatformView).UodateDisableScrolling(disableScrolling);
+        ((UntouchableMauiSwipeRefreshLayout)PlatformView).UpdateDisableScrolling(disableScrolling);
     }
 
     protected override UntouchableMauiSwipeRefreshLayout CreatePlatformView()
@@ -29,7 +29,7 @@ public class UntouchableMauiSwipeRefreshLayout : MauiSwipeRefreshLayout
     {
     }
 
-    public void UodateDisableScrolling(bool disableScrolling)
+    public void UpdateDisableScrolling(bool disableScrolling)
     {
         _disableScrolling = disableScrolling;
     }
