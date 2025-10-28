@@ -15,7 +15,7 @@ public class UntouchableScrollviewHandler : ScrollViewHandler
 {
     public void UpdateDisableScrolling(bool disableScrolling)
     {
-        ((UntouchableMauiScrollView)PlatformView).UodateDisableScrolling(disableScrolling);
+        ((UntouchableMauiScrollView)PlatformView).UpdateDisableScrolling(disableScrolling);
     }
 
     protected override MauiScrollView CreatePlatformView()
@@ -57,7 +57,7 @@ public class UntouchableMauiScrollView : MauiScrollView
     {
     }
 
-    public void UodateDisableScrolling(bool disableScrolling)
+    public void UpdateDisableScrolling(bool disableScrolling)
     {
         _disableScrolling = disableScrolling;
     }
