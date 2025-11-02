@@ -20,7 +20,7 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <LangVersion>latest</LangVersion>
     
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>Jean-Marie Alfonsi</Authors>
     <Description>Sharpnado.DragDropGridView is a high-performance .NET MAUI control with automatic grid arrangement, adaptive item sizing, and drag-and-drop reordering. Features include ItemsSource/DataTemplate binding, automatic column calculation, configurable spacing and padding, responsive orientation handling, and smooth drag-and-drop with visual feedback. Pure cross-platform implementation with no platform-specific code. Perfect for building draggable tile grids, reorderable galleries, and adaptive collections.</Description>
     <PackageProjectUrl>https://github.com/roubachof/Sharpnado.GridLayout</PackageProjectUrl>
@@ -35,6 +35,12 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageReleaseNotes>
+      Version 1.0.1 - Bug Fixes (November 2025)
+      
+      BUG FIXES:
+      🐛 Fixed auto-scrolling behavior during drag operations
+      🐛 Fixed shadow effect rendering on Android and iOS
+      
       Version 1.0.0 - Initial Release (October 2025)
       
       CORE FEATURES:
