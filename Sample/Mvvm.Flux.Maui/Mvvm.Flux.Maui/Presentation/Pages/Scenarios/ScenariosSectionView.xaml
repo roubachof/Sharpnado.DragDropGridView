@@ -27,30 +27,25 @@
                                          RefreshColor="{StaticResource LightBulbOnColor}">
                                 <Grid RowDefinitions="Auto,*">
                                     <!--  Header Section  -->
-                                    <Grid Grid.Row="0"
-                                          Padding="15,129,15,20"
-                                          ColumnDefinitions="80,*">
-                                        <Image Grid.Column="0"
-                                               WidthRequest="80"
-                                               HeightRequest="80"
-                                               Source="owner.png" />
-                                        <Label Grid.Column="1"
-                                               Style="{StaticResource TextHuge}"
-                                               HeightRequest="{Binding Source={x:Reference Root},
-                                                                       Path=Height,
-                                                                       Converter={converters:TopSafeAreaToDoubleConverter},
-                                                                       ConverterParameter=75}"
-                                               Margin="15"
-                                               VerticalTextAlignment="Center"
-                                               MaxLines="2"
-                                               Text="{Binding Title}" />
-                                    </Grid>
+
+                                    <Label Style="{StaticResource TextHuge}"
+                                           HeightRequest="{Binding Source={x:Reference Root},
+                                                                   Path=Height,
+                                                                   Converter={converters:TopSafeAreaToDoubleConverter},
+                                                                   ConverterParameter=75}"
+                                           Margin="15"
+                                           Padding="{OnPlatform '15,80,15,15',
+                                                                Android='15,120,15,15',
+                                                                WinUI='15,40,15,15'}"
+                                           VerticalTextAlignment="Center"
+                                           MaxLines="2"
+                                           Text="{Binding Title}" />
+
 
                                     <!--  Horizontal ScrollView with DragDropGridView  -->
                                     <ScrollView Grid.Row="1"
                                                 Orientation="Horizontal">
                                         <sho:DragDropGridView x:Name="GridView"
-                                                              AdaptItemWidth="True"
                                                               AnimateTransitions="True"
                                                               ColumnSpacing="0"
                                                               DragAndDropTrigger="{Binding DragTrigger}"
@@ -61,17 +56,16 @@
                                                               RowSpacing="0">
                                             <sho:DragDropGridView.ItemTemplate>
                                                 <DataTemplate x:DataType="lights:Light">
-                                                    <sho:DragAndDropView WidthRequest="120"
-                                                                         IsClippedToBounds="False"
+                                                    <sho:DragAndDropView IsClippedToBounds="False"
                                                                          TappedCommand="{Binding Source={RelativeSource AncestorType={x:Type scenarios:ScenariosSectionViewModel}},
                                                                                                  Path=NavigateToLightEditCommand}"
                                                                          TappedCommandParameter="{Binding}">
-                                                        <sho:Shadows Margin="10"
-                                                                     CornerRadius="10"
+                                                        <sho:Shadows CornerRadius="10"
                                                                      Shades="{Binding IsOn,
                                                                                       Converter={converters:BoolToShadesResourceConverter IfFalse='ShadowNone',
                                                                                                                                           IfTrue='ShadeLightBulbHalo'}}">
-                                                            <Border Background="{StaticResource SurfaceBackgroundColor}"
+                                                            <Border Margin="10"
+                                                                    Background="{StaticResource SurfaceBackgroundColor}"
                                                                     StrokeShape="{StaticResource RoundRectangle}"
                                                                     StrokeThickness="0">
                                                                 <Grid Padding="10,0,10,10">
