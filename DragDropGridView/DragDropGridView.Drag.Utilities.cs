@@ -30,77 +30,77 @@ public partial class DragDropGridView
 
     private void HandleScrollViewEdges(ScrollView scrollView, View view)
     {
-        const double EdgeZone = 150.0;  // Larger edge detection zone for earlier response
-        const double MaxScrollSpeed = 20.0;  // Maximum pixels per frame
-        const double MinScrollSpeed = 3.0;   // Minimum scroll speed to avoid stalling
+        // Configuration
+        const double EdgeZone = 150.0;
+        const double MaxScrollSpeed = 20.0;
+        const double MinScrollSpeed = 3.0;
 
-        var viewScreenCoordinates = view.GetScreenCoordinates<Application>();
-        var scrollScreenCoordinates = scrollView.GetScreenCoordinates<Application>();
-        var containerScreenCoordinates = this.GetScreenCoordinates<Application>();
+        // Determine scroll orientation and boundaries
+        bool isVertical = scrollView.Orientation == ScrollOrientation.Vertical;
+        double currentScroll = isVertical ? scrollView.ScrollY : scrollView.ScrollX;
+        double scrollViewSize = isVertical ? scrollView.Height : scrollView.Width;
+        double contentSize = isVertical ? Height : Width;
+        double maxScroll = Math.Max(0, contentSize - scrollViewSize);
 
-        double toolbarHeight = DeviceDisplay.Current.MainDisplayInfo.Orientation == DisplayOrientation.Landscape ? 48 : 56;
-        double screenHeight = (DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density) - toolbarHeight;
+        // Get dragged view position relative to scroll viewport (accounting for translation)
+        double viewPosition = isVertical 
+            ? (view.Y + view.TranslationY) - currentScroll
+            : (view.X + view.TranslationX) - currentScroll;
+        double viewSize = isVertical ? view.Height : view.Width;
+        double viewEnd = viewPosition + viewSize;
 
-        InternalLogger.DebugIf(VerboseLogging, Tag, () => $"screenHeight: {screenHeight}, viewScreenCoordinates: {viewScreenCoordinates}, scrollScreenCoordinates: {scrollScreenCoordinates}, containerScreenCoordinates: {containerScreenCoordinates}");
+        InternalLogger.DebugIf(VerboseLogging, Tag, () => 
+            $"HandleScrollViewEdges: orientation={scrollView.Orientation}, viewPosition={viewPosition:F1}, viewEnd={viewEnd:F1}, scrollViewSize={scrollViewSize:F1}, currentScroll={currentScroll:F1}, maxScroll={maxScroll:F1}");
 
-        // Calculate scroll viewport boundaries
-        double scrollViewportTop = scrollView.ScrollY + scrollScreenCoordinates.Y;
-        double scrollViewportBottom = scrollView.ScrollY + scrollScreenCoordinates.Y + screenHeight;
+        // Calculate distance from edges
+        double distanceFromStart = viewPosition;
+        double distanceFromEnd = scrollViewSize - viewEnd;
 
-        // Calculate dragged view boundaries
-        double viewTop = view.TranslationY + viewScreenCoordinates.Y;
-        double viewBottom = viewTop + view.Height;
-
-        // Calculate container boundaries
-        double containerBottom = containerScreenCoordinates.Y + Height;
-
-        // Calculate distance from edges (negative = inside edge zone)
-        double distanceFromTop = viewTop - scrollViewportTop;
-        double distanceFromBottom = scrollViewportBottom - viewBottom;
-
-        InternalLogger.DebugIf(VerboseLogging, Tag, () => $"distanceFromTop: {distanceFromTop}, distanceFromBottom: {distanceFromBottom}");
-
-        // Check if we need to scroll up (near top edge)
-        if (distanceFromTop < EdgeZone && scrollView.ScrollY > 0)
+        // Scroll backwards (up/left) if near start edge
+        if (distanceFromStart < EdgeZone && currentScroll > 0)
         {
-            // Calculate scroll speed based on distance (closer = faster, with easing)
-            double normalizedDistance = Math.Max(0, distanceFromTop) / EdgeZone; // 0 = at edge, 1 = far from edge
-            double easedDistance = 1.0 - Math.Pow(normalizedDistance, 2); // Quadratic easing
-            double scrollSpeed = MinScrollSpeed + (MaxScrollSpeed - MinScrollSpeed) * easedDistance;
+            double scrollIntensity = 1.0 - Math.Max(0, distanceFromStart) / EdgeZone;
+            double scrollSpeed = MinScrollSpeed + (MaxScrollSpeed - MinScrollSpeed) * scrollIntensity;
+            double targetScroll = Math.Max(0, currentScroll - scrollSpeed);
+            double scrollDelta = currentScroll - targetScroll;
 
-            double targetY = Math.Max(0, scrollView.ScrollY - scrollSpeed);
-            double actualScrollDelta = scrollView.ScrollY - targetY;
+            InternalLogger.DebugIf(VerboseLogging, Tag, () => 
+                $"Scrolling BACK: intensity={scrollIntensity:F2}, speed={scrollSpeed:F2}, delta={scrollDelta:F2}");
 
-            InternalLogger.DebugIf(VerboseLogging, Tag, () => $"Scrolling UP: speed={scrollSpeed:F2}, targetY={targetY:F2}, delta={actualScrollDelta:F2}");
-
-            // Compensate view position for scroll movement to keep it under the finger
-            view.TranslationY += actualScrollDelta;
-
-            TaskMonitor.Create(scrollView.ScrollToAsync(0, targetY, false));
+            // Compensate view translation to keep it under finger
+            if (isVertical)
+            {
+                view.TranslationY += scrollDelta;
+                TaskMonitor.Create(scrollView.ScrollToAsync(0, targetScroll, false));
+            }
+            else
+            {
+                view.TranslationX += scrollDelta;
+                TaskMonitor.Create(scrollView.ScrollToAsync(targetScroll, 0, false));
+            }
         }
-        // Check if we need to scroll down (near bottom edge)
-        else if (distanceFromBottom < EdgeZone && containerBottom > scrollViewportBottom)
+        // Scroll forwards (down/right) if near end edge
+        else if (distanceFromEnd < EdgeZone && currentScroll < maxScroll)
         {
-            // Calculate scroll speed based on distance (closer = faster, with easing)
-            double normalizedDistance = Math.Max(0, distanceFromBottom) / EdgeZone;
-            double easedDistance = 1.0 - Math.Pow(normalizedDistance, 2); // Quadratic easing
-            double scrollSpeed = MinScrollSpeed + (MaxScrollSpeed - MinScrollSpeed) * easedDistance;
+            double scrollIntensity = 1.0 - Math.Max(0, distanceFromEnd) / EdgeZone;
+            double scrollSpeed = MinScrollSpeed + (MaxScrollSpeed - MinScrollSpeed) * scrollIntensity;
+            double targetScroll = Math.Min(maxScroll, currentScroll + scrollSpeed);
+            double scrollDelta = targetScroll - currentScroll;
 
-            // Calculate max scroll position: content height minus visible viewport height
-            // This ensures we can scroll enough to show the full last row
-            double scrollViewHeight = scrollView.Height;
-            double contentHeight = Height; // GridLayout's full content height
-            double maxScrollY = Math.Max(0, contentHeight - scrollViewHeight);
-            
-            double targetY = Math.Min(maxScrollY, scrollView.ScrollY + scrollSpeed);
-            double actualScrollDelta = targetY - scrollView.ScrollY;
+            InternalLogger.DebugIf(VerboseLogging, Tag, () => 
+                $"Scrolling FORWARD: intensity={scrollIntensity:F2}, speed={scrollSpeed:F2}, delta={scrollDelta:F2}");
 
-            InternalLogger.DebugIf(VerboseLogging, Tag, () => $"Scrolling DOWN: speed={scrollSpeed:F2}, targetY={targetY:F2}, maxScrollY={maxScrollY:F2}, delta={actualScrollDelta:F2}");
-
-            // Compensate view position for scroll movement to keep it under the finger
-            view.TranslationY -= actualScrollDelta;
-
-            TaskMonitor.Create(scrollView.ScrollToAsync(0, targetY, false));
+            // Compensate view translation to keep it under finger
+            if (isVertical)
+            {
+                view.TranslationY -= scrollDelta;
+                TaskMonitor.Create(scrollView.ScrollToAsync(0, targetScroll, false));
+            }
+            else
+            {
+                view.TranslationX -= scrollDelta;
+                TaskMonitor.Create(scrollView.ScrollToAsync(targetScroll, 0, false));
+            }
         }
     }
 }
