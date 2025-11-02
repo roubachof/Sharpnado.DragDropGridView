@@ -68,7 +68,8 @@
                                         <sho:DragDropGridView.HeaderTemplate>
                                             <DataTemplate>
                                                 <Grid Padding="{OnPlatform '15,80,15,0',
-                                                                           Android='15,120,15,0'}"
+                                                                           Android='15,120,15,0',
+                                                                           WinUI='15,40,15,0'}"
                                                       ColumnDefinitions="80,*,60">
                                                     <Label Grid.Column="1"
                                                            Style="{StaticResource TextHuge}"
